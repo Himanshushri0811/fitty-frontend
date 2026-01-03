@@ -1,0 +1,102 @@
+/* 🚀 Main chatbot icon styling */
+#chatbot-icon {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 90px;
+    height: 90px;
+    background: linear-gradient(135deg, #4caf50, #2196f3, #ff9800, #e91e63);
+    background-size: 300% 300%;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    z-index: 10;
+    animation: pulse 2s infinite alternate;
+  }
+  
+  /* 🌟 Glow effect */
+  #chatbot-icon:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 25px rgba(255, 0, 150, 0.8);
+  }
+  
+  /* 🔥 Pulsing animation */
+  @keyframes pulse {
+    0% {
+        box-shadow: 0 0 15px #4caf50;
+    }
+    100% {
+        box-shadow: 0 0 35px #ff9800;
+    }
+  }
+  
+  /* 🟡 Face styling */
+  .face {
+    width: 75%;
+    height: 75%;
+    background: #fff;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    z-index: 1;
+    transition: transform 0.4s ease;
+  }
+  
+  /* 👀 Eyes */
+  .eye-container {
+    display: flex;
+    justify-content: space-between;
+    width: 70%;
+  }
+  
+  .eye {
+    width: 18px;
+    height: 18px;
+    background: #000;
+    border-radius: 50%;
+    animation: blink 4s infinite alternate;
+    transition: transform 0.4s;
+  }
+  
+  /* 🟣 Eye movement on hover */
+  #chatbot-icon:hover .left-eye {
+    transform: translateX(-8px);
+  }
+  #chatbot-icon:hover .right-eye {
+    transform: translateX(8px);
+  }
+  
+  /* 😊 Mouth */
+  .mouth {
+    width: 30px;
+    height: 6px;
+    background: #000;
+    border-radius: 10px;
+    margin-top: 10px;
+    transition: all 0.4s ease;
+  }
+  
+  /* 🎯 Smile on hover */
+  #chatbot-icon:hover .mouth {
+    width: 50px;
+    height: 15px;
+    border-radius: 50%;
+    background: #000;
+  }
+  
+  /* 👁️ Eye blink animation */
+  @keyframes blink {
+    0%, 100% {
+        transform: scaleY(1);
+    }
+    50% {
+        transform: scaleY(0.1);
+    }
+  }
+  

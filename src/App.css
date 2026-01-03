@@ -1,0 +1,89 @@
+/* ================================
+   GLOBAL RESET (CRITICAL)
+================================ */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+  font-family: 'Inter', sans-serif;
+  background-color: #0b0b0f;
+}
+
+/* React root */
+#root {
+  width: 100%;
+  height: 100%;
+}
+
+/* ================================
+   APP WRAPPER
+================================ */
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ================================
+   NAVBAR FIX
+================================ */
+/*
+IMPORTANT:
+- Navbar height must be fixed
+- NO margin-bottom on navbar
+*/
+.navbar {
+  height: 80px;              /* adjust if needed */
+  flex-shrink: 0;
+}
+
+/* ================================
+   MAIN CONTENT AREA
+================================ */
+/*
+This is the KEY FIX.
+Only ONE padding-top equal to navbar height.
+NO margin-top anywhere else.
+*/
+.main-content {
+  flex: 1;
+  padding-top: 80px;         /* EXACT navbar height */
+  width: 100%;
+  position: relative;
+}
+
+/* ================================
+   ROUTE PAGES BASE STYLE
+================================ */
+.page {
+  width: 100%;
+  min-height: calc(100vh - 80px);
+  padding: 24px;
+}
+
+/* ================================
+   BOOTSTRAP OVERRIDES
+================================ */
+.container,
+.container-fluid {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+.row {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+/* ================================
+   FOOTER FIX
+================================ */
+footer {
+  margin-top: auto;
+}

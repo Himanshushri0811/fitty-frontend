@@ -1,0 +1,22 @@
+/* WeeklyDiet.css */
+.weekly-diet-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.meals-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    padding: 1rem 0;
+}
+
+.no-meals {
+    text-align: center;
+    grid-column: 1 / -1;
+    padding: 4rem;
+    color: var(--d-text-gray);
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 16px;
+    border: 1px dashed var(--d-border);
+}

@@ -1,0 +1,46 @@
+/* GroceryList.css */
+.grocery-container {
+    background: var(--d-card-bg);
+    border-radius: 16px;
+    padding: 1.5rem;
+    border: 1px solid var(--d-border);
+    margin-top: 2rem;
+}
+
+.grocery-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.grocery-header h3 {
+    font-size: 1.2rem;
+    color: var(--d-primary);
+    margin: 0;
+}
+
+.grocery-items {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1rem;
+}
+
+.grocery-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 0.8rem;
+    border-radius: 8px;
+    color: var(--d-text-gray);
+    font-size: 0.9rem;
+}
+
+.item-check {
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--d-border);
+    border-radius: 4px;
+    display: inline-block;
+}

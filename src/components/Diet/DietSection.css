@@ -1,0 +1,284 @@
+/* DietSection.css Expanded */
+:root {
+    --d-bg: #0e0e11;
+    --d-card-bg: #1a1a1f;
+    --d-primary: #00ff99;
+    --d-text: #ffffff;
+    --d-text-gray: #a1a1aa;
+    --d-border: #27272a;
+}
+
+.diet-container {
+    min-height: 100vh;
+    background-color: var(--d-bg);
+    padding: 2rem 1rem;
+    color: var(--d-text);
+    font-family: 'Inter', sans-serif;
+    position: relative;
+}
+
+/* --- Greeting Box --- */
+.greeting-box {
+    background: linear-gradient(135deg, rgba(0, 255, 153, 0.1), rgba(0, 0, 0, 0));
+    border-left: 4px solid var(--d-primary);
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.greeting-box h2 {
+    font-size: 1.8rem;
+    margin: 0 0 0.5rem 0;
+    color: #fff;
+}
+
+.motivational-text {
+    color: var(--d-text-gray);
+    font-style: italic;
+    font-size: 1rem;
+}
+
+/* --- Wizard Steps --- */
+.wizard-step {
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.step-title {
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    background: linear-gradient(90deg, #fff, #aaa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.goal-options-large {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.big-option-btn {
+    background: var(--d-card-bg);
+    border: 2px solid var(--d-border);
+    padding: 2rem 3rem;
+    border-radius: 20px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--d-text);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    min-width: 200px;
+}
+
+.big-option-btn:hover {
+    border-color: var(--d-primary);
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 255, 153, 0.2);
+}
+
+.back-btn-small {
+    background: transparent;
+    border: none;
+    color: var(--d-text-gray);
+    margin-bottom: 1rem;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+/* --- Plan Dashboard --- */
+.plan-header-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.reset-btn {
+    background: transparent;
+    border: 1px solid var(--d-border);
+    color: var(--d-text-gray);
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.water-tracker {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(0, 153, 255, 0.1);
+    padding: 0.5rem 1rem;
+    border-radius: 30px;
+    border: 1px solid rgba(0, 153, 255, 0.3);
+}
+
+.water-count {
+    font-weight: 700;
+    color: #4da6ff;
+}
+
+.add-water-btn {
+    background: #4da6ff;
+    color: #fff;
+    border: none;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.2rem;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* --- Reused Selectors & Misc --- */
+.day-selector {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    overflow-x: auto;
+    padding-bottom: 10px;
+}
+
+.day-btn {
+    background: transparent;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    border: 1px solid var(--d-border);
+    color: var(--d-text-gray);
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.day-btn.active {
+    background: var(--d-primary);
+    color: #000;
+    border-color: var(--d-primary);
+}
+
+.tag-filters {
+    display: flex;
+    justify-content: center;
+    gap: 0.8rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.filter-tag {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    color: var(--d-text-gray);
+    border: 1px solid transparent;
+}
+
+.filter-tag.active {
+    background: rgba(0, 255, 153, 0.1);
+    color: var(--d-primary);
+    border-color: var(--d-primary);
+}
+
+/* --- Login Glass Overlay --- */
+.login-overlay-glass {
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 10, 10, 0.7);
+    backdrop-filter: blur(15px);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-modal-glass {
+    background: rgba(30, 30, 35, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 3rem;
+    border-radius: 24px;
+    text-align: center;
+    max-width: 400px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+}
+
+.lock-emoji {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 1rem;
+}
+
+.login-modal-glass h2 {
+    color: #fff;
+    margin-bottom: 1rem;
+}
+
+.login-btn-glass {
+    background: var(--d-primary);
+    color: #000;
+    border: none;
+    padding: 1rem 2.5rem;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 1.5rem;
+    transition: transform 0.2s;
+}
+
+.login-btn-glass:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(0, 255, 153, 0.4);
+}
+
+/* Animations */
+.animate-fade-in {
+    animation: fadeIn 0.5s ease;
+}
+
+.animate-slide-up {
+    animation: slideUp 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 768px) {
+    .big-option-btn {
+        width: 100%;
+    }
+}
