@@ -4,6 +4,7 @@ import WeeklyDiet from './WeeklyDiet';
 import MealModal from './MealModal';
 import GroceryList from './GroceryList';
 import { dietData } from './dietData';
+import fittyVoice from '../../utils/fittyVoice';
 import './DietSection.css';
 
 const GOALS = ["Fat Loss", "Muscle Gain", "Maintenance"];
@@ -54,15 +55,7 @@ const DietSection = () => {
 
     // Voice Function
     const speak = (text) => {
-        if (synth.speaking) {
-            synth.cancel();
-        }
-        const utterThis = new SpeechSynthesisUtterance(text);
-        // Try to find a Hindi/English India voice for natural feel
-        const voices = synth.getVoices();
-        const desiredVoice = voices.find(v => v.lang.includes('IN')) || voices[0];
-        if (desiredVoice) utterThis.voice = desiredVoice;
-        synth.speak(utterThis);
+        fittyVoice.speak(text);
     };
 
     // Handlers

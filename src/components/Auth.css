@@ -275,7 +275,8 @@
   border-radius: 10px;
   font-size: 16px;
   transition: all 0.3s ease;
-  background: #f9fafb;
+  background: #f9fafb !important;
+  color: #000000 !important;
 }
 
 .form-input:focus {
@@ -429,11 +430,12 @@
     flex-direction: column;
     min-height: auto;
   }
-  
-  .auth-left, .auth-right {
+
+  .auth-left,
+  .auth-right {
     padding: 30px;
   }
-  
+
   .hero-image img {
     height: 200px;
   }
@@ -443,24 +445,27 @@
   .auth-container {
     border-radius: 16px;
   }
-  
-  .auth-left, .auth-right {
+
+  .auth-left,
+  .auth-right {
     padding: 20px;
   }
-  
+
   .logo-text h1 {
     font-size: 24px;
   }
-  
+
   .tab {
     padding: 10px 30px;
     font-size: 14px;
   }
-  
-  .form-input, .submit-btn, .social-btn {
+
+  .form-input,
+  .submit-btn,
+  .social-btn {
     padding: 14px;
   }
-  
+
   .social-buttons {
     flex-direction: column;
   }

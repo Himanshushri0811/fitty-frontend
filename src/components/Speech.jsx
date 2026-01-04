@@ -1,14 +1,14 @@
 import React, { useEffect } from 'react';
+import fittyVoice from '../utils/fittyVoice';
 
 const Speech = ({ text }) => {
     useEffect(() => {
-        const synth = window.speechSynthesis;
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'hi-IN';  // हिंदी में बोलने के लिए
-        synth.speak(utterance);
+        if (text) {
+            fittyVoice.speak(text);
+        }
     }, [text]);
 
-    return null;  // कोई UI नहीं दिखेगा
+    return null;
 };
 
 export default Speech;

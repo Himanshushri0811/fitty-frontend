@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { PorcupineWorker } from "@picovoice/porcupine-web";
+import fittyVoice from "../utils/fittyVoice";
 
 const VoiceAssistant = () => {
   const [wakeWordDetected, setWakeWordDetected] = useState(false);
@@ -98,9 +99,7 @@ const VoiceAssistant = () => {
 
   const speak = (text) => {
     console.log("🔊 Speaking:", text);
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = "en-US";
-    window.speechSynthesis.speak(utterance);
+    fittyVoice.speak(text);
   };
 
   // Use a trick to make sure the browser allows speech synthesis (auto interaction)
@@ -112,9 +111,7 @@ const VoiceAssistant = () => {
     fakeInput.focus(); // triggers "user interaction"
     document.body.removeChild(fakeInput);
 
-    window.speechSynthesis.speak(
-      new SpeechSynthesisUtterance("Hi! Say Fity to start")
-    );
+    fittyVoice.speak("Hi! Say Fity to start");
   }, []);
 
   return (

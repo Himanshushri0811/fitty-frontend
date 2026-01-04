@@ -1,29 +1,11 @@
 import React, { useEffect, useState } from "react";
+import fittyVoice from "../utils/fittyVoice";
 
 const FityVoiceAssistant = ({ onVoiceCommand }) => {
   const [isListening, setIsListening] = useState(false);
 
   const speakText = (text) => {
-    const synth = window.speechSynthesis;
-    
-    if (!synth) {
-      console.error("SpeechSynthesis not supported!");
-      return;
-    }
-
-    // Check if speaking already
-    if (synth.speaking) {
-      synth.cancel();
-    }
-
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = /[a-zA-Z]/.test(text) ? "en-US" : "hi-IN";
-
-    utterance.onstart = () => console.log("🔊 Speaking started");
-    utterance.onerror = (e) => console.error("❌ Speaking error", e);
-    utterance.onend = () => console.log("✅ Speaking done");
-
-    synth.speak(utterance);
+    fittyVoice.speak(text);
   };
 
   const fetchFityResponse = async (message) => {

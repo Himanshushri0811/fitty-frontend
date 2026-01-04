@@ -11,6 +11,7 @@ import './App.css';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Chatbot from './components/Chatbot';
+import GreetingHandler from './components/GreetingHandler';
 
 /* =======================
    Pages / Screens
@@ -34,6 +35,16 @@ import VoiceAssistant from './components/VoiceAssistant';
 import Faq from './components/Faq';
 import PrivacyPolicy from './components/PrivacyPolicy';
 import Terms from './components/Terms';
+import Explore from './components/Explore/Explore';
+
+/* =======================
+   Admin Panel
+======================= */
+import AdminLayout from './components/Admin/AdminLayout';
+import AdminDashboard from './components/Admin/AdminDashboard';
+import UserManagement from './components/Admin/UserManagement';
+import GymManagement from './components/Admin/GymManagement';
+import ActivityLogs from './components/Admin/ActivityLogs';
 
 /* =======================
    App Component
@@ -45,6 +56,7 @@ function App() {
 
         {/* ===== Global Navbar ===== */}
         <Navbar />
+        <GreetingHandler />
 
         {/* ===== Main Content Area ===== */}
         <div className="main-content">
@@ -62,6 +74,7 @@ function App() {
 
               {/* ---------- Fitness Core ---------- */}
               <Route path="/workout" element={<Workout />} />
+              <Route path="/explore" element={<Explore />} />
               <Route path="/posture" element={<Posture />} />
               <Route path="/motivation" element={<Motivation />} />
               <Route path="/success-stories" element={<SuccessStories />} />
@@ -82,6 +95,14 @@ function App() {
               <Route path="/privacy" element={<PrivacyPolicy />} />
               <Route path="/terms" element={<Terms />} />
 
+              {/* ---------- Admin Panel ---------- */}
+              <Route path="/admin" element={<AdminLayout />}>
+                <Route path="dashboard" element={<AdminDashboard />} />
+                <Route path="users" element={<UserManagement />} />
+                <Route path="gyms" element={<GymManagement />} />
+                <Route path="logs" element={<ActivityLogs />} />
+              </Route>
+
               {/* ---------- 404 Fallback ---------- */}
               <Route path="*" element={<Home />} />
 
@@ -93,8 +114,8 @@ function App() {
         <Chatbot />
         <Footer />
 
-      </div>
-    </Router>
+      </div >
+    </Router >
   );
 }
 

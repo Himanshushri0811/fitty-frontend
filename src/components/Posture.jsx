@@ -6,6 +6,7 @@ import * as cam from "@mediapipe/camera_utils";
 import { drawConnectors, drawLandmarks } from "@mediapipe/drawing_utils";
 import { POSE_CONNECTIONS } from "@mediapipe/pose";
 import API from "./axiosConfig";
+import fittyVoice from "../utils/fittyVoice";
 import { motion, AnimatePresence } from "framer-motion";
 import { Camera, RefreshCw, CheckCircle2, AlertTriangle, XCircle, Play, ArrowLeft } from "lucide-react";
 import "./Posture.css";
@@ -153,10 +154,7 @@ const PostureDetector = () => {
   };
 
   const speakFeedback = (text) => {
-    const synth = window.speechSynthesis;
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.rate = 1.1;
-    synth.speak(utterance);
+    fittyVoice.speak(text);
   };
 
   // --- Drawing ---

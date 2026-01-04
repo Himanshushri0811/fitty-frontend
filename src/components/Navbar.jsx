@@ -93,8 +93,17 @@ const Navbar = () => {
     { path: '/settings', label: 'Settings', icon: <FaCog /> },
   ];
 
+  if (userData?.is_staff || userData?.is_superuser) {
+    userMenuItems.push({ path: '/admin/dashboard', label: 'Admin Panel', icon: <RiDashboardFill /> });
+  }
+
   // Premium badge for pro users
   const isPremiumUser = userData?.subscription === 'premium';
+
+  // Hide navbar on admin routes
+  if (location.pathname.startsWith('/admin')) {
+    return null;
+  }
 
   return (
     <>

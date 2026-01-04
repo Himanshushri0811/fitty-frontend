@@ -28,6 +28,7 @@ import {
 import API from './axiosConfig';
 import { useNavigate } from 'react-router-dom';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
+import fittyVoice from '../utils/fittyVoice';
 import './Chatbot.css';
 
 const Chatbot = () => {
@@ -131,10 +132,8 @@ const Chatbot = () => {
 
   // Stop all speech
   const stopAllSpeech = () => {
-    if (speechSynthesis) {
-      speechSynthesis.cancel();
-      setIsSpeaking(false);
-    }
+    fittyVoice.stop();
+    setIsSpeaking(false);
   };
 
   // Handle mute/unmute
@@ -147,32 +146,27 @@ const Chatbot = () => {
 
   // Handle close
   const handleClose = () => {
-    stopAllSpeech();
+    fittyVoice.stop();
+    setIsSpeaking(false);
     setIsOpen(false);
   };
 
   // Speak text
   const speakText = (text) => {
-    if (speechSynthesis && !isMuted) {
-      stopAllSpeech();
-
+    if (!isMuted) {
       const cleanText = text
         .replace(/\*\*/g, '')
         .replace(/[•\-]/g, '. ')
         .replace(/\n/g, '. ')
         .replace(/[🏋️‍♂️🥗💪🔥🍗]/g, '');
 
-      const utterance = new SpeechSynthesisUtterance(cleanText);
-      utterance.lang = 'en-IN';
-      utterance.rate = 1.0;
-      utterance.pitch = 1.0;
-      utterance.volume = 0.7;
+      fittyVoice.speak(cleanText);
+      setIsSpeaking(true);
 
-      utterance.onstart = () => setIsSpeaking(true);
-      utterance.onend = () => setIsSpeaking(false);
-      utterance.onerror = () => setIsSpeaking(false);
-
-      speechSynthesis.speak(utterance);
+      // Since fittyVoice doesn't notify on end easily without callbacks, 
+      // we'll just set a timeout based on text length for UI feedback
+      const duration = (cleanText.length / 10) * 1000;
+      setTimeout(() => setIsSpeaking(false), Math.min(duration, 5000));
     }
   };
 

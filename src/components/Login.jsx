@@ -25,7 +25,14 @@ const Login = ({ onSwitch }) => {
       localStorage.setItem('access_token', res.data.access);
       localStorage.setItem('refresh_token', res.data.refresh);
       localStorage.setItem('user', JSON.stringify(res.data.user));
-      window.location.href = '/profile';
+      localStorage.setItem('fitty_greeting_needed', 'true');
+
+      // Auto-redirect to admin dashboard if staff/superuser
+      if (res.data.user.is_staff || res.data.user.is_superuser) {
+        window.location.href = '/admin/dashboard';
+      } else {
+        window.location.href = '/profile';
+      }
     } catch (err) {
       setError(err.response?.data?.error || 'Invalid credentials. Please try again.');
     } finally {
@@ -38,6 +45,18 @@ const Login = ({ onSwitch }) => {
       <div>
         <h2 className="form-title">Welcome Back!</h2>
         <p className="form-subtitle">Login to continue your fitness journey</p>
+        <div style={{
+          marginTop: '10px',
+          padding: '8px',
+          background: 'rgba(99, 102, 241, 0.1)',
+          borderRadius: '8px',
+          fontSize: '0.85rem',
+          color: '#818cf8',
+          textAlign: 'center',
+          border: '1px solid rgba(99, 102, 241, 0.2)'
+        }}>
+          💡 <strong>Admin Note:</strong> Staff accounts will be redirected to the Dashboard.
+        </div>
       </div>
 
       {error && <div className="error-message">{error}</div>}

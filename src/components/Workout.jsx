@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import fittyVoice from "../utils/fittyVoice";
 import "./Workout.css";
 
 // ------------------- MOCK DATA -------------------
@@ -97,16 +98,7 @@ export default function Workout() {
 
   // --- VOICE FUNCTION ---
   const speak = (text) => {
-    if (synth.speaking) {
-      synth.cancel();
-    }
-    const utterThis = new SpeechSynthesisUtterance(text);
-    // Attempt to select a motivating voice
-    const voices = synth.getVoices();
-    // Prefer a deeper/authoritative voice if available, or just the default
-    const preferredVoice = voices.find(v => v.lang.includes('en') && v.name.includes('Male')) || voices[0];
-    if (preferredVoice) utterThis.voice = preferredVoice;
-    synth.speak(utterThis);
+    fittyVoice.speak(text);
   };
 
   // --- HANDLERS ---
