@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
     MdDashboard, MdPersonAdd, MdPeople, MdPayments,
     MdEventNote, MdSettings, MdLock, MdCheckCircle,
-    MdNavigateNext, MdInfo
+    MdNavigateNext, MdInfo, MdStar, MdDelete, MdWarning,
+    MdNotifications, MdClose
 } from 'react-icons/md';
 import API from '../axiosConfig';
 import './GymDashboard.css';
+
+const FREE_MEMBER_LIMIT = 5;
 
 const GymDashboard = () => {
     const navigate = useNavigate();
@@ -15,7 +18,7 @@ const GymDashboard = () => {
     const [stats, setStats] = useState(null);
     const [members, setMembers] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [paymentStatus, setPaymentStatus] = useState(false);
+    const [paymentStatus, setPaymentStatus] = useState(false); // True if Pro
     const [planType, setPlanType] = useState('FREE');
     const [gymName, setGymName] = useState('FitMitra Gym');
 
@@ -31,10 +34,10 @@ const GymDashboard = () => {
             setPlanType(overviewRes.data.plan_type || 'FREE');
             setGymName(overviewRes.data.gym_name);
 
-            if (overviewRes.data.payment_status) {
-                const membersRes = await API.get('/api/gym/members/');
-                setMembers(membersRes.data);
-            }
+            // Fetch members list
+            const membersRes = await API.get('/api/gym/members/');
+            setMembers(membersRes.data);
+
         } catch (err) {
             console.error("Error fetching dashboard data", err);
         } finally {
@@ -47,6 +50,9 @@ const GymDashboard = () => {
     };
 
     if (loading) return <div className="gym-loading">Loading Dashboard...</div>;
+
+    const isPremium = paymentStatus;
+    const memberCount = members.length;
 
     return (
         <div className="gym-dashboard-container">
@@ -61,105 +67,109 @@ const GymDashboard = () => {
                         <MdDashboard /> Overview
                     </button>
                     <button className={activeTab === 'add-member' ? 'active' : ''} onClick={() => setActiveTab('add-member')}>
-                        <MdPersonAdd /> Add Candidate
+                        <MdPersonAdd /> Add Member
+                        {!isPremium && memberCount >= FREE_MEMBER_LIMIT && <MdLock size={14} style={{ marginLeft: 'auto', color: 'var(--warning)' }} />}
                     </button>
                     <button className={activeTab === 'members' ? 'active' : ''} onClick={() => setActiveTab('members')}>
                         <MdPeople /> Members List
                     </button>
                     <button className={activeTab === 'fees' ? 'active' : ''} onClick={() => setActiveTab('fees')}>
-                        <MdPayments /> Fees Management
+                        <MdPayments /> Fees & Dues
                     </button>
                     <button className={activeTab === 'profile' ? 'active' : ''} onClick={() => setActiveTab('profile')}>
                         <MdSettings /> Profile
                     </button>
                 </nav>
 
-                {!paymentStatus ? (
+                {!isPremium ? (
                     <div className="sidebar-upgrade-card">
-                        <MdLock className="lock-icon" />
-                        <p>Features Locked</p>
+                        <div className="upgrade-header">
+                            <MdStar className="lock-icon" />
+                            <span>Free Plan</span>
+                        </div>
+                        <div className="limit-bar">
+                            <div className="limit-progress" style={{ width: `${Math.min((memberCount / FREE_MEMBER_LIMIT) * 100, 100)}%` }}></div>
+                        </div>
+                        <p className="limit-text">{memberCount}/{FREE_MEMBER_LIMIT} Members Used</p>
+
                         <button onClick={handleUpgradeClick}>
-                            View Upgrade Plans
+                            Upgrade to Pro (₹399)
                         </button>
                     </div>
                 ) : (
                     <div className="sidebar-plan-info">
-                        <p className="plan-label">Current Plan</p>
+                        <p className="plan-label">Plan Active</p>
                         <div className="plan-badge-sidebar">{planType}</div>
-                        {planType === 'STARTER' && (
-                            <button className="upgrade-link" onClick={handleUpgradeClick}>
-                                Upgrade to Pro
-                            </button>
-                        )}
                     </div>
                 )}
             </div>
 
             {/* Main Content */}
-            <div className="gym-main-content">
-                {!paymentStatus && activeTab !== 'overview' && activeTab !== 'profile' ? (
-                    <LockedFeatureView onUpgrade={handleUpgradeClick} />
-                ) : (
-                    <div className="tab-content">
-                        {activeTab === 'overview' && <OverviewTab stats={stats} paymentStatus={paymentStatus} onUpgrade={handleUpgradeClick} />}
-                        {activeTab === 'add-member' && <AddMemberTab onMemberAdded={fetchDashboardData} />}
-                        {activeTab === 'members' && <MembersTable members={members} />}
-                        {activeTab === 'fees' && <FeesTab members={members} />}
-                        {activeTab === 'profile' && <ProfileTab gymName={gymName} />}
-                    </div>
-                )}
+            <div className="gym-main-content" style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
+
+                <div className="tab-content-scrollable" style={{ padding: '30px', overflowY: 'auto', flex: 1 }}>
+                    {activeTab === 'overview' && (
+                        <OverviewTab
+                            stats={stats}
+                            isPremium={isPremium}
+                            onUpgrade={handleUpgradeClick}
+                        />
+                    )}
+                    {activeTab === 'add-member' && (
+                        <AddMemberTab
+                            onMemberAdded={fetchDashboardData}
+                            isPremium={isPremium}
+                            memberCount={memberCount}
+                            onUpgrade={handleUpgradeClick}
+                        />
+                    )}
+                    {activeTab === 'members' && (
+                        <MembersTable
+                            members={members}
+                            onDeleteRefresh={fetchDashboardData}
+                            isPremium={isPremium}
+                        />
+                    )}
+                    {activeTab === 'fees' && (
+                        <FeesTab
+                            members={members}
+                            isPremium={isPremium}
+                            onUpgrade={handleUpgradeClick}
+                        />
+                    )}
+                    {activeTab === 'profile' && <ProfileTab gymName={gymName} />}
+                </div>
             </div>
         </div>
     );
 };
 
-const LockedFeatureView = ({ onUpgrade, isProcessing }) => (
-    <div className="locked-view">
-        <div className="blurred-overlay">
-            <div className="dummy-content">
-                <div className="dummy-row"></div>
-                <div className="dummy-row"></div>
-                <div className="dummy-row"></div>
-            </div>
-        </div>
+/* --- SUB COMPONENTS --- */
+
+const FeatureLockOverlay = ({ title, description, onUpgrade }) => (
+    <div className="lock-overlay">
         <motion.div
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            className="locked-card-premium"
+            className="lock-message-box"
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
         >
-            <div className="premium-badge">PREMIUM</div>
-            <MdLock className="huge-lock" />
-            <h1>Unlock Full Access</h1>
-            <p>You're currently on the Free Plan. Upgrade to manage members, track fees, and access detailed analytics.</p>
-
-            <div className="pricing-info">
-                <span className="price">₹299</span>
-                <span className="period">/ one-time</span>
+            <div className="lock-icon-circle">
+                <MdLock />
             </div>
-
-            <div className="benefit-list">
-                <div className="benefit-item"><MdCheckCircle /> <strong>Unlimited</strong> Member Registration</div>
-                <div className="benefit-item"><MdCheckCircle /> <strong>Automated</strong> Fees Reminders</div>
-                <div className="benefit-item"><MdCheckCircle /> <strong>Revenue</strong> Tracking & Analytics</div>
-                <div className="benefit-item"><MdCheckCircle /> <strong>Priority</strong> Owner Support</div>
-            </div>
-
-            <button
-                className="upgrade-btn-premium"
-                onClick={onUpgrade}
-            >
-                View Plans & Upgrade
+            <h3>{title}</h3>
+            <p>{description}</p>
+            <button className="upgrade-btn-small" onClick={onUpgrade}>
+                Upgrade to Pro (₹399)
             </button>
-            <p className="secure-text">🔒 Secure payment via Razorpay</p>
         </motion.div>
     </div>
 );
 
-const OverviewTab = ({ stats, paymentStatus, onUpgrade }) => (
-    <div className="dashboard-overview">
+const OverviewTab = ({ stats, isPremium, onUpgrade }) => (
+    <div className="dashboard-overview animate-fade-in">
         <header className="page-header">
             <h1>Workspace Overview</h1>
-            <p>Overview of your gym's performance</p>
+            <p>Welcome back, here's what's happening today.</p>
         </header>
 
         <div className="stats-grid">
@@ -170,6 +180,7 @@ const OverviewTab = ({ stats, paymentStatus, onUpgrade }) => (
                     <span className="value">{stats?.total_members || 0}</span>
                 </div>
             </div>
+
             <div className="stat-card">
                 <div className="stat-icon paid"><MdCheckCircle /></div>
                 <div className="stat-info">
@@ -177,32 +188,66 @@ const OverviewTab = ({ stats, paymentStatus, onUpgrade }) => (
                     <span className="value">{stats?.paid_members || 0}</span>
                 </div>
             </div>
+
             <div className="stat-card">
                 <div className="stat-icon pending"><MdInfo /></div>
                 <div className="stat-info">
-                    <span className="label">Payment Pending</span>
+                    <span className="label">Dues Pending</span>
                     <span className="value">{stats?.pending_members || 0}</span>
                 </div>
             </div>
         </div>
 
-        {!paymentStatus && (
-            <div className="promo-banner">
-                <div className="promo-text">
-                    <h3>Take your gym to the next level</h3>
-                    <p>Track fees, manage attendance and get detailed reports.</p>
+        {!isPremium && (
+            <div className="promo-banner card-premium" style={{
+                background: 'linear-gradient(135deg, #4f46e5 0%, #a855f7 100%)',
+                color: 'white',
+                border: 'none',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                flexWrap: 'wrap',
+                gap: '20px'
+            }}>
+                <div className="promo-text" style={{ flex: 1, minWidth: '300px' }}>
+                    <h3 style={{ color: 'white', marginBottom: '8px' }}>Unlock Limitless Growth 🚀</h3>
+                    <p style={{ color: 'rgba(255,255,255,0.9)', fontSize: '0.95rem' }}>
+                        You're currently on the <strong>Free Plan</strong> (Limit: {FREE_MEMBER_LIMIT} members).
+                        Upgrade to <strong>Pro</strong> for unlimited members, AI Voice Assistant, and Priority Support.
+                    </p>
                 </div>
-                <button onClick={onUpgrade}>Upgrade Now <MdNavigateNext /></button>
+                <button
+                    onClick={onUpgrade}
+                    style={{
+                        background: 'white',
+                        color: '#4f46e5',
+                        border: 'none',
+                        padding: '12px 24px',
+                        borderRadius: '30px',
+                        fontWeight: '800',
+                        cursor: 'pointer',
+                        boxShadow: '0 4px 15px rgba(0,0,0,0.2)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        whiteSpace: 'nowrap'
+                    }}
+                >
+                    Upgrade to Pro - ₹399/mo <MdNavigateNext />
+                </button>
             </div>
         )}
     </div>
 );
 
-const AddMemberTab = ({ onMemberAdded }) => {
+const AddMemberTab = ({ onMemberAdded, isPremium, memberCount, onUpgrade }) => {
     const [formData, setFormData] = useState({
         name: '', mobile: '', join_date: '', fees_status: 'PENDING', fees_due_date: ''
     });
     const [submitting, setSubmitting] = useState(false);
+
+    // Lock condition: Free plan AND limit reached
+    const isLocked = !isPremium && memberCount >= FREE_MEMBER_LIMIT;
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -213,17 +258,40 @@ const AddMemberTab = ({ onMemberAdded }) => {
             setFormData({ name: '', mobile: '', join_date: '', fees_status: 'PENDING', fees_due_date: '' });
             onMemberAdded();
         } catch (err) {
-            alert("Error adding member. Please check your data.");
+            alert("Error adding member.");
         } finally {
             setSubmitting(false);
         }
     };
 
+    if (isLocked) {
+        return (
+            <div className="add-member-container blur-section-container">
+                <header className="page-header">
+                    <h1>Add New Member</h1>
+                    <p>Register a new member (Free Limit: {FREE_MEMBER_LIMIT})</p>
+                </header>
+                <div className="gym-form blur-content">
+                    {/* Dummy Form for blurred effect */}
+                    <div className="form-row">
+                        <div className="input-group"><label>Full Name</label><input type="text" /></div>
+                        <div className="input-group"><label>Mobile Number</label><input type="text" /></div>
+                    </div>
+                </div>
+                <FeatureLockOverlay
+                    title="Member Limit Reached 🔒"
+                    description={`You have reached the limit of ${FREE_MEMBER_LIMIT} members on the Free Plan.Upgrade to Pro for UNLIMITED additions.`}
+                    onUpgrade={onUpgrade}
+                />
+            </div>
+        );
+    }
+
     return (
-        <div className="add-member-container">
+        <div className="add-member-container animate-fade-in">
             <header className="page-header">
-                <h1>Add New Candidate</h1>
-                <p>Register a new member to your gym</p>
+                <h1>Add New Member</h1>
+                <p>Register a new member to your gym {!isPremium && <span style={{ color: 'var(--warning)', fontWeight: '600' }}>({memberCount}/{FREE_MEMBER_LIMIT} used)</span>}</p>
             </header>
             <form className="gym-form" onSubmit={handleSubmit}>
                 <div className="form-row">
@@ -261,88 +329,134 @@ const AddMemberTab = ({ onMemberAdded }) => {
     );
 };
 
-const MembersTable = ({ members }) => (
-    <div className="members-list-container">
-        <header className="page-header">
-            <h1>Members List</h1>
-            <p>Manage all registered gym members</p>
-        </header>
-        <div className="table-responsive">
-            <table className="gym-table">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Mobile</th>
-                        <th>Join Date</th>
-                        <th>Status</th>
-                        <th>Due Date</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {members.map(m => (
-                        <tr key={m.id}>
-                            <td>{m.name}</td>
-                            <td>{m.mobile}</td>
-                            <td>{m.join_date}</td>
-                            <td>
-                                <span className={`status-badge ${m.fees_status.toLowerCase()}`}>
-                                    {m.fees_status}
-                                </span>
-                            </td>
-                            <td>{m.fees_due_date}</td>
-                        </tr>
-                    ))}
-                    {members.length === 0 && <tr><td colSpan="5" style={{ textAlign: 'center' }}>No members found</td></tr>}
-                </tbody>
-            </table>
-        </div>
-    </div>
-);
+const MembersTable = ({ members, onDeleteRefresh, isPremium }) => {
 
-const FeesTab = ({ members }) => (
-    <div className="fees-management">
-        <header className="page-header">
-            <h1>Fees Status</h1>
-            <p>Track payments and pending dues</p>
-        </header>
-        <div className="fees-grid">
-            {members.map(m => (
-                <div className={`fee-card ${m.fees_status.toLowerCase()}`} key={m.id}>
-                    <div className="fee-user">
-                        <h4>{m.name}</h4>
-                        <p>{m.mobile}</p>
-                    </div>
-                    <div className="fee-info">
-                        <span className="due-label">Due Date:</span>
-                        <span className="due-date">{m.fees_due_date}</span>
-                    </div>
-                    <div className="fee-action">
-                        <span className={`status-txt ${m.fees_status.toLowerCase()}`}>{m.fees_status}</span>
-                    </div>
-                </div>
-            ))}
+    const handleDelete = async (id) => {
+        if (window.confirm("Are you sure you want to remove this member?")) {
+            try {
+                // Assuming backend supports DELETE /api/gym/members/{id}/
+                // Using axiosConfig API
+                await API.delete(`/api/gym/members/${id}/`);
+                alert("Member removed successfully.");
+                onDeleteRefresh();
+            } catch (err) {
+                console.error(err);
+                alert("Failed to delete member.");
+            }
+        }
+    };
+
+    return (
+        <div className="members-list-container animate-fade-in">
+            <header className="page-header">
+                <h1>Members List</h1>
+                <p>Manage all registered gym members</p>
+            </header>
+            <div className="table-responsive">
+                <table className="gym-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Mobile</th>
+                            <th>Join Date</th>
+                            <th>Status</th>
+                            <th>Due Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {members.map(m => (
+                            <tr key={m.id}>
+                                <td>{m.name}</td>
+                                <td>{m.mobile}</td>
+                                <td>{m.join_date}</td>
+                                <td>
+                                    <span className={`status-badge ${m.fees_status.toLowerCase()}`}>
+                                        {m.fees_status}
+                                    </span>
+                                </td>
+                                <td>{m.fees_due_date}</td>
+                                <td>
+                                    <button
+                                        onClick={() => handleDelete(m.id)}
+                                        className="btn-icon-delete"
+                                        title="Delete Member"
+                                        style={{
+                                            background: 'rgba(239, 68, 68, 0.1)',
+                                            color: '#ef4444',
+                                            border: 'none',
+                                            padding: '8px',
+                                            borderRadius: '8px',
+                                            cursor: 'pointer',
+                                            transition: 'all 0.2s'
+                                        }}
+                                    >
+                                        <MdDelete />
+                                    </button>
+                                </td>
+                            </tr>
+                        ))}
+                        {members.length === 0 && <tr><td colSpan="6" style={{ textAlign: 'center' }}>No members found. Add one!</td></tr>}
+                    </tbody>
+                </table>
+            </div>
         </div>
-    </div>
-);
+    );
+};
+
+// Fees tab remains accessible for visibility, but perhaps detailed reporting is premium?
+// User said: "fees & revenue tracking" in plans is locked. 
+// But in the dashboard, let's keep it open for the basic view (the cards) as per "Limited Dashboard Access".
+const FeesTab = ({ members, isPremium, onUpgrade }) => {
+    return (
+        <div className="fees-management animate-fade-in">
+            <header className="page-header">
+                <h1>Fees Status</h1>
+                <p>Track payments and pending dues</p>
+            </header>
+            <div className="fees-grid">
+                {members.map(m => (
+                    <div className="card-premium" key={m.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div>
+                            <h4 style={{ marginBottom: '5px' }}>{m.name}</h4>
+                            <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Due: {m.fees_due_date}</p>
+                        </div>
+                        <span className={`status-badge ${m.fees_status.toLowerCase()}`}>{m.fees_status}</span>
+                    </div>
+                ))}
+            </div>
+            {!isPremium && members.length > 0 && (
+                <div style={{ marginTop: '20px', padding: '15px', background: 'rgba(245, 158, 11, 0.1)', borderRadius: '12px', border: '1px solid rgba(245, 158, 11, 0.2)', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <MdWarning color="#f59e0b" size={24} />
+                    <div>
+                        <h4 style={{ color: '#f59e0b', margin: 0, fontSize: '0.95rem' }}>Automated Reminders Disabled</h4>
+                        <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.85rem' }}>Upgrade to Pro to automatically send WhatsApp reminders for pending fees.</p>
+                    </div>
+                    <button style={{ marginLeft: 'auto', background: 'transparent', color: '#f59e0b', border: '1px solid #f59e0b', padding: '6px 12px', borderRadius: '6px', cursor: 'pointer', fontSize: '0.8rem' }} onClick={onUpgrade}>Unlock</button>
+                </div>
+            )}
+        </div>
+    );
+};
 
 const ProfileTab = ({ gymName }) => (
-    <div className="gym-profile-tab">
+    <div className="gym-profile-tab animate-fade-in">
         <header className="page-header">
             <h1>Gym Profile</h1>
             <p>Manage your gym details</p>
         </header>
-        <div className="profile-details-card">
-            <div className="profile-row">
-                <label>Gym Name</label>
-                <span>{gymName}</span>
+        <div className="card-premium" style={{ maxWidth: '600px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid var(--border-color)' }}>
+                <span style={{ color: 'var(--text-muted)' }}>Gym Name</span>
+                <span style={{ fontWeight: '600' }}>{gymName}</span>
             </div>
-            <div className="profile-row">
-                <label>Establishment Date</label>
-                <span>Joined FitMitra recently</span>
+            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 0' }}>
+                <span style={{ color: 'var(--text-muted)' }}>Status</span>
+                <span style={{ color: 'var(--primary)', fontWeight: 'bold' }}>Active</span>
             </div>
-            {/* Add more profile fields as needed */}
         </div>
     </div>
 );
 
 export default GymDashboard;
+
