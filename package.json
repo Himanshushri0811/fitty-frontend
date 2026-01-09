@@ -2,12 +2,6 @@
   "name": "demoproject",
   "version": "0.1.0",
   "private": true,
-  "overrides": {
-    "react-facebook-login": {
-      "react": "$react",
-      "react-dom": "$react-dom"
-    }
-  },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.7.2",
     "@fortawesome/free-brands-svg-icons": "^6.7.2",
@@ -38,7 +32,6 @@
     "react-circular-progressbar": "^2.2.0",
     "react-confetti": "^6.4.0",
     "react-dom": "^19.1.0",
-    "react-facebook-login": "^4.1.1",
     "react-icons": "^5.5.0",
     "react-intersection-observer": "^9.16.0",
     "react-player": "^2.16.0",
