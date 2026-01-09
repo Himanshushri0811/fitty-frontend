@@ -26,7 +26,7 @@ import {
   FaSeedling
 } from 'react-icons/fa';
 import API from './axiosConfig';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 import fittyVoice from '../utils/fittyVoice';
 import './Chatbot.css';
@@ -45,6 +45,7 @@ const Chatbot = () => {
 
   const messagesEndRef = useRef(null);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const {
     transcript,
@@ -192,7 +193,10 @@ const Chatbot = () => {
 
     try {
       const response = await API.post('/api/ai/chat/',
-        { message: messageToSend }
+        {
+          message: messageToSend,
+          context: { page: location.pathname }
+        }
       );
 
       const botMsg = {

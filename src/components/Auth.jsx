@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  FaDumbbell, 
-  FaAppleAlt, 
-  FaChartLine, 
+import {
+  FaDumbbell,
+  FaAppleAlt,
+  FaChartLine,
   FaHeartbeat,
   FaRunning,
   FaHome,
@@ -42,10 +42,11 @@ const Auth = ({ initialTab = 'login' }) => {
 
   const handleSwitch = () => {
     setIsAnimating(true);
+    const nextLoginState = !isLogin;
     setTimeout(() => {
-      setIsLogin(!isLogin);
+      setIsLogin(nextLoginState);
       // Update URL without page reload
-      navigate(`/auth?tab=${!isLogin ? 'login' : 'signup'}`, { replace: true });
+      navigate(`/auth?tab=${nextLoginState ? 'login' : 'signup'}`, { replace: true });
       setTimeout(() => {
         setIsAnimating(false);
       }, 50);
@@ -63,7 +64,7 @@ const Auth = ({ initialTab = 'login' }) => {
 
   return (
     <div className="auth-page">
-      <motion.div 
+      <motion.div
         className="auth-container"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -71,41 +72,43 @@ const Auth = ({ initialTab = 'login' }) => {
       >
         {/* Left Section - Branding & Benefits */}
         <div className="auth-left">
-          <motion.div 
+          <motion.div
             className="brand-section"
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.1 }}
           >
             <div className="logo">
-              <span className="logo-icon">💪</span>
+              <span className="logo-icon">
+                <MdFitnessCenter style={{ color: 'white' }} />
+              </span>
               <div className="logo-text">
                 <h1>FitMitra</h1>
-                <p>Your AI Fitness Guide</p>
+                <p>Advanced AI Trainer</p>
               </div>
             </div>
-            
+
             <div className="hero-image">
-              <img 
-                src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d6b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
+              <img
+                src="https://images.unsplash.com/photo-1593079831268-3381b0db4a77?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
                 alt="Fitness Motivation"
               />
               <div className="image-overlay">
-                <h3>Transform Your Body</h3>
-                <p>Start your fitness journey today</p>
+                <h3>Limitless Living</h3>
+                <p>Precision guidance. Peak performance.</p>
               </div>
             </div>
           </motion.div>
 
           <div className="benefits-section">
-            <h3>Why Choose FitMitra?</h3>
+            <h3>Engineered for Results</h3>
             <div className="benefits-list">
               {benefits.map((benefit, index) => (
-                <motion.div 
+                <motion.div
                   key={index}
                   className="benefit-item"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.2 + index * 0.1 }}
                 >
                   <span className="benefit-icon">{benefit.icon}</span>
@@ -113,19 +116,19 @@ const Auth = ({ initialTab = 'login' }) => {
                 </motion.div>
               ))}
             </div>
-            
+
             <div className="stats">
               <div className="stat">
-                <div className="stat-number">50K+</div>
-                <div className="stat-label">Active Users</div>
+                <span className="stat-number">50K+</span>
+                <span className="stat-label">Athletes</span>
               </div>
               <div className="stat">
-                <div className="stat-number">4.8★</div>
-                <div className="stat-label">Rating</div>
+                <span className="stat-number">4.9★</span>
+                <span className="stat-label">Rating</span>
               </div>
               <div className="stat">
-                <div className="stat-number">24/7</div>
-                <div className="stat-label">Support</div>
+                <span className="stat-number">24/7</span>
+                <span className="stat-label">AI Sync</span>
               </div>
             </div>
           </div>
@@ -136,13 +139,13 @@ const Auth = ({ initialTab = 'login' }) => {
           {/* Tabs */}
           <div className="tabs-container">
             <div className="tabs">
-              <button 
+              <button
                 className={`tab ${isLogin ? 'active' : ''}`}
                 onClick={() => !isLogin && handleSwitch()}
               >
                 Login
               </button>
-              <button 
+              <button
                 className={`tab ${!isLogin ? 'active' : ''}`}
                 onClick={() => isLogin && handleSwitch()}
               >
@@ -155,17 +158,17 @@ const Auth = ({ initialTab = 'login' }) => {
           {/* Forms with Animation */}
           <div className="forms-container">
             <div className={`forms-slider ${isLogin ? 'login-active' : 'signup-active'}`}>
-              
+
               {/* Login Form */}
               <div className="form-wrapper login-wrapper">
                 <LoginForm onSwitch={handleSwitch} />
               </div>
-              
+
               {/* Signup Form */}
               <div className="form-wrapper signup-wrapper">
                 <SignupForm onSwitch={handleSwitch} />
               </div>
-              
+
             </div>
           </div>
 

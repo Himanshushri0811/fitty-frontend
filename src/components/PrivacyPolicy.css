@@ -1,90 +1,145 @@
-/* Container Styling */
-.privacy-wrapper {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    background: #000;  
-    color: #f0f0f0;  
-    padding: 2rem;
+.legal-page {
+  min-height: 100vh;
+  padding: 120px 20px 80px;
+  background: var(--bg-main);
+  color: var(--text-main);
+  font-family: 'Outfit', sans-serif;
+}
+
+.legal-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* Header */
+.legal-header {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.legal-icon-wrapper {
+  width: 80px;
+  height: 80px;
+  background: rgba(99, 102, 241, 0.1);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  border: 1px solid var(--border-color);
+}
+
+.main-legal-icon {
+  font-size: 40px;
+  color: var(--accent-primary);
+}
+
+.legal-header h1 {
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 800;
+  margin-bottom: 10px;
+}
+
+.last-updated {
+  color: var(--text-dim);
+  font-size: 0.95rem;
+}
+
+/* Content Sections */
+.legal-content {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.legal-section-card {
+  background: var(--bg-secondary);
+  padding: 35px;
+  border-radius: 24px;
+  border: 1px solid var(--border-color);
+  box-shadow: var(--card-shadow);
+  transition: transform 0.3s ease, border-color 0.3s ease;
+}
+
+.legal-section-card:hover {
+  transform: translateY(-5px);
+  border-color: var(--accent-primary);
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.section-icon {
+  font-size: 1.5rem;
+  color: var(--accent-primary);
+}
+
+.legal-section-card h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--text-main);
+}
+
+.legal-section-card p {
+  color: var(--text-dim);
+  line-height: 1.7;
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+/* Footer */
+.legal-footer {
+  text-align: center;
+  margin-top: 60px;
+  padding: 40px;
+  border-top: 1px solid var(--border-color);
+}
+
+.legal-footer h3 {
+  margin-bottom: 15px;
+  color: var(--text-main);
+}
+
+.legal-footer p {
+  color: var(--text-dim);
+  margin-bottom: 10px;
+}
+
+.legal-footer a {
+  color: var(--accent-primary);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.legal-footer a:hover {
+  text-decoration: underline;
+}
+
+.copyright {
+  font-size: 0.9rem;
+  margin-top: 20px !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .legal-page {
+    padding-top: 100px;
   }
-  
-  /* Privacy Card */
-  .privacy-card {
-    background: #1a1a1a;  
-    padding: 3rem;
-    border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
-    max-width: 700px;
-    transition: all 0.3s ease;
+
+  .legal-section-card {
+    padding: 25px;
   }
-  
-  .privacy-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.9);
+
+  .legal-section-card h2 {
+    font-size: 1.3rem;
   }
-  
-  /* Title Styling */
-  .privacy-title {
-    font-size: 2.5rem;
-    text-align: center;
-    margin-bottom: 2rem;
-    color: #4f46e5; 
-    font-weight: 800;
-  }
-  
-  /* Privacy Items */
-  .privacy-item {
-    margin-bottom: 2rem;
-    padding: 1.5rem;
-    border-left: 4px solid #4f46e5;
-    background: #222;  
-    border-radius: 8px;
-    transition: all 0.3s ease;
-  }
-  
-  .privacy-item:hover {
-    background: #2a2a2a;
-    border-left-color: #9333ea;
-  }
-  
-  .privacy-item h2 {
-    font-size: 1.5rem;
-    color: #4f46e5;
-    margin-bottom: 0.5rem;
-  }
-  
-  .privacy-item p {
+
+  .legal-section-card p {
     font-size: 1rem;
-    line-height: 1.6;
-    color: #cbd5e0;
-    transition: color 0.3s;
   }
-  
-  .privacy-item p:hover {
-    color: #e0e0e0;
-  }
-  
-  /* Footer */
-  .privacy-footer {
-    text-align: center;
-    font-size: 0.9rem;
-    color: #a0aec0;
-    margin-top: 2rem;
-  }
-  
-  @media (max-width: 768px) {
-    .privacy-card {
-      padding: 2rem;
-      max-width: 90%;
-    }
-  
-    .privacy-title {
-      font-size: 2rem;
-    }
-  
-    .privacy-item h2 {
-      font-size: 1.3rem;
-    }
-  }
-  
+}

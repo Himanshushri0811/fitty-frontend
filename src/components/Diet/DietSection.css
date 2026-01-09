@@ -1,11 +1,11 @@
 /* DietSection.css Expanded */
 :root {
-    --d-bg: #0e0e11;
-    --d-card-bg: #1a1a1f;
-    --d-primary: #00ff99;
-    --d-text: #ffffff;
-    --d-text-gray: #a1a1aa;
-    --d-border: #27272a;
+    --d-bg: var(--bg-main);
+    --d-card-bg: var(--bg-secondary);
+    --d-primary: var(--accent-primary);
+    --d-text: var(--text-main);
+    --d-text-gray: var(--text-dim);
+    --d-border: var(--border-color);
 }
 
 .diet-container {
@@ -13,24 +13,24 @@
     background-color: var(--d-bg);
     padding: 2rem 1rem;
     color: var(--d-text);
-    font-family: 'Inter', sans-serif;
+    font-family: 'Outfit', sans-serif;
     position: relative;
 }
 
 /* --- Greeting Box --- */
 .greeting-box {
-    background: linear-gradient(135deg, rgba(0, 255, 153, 0.1), rgba(0, 0, 0, 0));
+    background: var(--bg-secondary);
     border-left: 4px solid var(--d-primary);
     padding: 1.5rem;
     border-radius: 8px;
     margin-bottom: 2rem;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    box-shadow: var(--card-shadow);
 }
 
 .greeting-box h2 {
     font-size: 1.8rem;
     margin: 0 0 0.5rem 0;
-    color: #fff;
+    color: var(--text-main);
 }
 
 .motivational-text {
@@ -50,16 +50,7 @@
 .step-title {
     font-size: 2rem;
     margin-bottom: 2rem;
-    background: linear-gradient(90deg, #fff, #aaa);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
-
-.goal-options-large {
-    display: flex;
-    justify-content: center;
-    gap: 1.5rem;
-    flex-wrap: wrap;
+    color: var(--text-main);
 }
 
 .big-option-btn {
@@ -69,16 +60,17 @@
     border-radius: 20px;
     font-size: 1.2rem;
     font-weight: 700;
-    color: var(--d-text);
+    color: var(--text-main);
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     min-width: 200px;
+    box-shadow: var(--card-shadow);
 }
 
 .big-option-btn:hover {
     border-color: var(--d-primary);
     transform: translateY(-5px);
-    box-shadow: 0 10px 30px rgba(0, 255, 153, 0.2);
+    box-shadow: 0 10px 30px rgba(99, 102, 241, 0.2);
 }
 
 .back-btn-small {
@@ -90,18 +82,13 @@
     font-size: 0.9rem;
 }
 
-/* --- Plan Dashboard --- */
-.plan-header-actions {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 2rem;
-    flex-wrap: wrap;
-    gap: 1rem;
+.back-btn-small:hover {
+    color: var(--accent-primary);
+    text-decoration: underline;
 }
 
 .reset-btn {
-    background: transparent;
+    background: var(--bg-main);
     border: 1px solid var(--d-border);
     color: var(--d-text-gray);
     padding: 0.5rem 1rem;
@@ -113,10 +100,11 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    background: rgba(0, 153, 255, 0.1);
+    background: var(--bg-secondary);
     padding: 0.5rem 1rem;
     border-radius: 30px;
-    border: 1px solid rgba(0, 153, 255, 0.3);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--card-shadow);
 }
 
 .water-count {

@@ -10,8 +10,9 @@ import './App.css';
 ======================= */
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
-import Chatbot from './components/Chatbot';
-import GreetingHandler from './components/GreetingHandler';
+import Chatbot from './components/common/Chatbot/Chatbot';
+import { AuthProvider } from './context/AuthContext';
+import { PublicRoute, ProtectedRoute, GymOwnerRoute, AdminRoute } from './components/RouteGuards';
 
 /* =======================
    Pages / Screens
@@ -23,11 +24,10 @@ import Auth from './components/Auth';
 import Workout from './components/Workout';
 import Posture from './components/Posture';
 import Motivation from './components/Motivation';
-import SuccessStories from './components/SuccessStories';
-
-import Nutrition from './components/Nutrition';
+// import SuccessStories from './components/SuccessStories';
+// import Nutrition from './components/Nutrition';
 import Diet from './components/Diet/DietSection'; // Updated to new DietSection
-import HealthTracking from './components/HealthTracking';
+// import HealthTracking from './components/HealthTracking';
 
 import Profile from './components/Profile';
 import VoiceAssistant from './components/VoiceAssistant';
@@ -36,6 +36,10 @@ import Faq from './components/Faq';
 import PrivacyPolicy from './components/PrivacyPolicy';
 import Terms from './components/Terms';
 import Explore from './components/Explore/Explore';
+import UserProfile from './components/Social/UserProfile';
+import FollowList from './components/Social/FollowList';
+import Messages from './components/Social/Messages';
+
 
 /* =======================
    Admin Panel
@@ -47,75 +51,97 @@ import GymManagement from './components/Admin/GymManagement';
 import ActivityLogs from './components/Admin/ActivityLogs';
 
 /* =======================
+   Gym Owner Section
+======================= */
+import GymOwnerSignup from './components/GymOwner/GymOwnerSignup';
+import GymDashboard from './components/GymOwner/GymDashboard';
+import GymPlans from './components/GymOwner/GymPlans';
+
+// Import UserDashboard
+import UserDashboard from './components/UserDashboard/UserDashboard';
+
+/* =======================
    App Component
 ======================= */
 function App() {
   return (
-    <Router>
-      <div className="app">
+    <AuthProvider>
+      <Router>
+        <div className="app">
 
-        {/* ===== Global Navbar ===== */}
-        <Navbar />
-        <GreetingHandler />
+          {/* ===== Global Navbar ===== */}
+          <Navbar />
 
-        {/* ===== Main Content Area ===== */}
-        <div className="main-content">
-          <AnimatePresence mode="wait">
-            <Routes>
+          {/* ===== Main Content Area ===== */}
+          <div className="main-content">
+            <AnimatePresence mode="wait">
+              <Routes>
 
-              {/* ---------- Public Pages ---------- */}
-              <Route path="/" element={<Home />} />
-              <Route path="/contact" element={<Contact />} />
+                {/* ---------- Public Routes (Redirect if Logged In) ---------- */}
+                <Route element={<PublicRoute />}>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/auth" element={<Auth />} />
+                  <Route path="/login" element={<Auth initialTab="login" />} />
+                  <Route path="/signup" element={<Auth initialTab="signup" />} />
+                  <Route path="/signup/gym-owner" element={<GymOwnerSignup />} />
+                </Route>
 
-              {/* ---------- Authentication ---------- */}
-              <Route path="/auth" element={<Auth />} />
-              <Route path="/login" element={<Auth initialTab="login" />} />
-              <Route path="/signup" element={<Auth initialTab="signup" />} />
+                {/* ---------- Protected Routes ---------- */}
+                <Route element={<ProtectedRoute />}>
+                  <Route path="/dashboard" element={<UserDashboard />} />
+                  <Route path="/workout" element={<Workout />} />
+                  <Route path="/posture" element={<Posture />} />
+                  <Route path="/diet" element={<Diet />} />
+                  <Route path="/profile" element={<Profile />} />
+                  <Route path="/profile/:username" element={<UserProfile />} />
+                  <Route path="/profile/:username/followers" element={<FollowList type="followers" />} />
+                  <Route path="/profile/:username/following" element={<FollowList type="following" />} />
+                  <Route path="/messages" element={<Messages />} />
+                </Route>
 
-              {/* ---------- Fitness Core ---------- */}
-              <Route path="/workout" element={<Workout />} />
-              <Route path="/explore" element={<Explore />} />
-              <Route path="/posture" element={<Posture />} />
-              <Route path="/motivation" element={<Motivation />} />
-              <Route path="/success-stories" element={<SuccessStories />} />
+                {/* ---------- Gym Owner Routes ---------- */}
+                <Route element={<GymOwnerRoute />}>
+                  <Route path="/gym-dashboard" element={<GymDashboard />} />
+                  <Route path="/gym-plans" element={<GymPlans />} />
+                </Route>
 
-              {/* ---------- Health & Nutrition ---------- */}
-              <Route path="/nutrition" element={<Nutrition />} />
-              <Route path="/diet" element={<Diet />} />
-              <Route path="/health-tracking" element={<HealthTracking />} />
+                {/* ---------- Admin Panel ---------- */}
+                <Route path="/admin" element={<AdminRoute />}>
+                  <Route path="" element={<AdminLayout />}>
+                    <Route path="dashboard" element={<AdminDashboard />} />
+                    <Route path="users" element={<UserManagement />} />
+                    <Route path="gyms" element={<GymManagement />} />
+                    <Route path="logs" element={<ActivityLogs />} />
+                  </Route>
+                </Route>
 
-              {/* ---------- User ---------- */}
-              <Route path="/profile" element={<Profile />} />
+                {/* ---------- Publicly Accessible Pages (Always) ---------- */}
+                <Route path="/contact" element={<Contact />} />
+                <Route path="/explore" element={<Explore />} />
+                <Route path="/motivation" element={<Motivation />} />
+                {/* <Route path="/success-stories" element={<SuccessStories />} /> */}
+                {/* <Route path="/nutrition" element={<Nutrition />} /> */}
+                {/* <Route path="/health-tracking" element={<HealthTracking />} /> */}
+                <Route path="/voice-assistant" element={<VoiceAssistant />} />
+                <Route path="/faq" element={<Faq />} />
+                <Route path="/privacy" element={<PrivacyPolicy />} />
+                <Route path="/terms" element={<Terms />} />
 
-              {/* ---------- AI / Assistant ---------- */}
-              <Route path="/voice-assistant" element={<VoiceAssistant />} />
 
-              {/* ---------- Support ---------- */}
-              <Route path="/faq" element={<Faq />} />
-              <Route path="/privacy" element={<PrivacyPolicy />} />
-              <Route path="/terms" element={<Terms />} />
+                {/* ---------- 404 Fallback ---------- */}
+                <Route path="*" element={<Home />} />
 
-              {/* ---------- Admin Panel ---------- */}
-              <Route path="/admin" element={<AdminLayout />}>
-                <Route path="dashboard" element={<AdminDashboard />} />
-                <Route path="users" element={<UserManagement />} />
-                <Route path="gyms" element={<GymManagement />} />
-                <Route path="logs" element={<ActivityLogs />} />
-              </Route>
+              </Routes>
+            </AnimatePresence>
+          </div>
 
-              {/* ---------- 404 Fallback ---------- */}
-              <Route path="*" element={<Home />} />
+          {/* ===== Global Utilities ===== */}
+          <Chatbot />
+          <Footer />
 
-            </Routes>
-          </AnimatePresence>
-        </div>
-
-        {/* ===== Global Utilities ===== */}
-        <Chatbot />
-        <Footer />
-
-      </div >
-    </Router >
+        </div >
+      </Router >
+    </AuthProvider >
   );
 }
 

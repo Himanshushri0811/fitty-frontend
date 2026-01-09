@@ -1,10 +1,11 @@
 /* Footer Styles */
 .footer {
-  background: #000; /* Pure black background */
-  color: #ffffff;
+  background: var(--bg-secondary);
+  color: var(--text-main);
   padding: 70px 30px;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.9);
+  font-family: 'Outfit', sans-serif;
+  box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.05);
+  border-top: 1px solid var(--border-color);
   position: relative;
   z-index: 1;
 }
@@ -12,23 +13,11 @@
 /* Glitch Animation for Heading */
 .footer-about h3 {
   font-size: 2.3rem;
-  color: #00e5ff;
+  color: var(--accent-primary);
   position: relative;
-  text-shadow: 0 0 15px #00e5ff, 0 0 30px #00e5ff;
-  animation: glitch 1.5s infinite alternate;
+  margin-bottom: 15px;
 }
 
-@keyframes glitch {
-  0% {
-    text-shadow: 4px 4px 12px #00e5ff;
-  }
-  50% {
-    text-shadow: -4px -4px 18px #4f46e5;
-  }
-  100% {
-    text-shadow: 4px -4px 15px #00e5ff;
-  }
-}
 
 /* Footer Container */
 .footer-container {
@@ -51,14 +40,16 @@
 .footer-about p {
   font-size: 1rem;
   line-height: 1.8;
-  color: #b0bec5;
+  color: var(--text-dim);
+  max-width: 400px;
 }
 
 /* Footer Links */
 .footer-links h4 {
   font-size: 1.4rem;
-  color: #00e5ff;
-  transition: all 0.3s ease;
+  color: var(--text-main);
+  margin-bottom: 20px;
+  font-weight: 700;
 }
 
 .footer-links ul {
@@ -73,31 +64,32 @@
 
 .footer-links ul li a {
   text-decoration: none;
-  color: #b0bec5;
+  color: var(--text-dim);
   font-size: 1rem;
-  transition: color 0.3s, transform 0.3s ease;
+  transition: all 0.3s ease;
 }
 
 .footer-links ul li a:hover {
-  color: #00e5ff;
+  color: var(--accent-primary);
   transform: translateX(8px);
 }
 
 /* Social Media */
 .footer-social h4 {
   font-size: 1.5rem;
-  color: #00e5ff;
+  color: var(--text-main);
+  margin-bottom: 20px;
 }
 
 .social-icons a {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 55px;
-  height: 55px;
-  background: rgba(0, 229, 255, 0.15);
-  color: #00e5ff;
-  font-size: 1.8rem;
+  width: 45px;
+  height: 45px;
+  background: var(--bg-main);
+  color: var(--accent-primary);
+  font-size: 1.4rem;
   margin-right: 15px;
   border-radius: 50%;
   transition: all 0.3s ease;

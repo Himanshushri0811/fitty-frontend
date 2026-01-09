@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FaImages, FaTimes, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import { FaImages, FaTimes, FaChevronLeft, FaChevronRight, FaMapMarkerAlt, FaDirections } from 'react-icons/fa';
 
 const GymCard = ({ gym }) => {
     const [showGallery, setShowGallery] = useState(false);
@@ -23,6 +23,15 @@ const GymCard = ({ gym }) => {
         setActiveIndex((prev) => (prev - 1 + allImages.length) % allImages.length);
     };
 
+    const openDirections = (e) => {
+        e.stopPropagation();
+        if (gym.latitude && gym.longitude) {
+            window.open(`https://www.google.com/maps/dir/?api=1&destination=${gym.latitude},${gym.longitude}`, '_blank');
+        } else {
+            alert("No coordinates available for this gym.");
+        }
+    };
+
     return (
         <div className="gym-card">
             <div className="gym-image" onClick={() => setShowGallery(true)}>
@@ -44,20 +53,31 @@ const GymCard = ({ gym }) => {
                 </div>
 
                 <div className="gym-address">
-                    <i className="fas fa-map-marker-alt"></i> {gym.address}
+                    <FaMapMarkerAlt style={{ color: '#22d3ee', marginTop: '3px' }} /> {gym.address}
                 </div>
 
                 <div className="gym-features">
-                    {Array.isArray(gym.facilities) && gym.facilities.map((f, i) => (
+                    {Array.isArray(gym.facilities) && gym.facilities.slice(0, 3).map((f, i) => (
                         <span key={i} className="feature-tag">{f}</span>
                     ))}
+                    {gym.facilities.length > 3 && <span className="feature-tag">+{gym.facilities.length - 3}</span>}
                 </div>
 
                 <div className="gym-footer">
-                    <div className="gym-price">
-                        ₹{Math.round(gym.price_range_min)} <span>/mo</span>
+                    <div>
+                        <div className="gym-price">
+                            ₹{Math.round(gym.price_range_min)} <span>/mo</span>
+                        </div>
                     </div>
-                    <button className="view-btn" onClick={() => setShowGallery(true)}>View Photos</button>
+                </div>
+
+                <div className="gym-actions">
+                    <button className="action-btn btn-secondary" onClick={() => setShowGallery(true)}>
+                        <FaImages /> View Photos
+                    </button>
+                    <button className="action-btn btn-primary" onClick={openDirections}>
+                        <FaDirections /> Directions
+                    </button>
                 </div>
             </div>
 

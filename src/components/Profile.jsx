@@ -39,6 +39,9 @@ const Profile = () => {
   const [activeTab, setActiveTab] = useState('overview');
 
   const [profileData, setProfileData] = useState({ ...MOCK_PROFILE, username: "Loading..." });
+  const [socialProfile, setSocialProfile] = useState(null);
+  const [followingList, setFollowingList] = useState([]);
+  const [loadingSocial, setLoadingSocial] = useState(false);
   const [activityLog, setActivityLog] = useState([]);
   const [message, setMessage] = useState(null);
 
@@ -53,7 +56,42 @@ const Profile = () => {
 
     setIsLoggedIn(true);
     fetchProfile();
+    fetchSocialProfile();
   }, []);
+
+  const fetchSocialProfile = async () => {
+    try {
+      const token = localStorage.getItem('access_token');
+      const res = await API.get('/api/social/profiles/me/', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setSocialProfile(res.data);
+    } catch (err) {
+      console.error("Social profile fetch error:", err);
+    }
+  };
+
+  const fetchFollowingList = async () => {
+    if (!socialProfile) return;
+    try {
+      setLoadingSocial(true);
+      const token = localStorage.getItem('access_token');
+      const res = await API.get(`/api/social/profiles/${socialProfile.username}/following/`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setFollowingList(res.data.results.map(f => f.following));
+    } catch (err) {
+      console.error("Error fetching following list:", err);
+    } finally {
+      setLoadingSocial(false);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === 'community') {
+      fetchFollowingList();
+    }
+  }, [activeTab, socialProfile]);
 
   // --- API Calls ---
   const fetchProfile = async () => {
@@ -91,8 +129,19 @@ const Profile = () => {
     });
     if (cleanData.gender) cleanData.gender = cleanData.gender.toLowerCase();
 
+    // Only send fields that the backend expects for update
+    const updateData = {
+      bio: cleanData.bio,
+      age: cleanData.age,
+      gender: cleanData.gender,
+      height: cleanData.height,
+      weight: cleanData.weight,
+      goal: cleanData.goal,
+      fitness_level: cleanData.fitness_level
+    };
+
     try {
-      const res = await API.put('/api/accounts/profile/', cleanData);
+      const res = await API.put('/api/accounts/profile/', updateData);
 
       setProfileData(prev => ({ ...prev, ...res.data }));
       setIsEditing(false);
@@ -196,6 +245,16 @@ const Profile = () => {
         </div>
 
         <div className="header-actions">
+          {socialProfile && (
+            <div className="social-stats-mini">
+              <div className="stat-clickable" onClick={() => navigate(`/profile/${socialProfile.username}/followers`)}>
+                <strong>{socialProfile.followers_count}</strong> Followers
+              </div>
+              <div className="stat-clickable" onClick={() => navigate(`/profile/${socialProfile.username}/following`)}>
+                <strong>{socialProfile.following_count}</strong> Following
+              </div>
+            </div>
+          )}
           <button
             className={`edit-mode-btn ${isEditing ? 'active' : ''}`}
             onClick={() => setIsEditing(!isEditing)}
@@ -207,7 +266,7 @@ const Profile = () => {
 
       {/* Tabs */}
       <div className="profile-tabs">
-        {['Overview', 'Fitness', 'Activity', 'Settings'].map(tab => (
+        {['Overview', 'Fitness', 'Activity', 'Community', 'Settings'].map(tab => (
           <button
             key={tab}
             className={`tab-btn ${activeTab === tab.toLowerCase() ? 'active' : ''}`}
@@ -251,7 +310,7 @@ const Profile = () => {
               <span className="stat-label">Day Streak</span>
             </div>
             <div className="stat-card">
-              <span className="stat-value">{profileData.achievements || 0}</span>
+              <span className="stat-value">{profileData.achievements_count || 0}</span>
               <span className="stat-label">Achievements</span>
             </div>
           </div>
@@ -282,6 +341,21 @@ const Profile = () => {
                 <option>Muscle Gain</option>
                 <option>Maintenance</option>
                 <option>Flexibility</option>
+              </select>
+            </div>
+            <div className="form-group">
+              <label>Fitness Level</label>
+              <select
+                className="form-input"
+                name="fitness_level"
+                value={profileData.fitness_level}
+                onChange={handleInputChange}
+                disabled={!isEditing}
+              >
+                <option value="Beginner">Beginner</option>
+                <option value="Intermediate">Intermediate</option>
+                <option value="Advanced">Advanced</option>
+                <option value="Elite">Elite</option>
               </select>
             </div>
             <div className="form-group">
@@ -329,6 +403,19 @@ const Profile = () => {
                 value={profileData.weight}
                 onChange={handleInputChange}
                 disabled={!isEditing}
+              />
+            </div>
+
+            <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+              <label>Bio</label>
+              <textarea
+                className="form-input"
+                name="bio"
+                value={profileData.bio}
+                onChange={handleInputChange}
+                disabled={!isEditing}
+                rows="3"
+                style={{ resize: 'vertical' }}
               />
             </div>
 
@@ -386,6 +473,65 @@ const Profile = () => {
               <span>Health Stats</span>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* TAB: COMMUNITY */}
+      {activeTab === 'community' && (
+        <div className="animate-slide-up">
+          <h3 style={{ marginBottom: '1.5rem', color: '#667eea' }}>People You Follow</h3>
+          {loadingSocial ? (
+            <div style={{ textAlign: 'center', padding: '20px' }}>Loading...</div>
+          ) : followingList.length === 0 ? (
+            <div className="empty-community" style={{ textAlign: 'center', padding: '40px', background: 'rgba(255,255,255,0.02)', borderRadius: '16px' }}>
+              <p style={{ color: '#64748b' }}>You aren't following anyone yet.</p>
+              <button onClick={() => navigate('/explore')} className="save-btn" style={{ maxWidth: '200px', marginTop: '10px' }}>Discover People</button>
+            </div>
+          ) : (
+            <div className="following-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '15px' }}>
+              {followingList.map(user => (
+                <div key={user.id} className="user-mini-card" style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '12px 15px',
+                  background: 'rgba(30, 41, 59, 0.4)',
+                  borderRadius: '12px',
+                  border: '1px solid rgba(100, 116, 139, 0.1)'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }} onClick={() => navigate(`/profile/${user.username}`)}>
+                    <div style={{ width: '40px', height: '40px', borderRadius: '50%', overflow: 'hidden', border: '2px solid #667eea' }}>
+                      {user.profile_picture ? (
+                        <img src={user.profile_picture} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt={user.username} />
+                      ) : (
+                        <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#667eea', color: 'white', fontWeight: 'bold', fontSize: '12px' }}>
+                          {user.username.charAt(0).toUpperCase()}
+                        </div>
+                      )}
+                    </div>
+                    <div>
+                      <h4 style={{ margin: 0, fontSize: '0.9rem', color: '#e2e8f0' }}>@{user.username}</h4>
+                      <p style={{ margin: 0, fontSize: '0.75rem', color: '#94a3b8' }}>{user.full_name || 'FitMitra User'}</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => navigate(`/messages?user=${user.id}`)}
+                    style={{
+                      background: 'rgba(102, 126, 234, 0.1)',
+                      border: '1px solid rgba(102, 126, 234, 0.2)',
+                      color: '#a5b4fc',
+                      padding: '6px 12px',
+                      borderRadius: '8px',
+                      fontSize: '0.8rem',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Chat
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
 

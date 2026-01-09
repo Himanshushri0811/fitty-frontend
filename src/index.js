@@ -6,7 +6,11 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 
+import { ThemeProvider } from './context/ThemeContext';
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <App />
+  <ThemeProvider>
+    <App />
+  </ThemeProvider>
 );

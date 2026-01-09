@@ -7,53 +7,89 @@ import "./Workout.css";
 const WORKOUT_PLANS = {
   "Muscle Building": [
     {
-      day: "Mon",
-      focus: "Chest & Triceps",
-      icon: "💪",
+      day: "Mon", focus: "Chest & Triceps", icon: "💪",
       exercises: [
-        { id: 1, name: "Bench Press", sets: "4", reps: "8-12", rest: "90s", difficulty: "Hard", animation: "/animations/bench-press.json", description: "Primary compound movement for chest development. Keep elbows at 45 degrees." },
-        { id: 2, name: "Incline Press", sets: "3", reps: "10-12", rest: "60s", difficulty: "Medium", animation: "/animations/incline-press.json", description: "Targets upper chest fibers. Control the negative." },
-        { id: 3, name: "Tricep Pushdowns", sets: "3", reps: "12-15", rest: "60s", difficulty: "Medium", animation: "/animations/pushdown.json", description: "Isolate lateral head of triceps. Keep elbows tucked." },
+        { id: 1, name: "Bench Press", sets: "4", reps: "8-12", rest: "90s", difficulty: "Hard", description: "Primary compound movement for chest development. Keep elbows at 45 degrees." },
+        { id: 2, name: "Incline Press", sets: "3", reps: "10-12", rest: "60s", difficulty: "Medium", description: "Targets upper chest fibers. Control the negative." },
+        { id: 3, name: "Tricep Pushdowns", sets: "3", reps: "12-15", rest: "60s", difficulty: "Medium", description: "Isolate lateral head of triceps. Keep elbows tucked." },
+        { id: 4, name: "Dips", sets: "3", reps: "10", rest: "60s", difficulty: "Hard", description: "Great for lower chest and tricep power." }
       ],
     },
     {
-      day: "Tue",
-      focus: "Back & Biceps",
-      icon: "🔥",
+      day: "Tue", focus: "Back & Biceps", icon: "🔥",
       exercises: [
-        { id: 5, name: "Deadlift", sets: "4", reps: "5-8", rest: "120s", difficulty: "Hard", animation: "/animations/deadlift.json", description: "Full body compound. Keep back straight and core tight." },
-        { id: 6, name: "Pull Ups", sets: "3", reps: "AMRAP", rest: "90s", difficulty: "Medium", animation: "/animations/pullup.json", description: "Vertical pull for lat width. Full range of motion." },
+        { id: 5, name: "Deadlift", sets: "4", reps: "5-8", rest: "120s", difficulty: "Hard", description: "Full body compound. Keep back straight and core tight." },
+        { id: 6, name: "Pull Ups", sets: "3", reps: "AMRAP", rest: "90s", difficulty: "Medium", description: "Vertical pull for lat width. Full range of motion." },
+        { id: 7, name: "Barbell Rows", sets: "3", reps: "10-12", rest: "90s", difficulty: "Hard", description: "Build back thickness and strength." },
+        { id: 8, name: "Bicep Curls", sets: "3", reps: "12", rest: "60s", difficulty: "Easy", description: "Classic bicep isolation." }
       ],
     },
-    { day: "Wed", focus: "Rest & Mobility", icon: "🧘", exercises: [] },
+    {
+      day: "Wed", focus: "Rest & Mobility", icon: "🧘", exercises: [
+        { id: 9, name: "Hip Mobility", sets: "2", reps: "5m", rest: "0", difficulty: "Easy", description: "Loosen hips for better squatting." },
+        { id: 10, name: "Thoracic Extension", sets: "2", reps: "3m", rest: "0", difficulty: "Easy", description: "Improve posture and back health." }
+      ]
+    },
     {
       day: "Thu", focus: "Shoulders & Abs", icon: "🥥", exercises: [
-        { id: 11, name: "Overhead Press", sets: "4", reps: "6-8", rest: "90s", difficulty: "Hard", animation: "/animations/ohp.json", description: "Vertical press for shoulders." }
+        { id: 11, name: "Overhead Press", sets: "4", reps: "6-8", rest: "90s", difficulty: "Hard", description: "Vertical press for shoulders." },
+        { id: 12, name: "Lateral Raises", sets: "4", reps: "15", rest: "45s", difficulty: "Medium", description: "Build side delts for width." },
+        { id: 13, name: "Front Raises", sets: "3", reps: "12", rest: "45s", difficulty: "Medium", description: "Target front delts." },
+        { id: 14, name: "Hanging Leg Raises", sets: "3", reps: "15", rest: "60s", difficulty: "Hard", description: "Elite core exercise." }
       ]
     },
     {
       day: "Fri", focus: "Legs", icon: "🦵", exercises: [
-        { id: 15, name: "Squats", sets: "4", reps: "6-10", rest: "120s", difficulty: "Hard", animation: "/animations/squat.json", description: "King of leg exercises." }
+        { id: 15, name: "Squats", sets: "4", reps: "6-10", rest: "120s", difficulty: "Hard", description: "King of leg exercises." },
+        { id: 16, name: "Leg Press", sets: "3", reps: "12", rest: "90s", difficulty: "Medium", description: "Safely push heavy volume for quads." },
+        { id: 17, name: "Hamstring Curls", sets: "3", reps: "12", rest: "60s", difficulty: "Medium", description: "Isolate the back of the legs." },
+        { id: 18, name: "Calf Raises", sets: "4", reps: "20", rest: "45s", difficulty: "Easy", description: "Don't forget calves!" }
       ]
     },
-    { day: "Sat", focus: "Cardio", icon: "🏃", exercises: [] },
+    {
+      day: "Sat", focus: "Cardio & Core", icon: "🏃", exercises: [
+        { id: 19, name: "Sprints", sets: "5", reps: "100m", rest: "90s", difficulty: "Hard", description: "Build explosive power." },
+        { id: 20, name: "Plank", sets: "3", reps: "1m", rest: "45s", difficulty: "Medium", description: "Hold it steady." }
+      ]
+    },
     { day: "Sun", focus: "Rest", icon: "🛌", exercises: [] },
   ],
   "Fat Loss": [
     {
-      day: "Mon",
-      focus: "Full Body Circuit",
-      icon: "⚡",
+      day: "Mon", focus: "Full Body Circuit", icon: "⚡",
       exercises: [
         { id: 101, name: "Burpees", sets: "4", reps: "20", rest: "30s", difficulty: "Hard", animation: "/animations/burpees.json", description: "Metabolic conditioning." },
         { id: 102, name: "Kettlebell Swings", sets: "4", reps: "20", rest: "45s", difficulty: "Medium", animation: "/animations/kb-swing.json", description: "Posterior chain power." },
       ],
     },
-    { day: "Tue", focus: "HIIT Cardio", icon: "🔥", exercises: [] },
-    { day: "Wed", focus: "Active Recovery", icon: "🧘", exercises: [] },
-    { day: "Thu", focus: "Upper Body Burn", icon: "💪", exercises: [] },
-    { day: "Fri", focus: "Lower Body Blast", icon: "🦵", exercises: [] },
-    { day: "Sat", focus: "Long Run", icon: "🏃", exercises: [] },
+    {
+      day: "Tue", focus: "HIIT Cardio", icon: "🔥", exercises: [
+        { id: 103, name: "Mountain Climbers", sets: "4", reps: "45s", rest: "15s", difficulty: "Medium", description: "Core and cardio burner." },
+        { id: 104, name: "Jump Squats", sets: "4", reps: "15", rest: "30s", difficulty: "Hard", description: "Lower body explosion." }
+      ]
+    },
+    {
+      day: "Wed", focus: "Active Recovery", icon: "🧘", exercises: [
+        { id: 105, name: "Yoga Stretches", sets: "1", reps: "15m", rest: "0", difficulty: "Easy", description: "Improve flexibility." }
+      ]
+    },
+    {
+      day: "Thu", focus: "Upper Body Burn", icon: "💪", exercises: [
+        { id: 106, name: "Push Ups", sets: "4", reps: "AMRAP", rest: "45s", difficulty: "Medium", description: "Chest and triceps endurance." },
+        { id: 107, name: "Plank Rows", sets: "3", reps: "12/side", rest: "45s", difficulty: "Medium", description: "Core and back isolation." }
+      ]
+    },
+    {
+      day: "Fri", focus: "Lower Body Blast", icon: "🦵", exercises: [
+        { id: 108, name: "Walking Lunges", sets: "3", reps: "20", rest: "60s", difficulty: "Medium", description: "Dynamic leg strength." },
+        { id: 109, name: "Glute Bridges", sets: "3", reps: "15", rest: "45s", difficulty: "Easy", description: "Posterior isolation." }
+      ]
+    },
+    {
+      day: "Sat", focus: "Long Run", icon: "🏃", exercises: [
+        { id: 110, name: "5K Run", sets: "1", reps: "30m", rest: "0", difficulty: "Medium", description: "Endurance builder." }
+      ]
+    },
     { day: "Sun", focus: "Rest", icon: "🛌", exercises: [] },
   ]
 };
@@ -81,18 +117,23 @@ export default function Workout() {
     const status = !!token;
     setIsLoggedIn(status);
 
-    // Initial Greeting
-    const hour = new Date().getHours();
+    // Initial Greeting & Dynamic Day
+    const now = new Date();
+    const hour = now.getHours();
+    const systemDay = now.getDay(); // 0: Sun, 1: Mon...
+    const dayIndex = (systemDay + 6) % 7; // Map so 0 is Mon, 6 is Sun
+
     let timeGreet = "Hello";
     if (hour < 12) timeGreet = "Good Morning";
     else if (hour < 17) timeGreet = "Good Afternoon";
     else timeGreet = "Good Evening";
 
     setGreeting(`${timeGreet}, Champion! 🏋️`);
+    setSelectedDayIndex(dayIndex);
 
     // Voice Intro if logged in
     if (status && step === 1) {
-      speak(`${timeGreet}. Welcome to the Iron Temple. What is your training focus today?`);
+      speak(`${timeGreet}. Welcome to the Iron Temple. Today is ${WORKOUT_PLANS["Muscle Building"][dayIndex].day}. What is your training focus?`);
     }
   }, []);
 
@@ -118,7 +159,6 @@ export default function Workout() {
     else if (goal === "Fat Loss") msg = "Time to shred. Intensity will be high. Loading your circuit plan.";
 
     speak(msg);
-    setSelectedDayIndex(0);
     setStep(2);
   };
 

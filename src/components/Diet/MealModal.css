@@ -5,8 +5,8 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.85);
-    backdrop-filter: blur(5px);
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(8px);
     z-index: 2000;
     display: flex;
     align-items: center;
@@ -15,14 +15,14 @@
 }
 
 .meal-modal-container {
-    background: var(--d-card-bg);
+    background: var(--bg-secondary);
     width: 90%;
     max-width: 600px;
     max-height: 90vh;
     overflow-y: auto;
     border-radius: 24px;
-    border: 1px solid var(--d-border);
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--card-shadow);
     position: relative;
 }
 
@@ -71,21 +71,19 @@
 .modal-title-row h2 {
     font-size: 1.8rem;
     margin: 0;
-    background: linear-gradient(90deg, #fff, #ccc);
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: var(--text-main);
 }
 
 .prep-time {
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--bg-main);
     padding: 6px 12px;
     border-radius: 20px;
     font-size: 0.85rem;
-    color: var(--d-primary);
+    color: var(--accent-primary);
     display: flex;
     align-items: center;
     gap: 5px;
+    border: 1px solid var(--border-color);
 }
 
 /* Nutrient Grid */
@@ -94,9 +92,10 @@
     grid-template-columns: repeat(4, 1fr);
     gap: 1rem;
     margin-bottom: 2rem;
-    background: rgba(0, 0, 0, 0.2);
+    background: var(--bg-main);
     padding: 1rem;
     border-radius: 16px;
+    border: 1px solid var(--border-color);
 }
 
 .nutrient-item {
@@ -107,12 +106,12 @@
     display: block;
     font-size: 1.5rem;
     font-weight: 800;
-    color: var(--d-text);
+    color: var(--text-main);
 }
 
 .n-label {
     font-size: 0.8rem;
-    color: var(--d-text-gray);
+    color: var(--text-dim);
     text-transform: uppercase;
     letter-spacing: 1px;
 }
@@ -120,9 +119,9 @@
 /* Ingredients List */
 .ingredients-section h3 {
     font-size: 1.2rem;
-    color: var(--d-primary);
+    color: var(--accent-primary);
     margin-bottom: 1rem;
-    border-bottom: 1px solid var(--d-border);
+    border-bottom: 1px solid var(--border-color);
     padding-bottom: 0.5rem;
 }
 
@@ -138,12 +137,12 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    color: var(--d-text-gray);
+    color: var(--text-dim);
     font-size: 0.95rem;
 }
 
 .check-icon {
-    color: var(--d-primary);
+    color: var(--accent-primary);
     font-size: 1.2rem;
 }
 

@@ -1,139 +1,109 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+  /* Light Theme Variables */
+  --bg-main: #f8fafc;
+  --bg-secondary: #ffffff;
+  --bg-glass: rgba(255, 255, 255, 0.7);
+  --text-main: #020617;
+  /* Darker for better readability */
+  --text-dim: #475569;
+  /* Much darker for better contrast */
+  --border-color: rgba(0, 0, 0, 0.1);
+  --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --accent-primary: #6366f1;
+  --accent-secondary: #a855f7;
+  --nav-bg: rgba(255, 255, 255, 0.82);
+}
+
+[data-theme='dark'] {
+  /* Dark Theme Variables */
+  --bg-main: #0f172a;
+  --bg-secondary: #1e293b;
+  --bg-glass: rgba(30, 41, 59, 0.7);
+  --text-main: #f8fafc;
+  --text-dim: #94a3b8;
+  --border-color: rgba(255, 255, 255, 0.1);
+  --card-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+  --nav-bg: rgba(15, 23, 42, 0.8);
+}
+
+* {
+  box-sizing: border-box;
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
 
 body {
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Outfit', 'Poppins', sans-serif;
   margin: 0;
   padding: 0;
+  background-color: var(--bg-main);
+  color: var(--text-main);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: var(--text-main);
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-main);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-dim);
 }
 
 .navbar-custom {
-  background: rgba(0, 0, 0, 0.8);
+  background: var(--nav-bg);
   backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border-color);
 }
 
 .navbar-brand {
-  font-weight: 700;
-  color: #fff !important;
+  font-weight: 800;
+  color: var(--text-main) !important;
+  font-family: 'Outfit', sans-serif;
 }
 
 .nav-link {
-  color: #fff !important;
-  transition: color 0.3s ease;
+  color: var(--text-dim) !important;
+  font-weight: 500;
+  transition: all 0.3s ease;
 }
 
-.nav-link:hover {
-  color: #a855f7 !important;
-}
-
-.hero-section {
-  height: 100vh;
-  background-size: cover;
-  background-position: center;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  text-align: center;
-}
-
-.hero-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.6);
-}
-
-.hero-content {
-  position: relative;
-  z-index: 1;
-  max-width: 800px;
-  padding: 0 20px;
-}
-
-.feature-card {
-  background: #1f2937;
-  border-radius: 10px;
-  padding: 2rem;
-  text-align: center;
-  transition: transform 0.3s ease;
-  color: white;
-}
-
-.feature-card:hover {
-  transform: translateY(-10px);
-}
-
-.feature-icon {
-  color: #a855f7;
-  font-size: 2.5rem;
-  margin-bottom: 1rem;
-}
-
-.chatbot-toggle {
-  position: fixed;
-  bottom: 2rem;
-  right: 2rem;
-  background: #a855f7;
-  color: white;
-  border: none;
-  border-radius: 50%;
-  width: 60px;
-  height: 60px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  z-index: 1000;
-}
-
-.chatbot-toggle:hover {
-  background: #9333ea;
-}
-
-.chatbot-window {
-  position: fixed;
-  bottom: 6rem;
-  right: 2rem;
-  width: 350px;
-  background: #1f2937;
-  border-radius: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  z-index: 1000;
-}
-
-.chatbot-header {
-  padding: 1rem;
-  border-bottom: 1px solid #374151;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.chatbot-messages {
-  height: 400px;
-  overflow-y: auto;
-  padding: 1rem;
-}
-
-.chatbot-input {
-  padding: 1rem;
-  border-top: 1px solid #374151;
+.nav-link:hover,
+.nav-link.active {
+  color: var(--accent-primary) !important;
 }
 
 .btn-custom {
-  background: #a855f7;
+  background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
   border: none;
   color: white;
-  padding: 0.5rem 1.5rem;
+  padding: 0.6rem 2rem;
   border-radius: 9999px;
-  font-weight: 600;
-  transition: background-color 0.3s ease;
+  font-weight: 700;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
 }
 
 .btn-custom:hover {
-  background: #9333ea;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(99, 102, 241, 0.4);
+  color: white;
 }

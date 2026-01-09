@@ -12,44 +12,31 @@ import {
   FaChevronDown,
   FaCrown,
   FaFire,
-  FaHeartbeat,
   FaRunning,
-  FaTrophy,
   FaCog,
-  FaBell
+  FaBell,
+  FaSun,
+  FaMoon,
+  FaRobot
 } from 'react-icons/fa';
-import { GiMuscleUp } from 'react-icons/gi';
-import { MdFitnessCenter, MdContactMail } from 'react-icons/md';
+import { MdContactMail } from 'react-icons/md';
 import { RiDashboardFill } from 'react-icons/ri';
+import { useTheme } from '../context/ThemeContext';
+import { useAuth } from '../context/AuthContext';
 import './Navbar.css';
 
 const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const dropdownRef = useRef(null);
+  const { isDarkMode, toggleTheme } = useTheme();
 
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userData, setUserData] = useState(null);
+  // Using Auth Context
+  const { isAuthenticated: isLoggedIn, user: userData, logout } = useAuth();
+
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-
-  // Handle scroll effect
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  // Check auth status
-  useEffect(() => {
-    const token = localStorage.getItem('access_token');
-    const user = JSON.parse(localStorage.getItem('user'));
-    setIsLoggedIn(!!token);
-    setUserData(user);
-  }, [location]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -62,40 +49,78 @@ const Navbar = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // Handle scroll effect
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   const handleLogout = () => {
     if (window.confirm('Are you sure you want to logout?')) {
-      localStorage.clear();
-      setIsLoggedIn(false);
-      setUserData(null);
+      logout();
       navigate('/');
-      window.location.reload();
     }
   };
 
-  // Navigation items
-  const navItems = [
-    { path: '/', label: 'Home', icon: <FaHome /> },
-    { path: '/workout', label: 'Workout', icon: <FaDumbbell /> },
-    { path: '/diet', label: 'Diet', icon: <FaUtensils /> },
-    { path: '/nutrition', label: 'Nutrition', icon: <GiMuscleUp /> },
-    { path: '/posture', label: 'Posture', icon: <MdFitnessCenter /> },
-    { path: '/health-tracking', label: 'Health', icon: <FaHeartbeat /> },
-    { path: '/explore', label: 'Explore', icon: <FaFire /> },
-    { path: '/contact', label: 'Contact', icon: <MdContactMail /> },
-  ];
+  // Navigation items based on role
+  const getNavItems = () => {
+    if (!isLoggedIn) {
+      return [
+        { path: '/', label: 'Home', icon: <FaHome /> },
+        { path: '/contact', label: 'Contact', icon: <MdContactMail /> },
+        // Add specific Gym Owner signup link for public visibility if needed, or keep in dropdown
+      ];
+    }
+
+    if (userData?.profile?.role === 'GYM_OWNER') {
+      return [
+        { path: '/gym-dashboard', label: 'Gym Dashboard', icon: <RiDashboardFill /> },
+        { path: '/profile', label: 'Profile', icon: <FaUser /> },
+        // Add more gym specific links here
+      ];
+    }
+
+    // Default USER Role
+    return [
+      { path: '/dashboard', label: 'Dashboard', icon: <RiDashboardFill /> },
+      { path: '/workout', label: 'Workout', icon: <FaDumbbell /> },
+      { path: '/diet', label: 'Diet', icon: <FaUtensils /> },
+      { path: '/explore', label: 'Explore', icon: <FaFire /> },
+      { path: '/voice-assistant', label: 'Assistant', icon: <FaRobot /> },
+    ];
+  };
+
+  const navItems = getNavItems();
 
   // User dropdown items
-  const userMenuItems = [
-    { path: '/profile', label: 'My Profile', icon: <FaUser /> },
-    { path: '/dashboard', label: 'Dashboard', icon: <RiDashboardFill /> },
-    { path: '/workout', label: 'My Workouts', icon: <FaDumbbell /> },
-    { path: '/diet', label: 'Meal Plans', icon: <FaUtensils /> },
-    { path: '/settings', label: 'Settings', icon: <FaCog /> },
-  ];
+  const getUserMenuItems = () => {
+    const baseItems = [
+      { path: '/profile', label: 'My Profile', icon: <FaUser /> },
+      { path: '/settings', label: 'Settings', icon: <FaCog /> },
+    ];
 
-  if (userData?.is_staff || userData?.is_superuser) {
-    userMenuItems.push({ path: '/admin/dashboard', label: 'Admin Panel', icon: <RiDashboardFill /> });
-  }
+    if (userData?.profile?.role === 'USER') {
+      baseItems.unshift(
+        { path: '/dashboard', label: 'Dashboard', icon: <RiDashboardFill /> },
+        { path: '/messages', label: 'Messages', icon: <MdContactMail /> }
+      );
+    } else if (userData?.profile?.role === 'GYM_OWNER') {
+      baseItems.unshift({ path: '/gym-dashboard', label: 'Dashboard', icon: <RiDashboardFill /> });
+    }
+
+    if (userData?.is_staff || userData?.is_superuser) {
+      baseItems.push({ path: '/admin/dashboard', label: 'Admin Panel', icon: <RiDashboardFill /> });
+    }
+
+    return baseItems;
+  };
+
+  const userMenuItems = getUserMenuItems();
+
+
 
   // Premium badge for pro users
   const isPremiumUser = userData?.subscription === 'premium';
@@ -109,9 +134,9 @@ const Navbar = () => {
     <>
       <motion.nav
         className={`navbar ${scrolled ? 'scrolled' : ''}`}
-        initial={{ y: -100 }}
-        animate={{ y: 0 }}
-        transition={{ type: "spring", stiffness: 100, damping: 20 }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
       >
         <div className="nav-container">
           {/* Brand Logo */}
@@ -120,12 +145,18 @@ const Navbar = () => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            <Link to="/" className="brand-link">
+            <Link to={userData?.profile?.role === 'GYM_OWNER' ? '/gym-dashboard' : '/'} className="brand-link">
               <div className="brand-logo">
                 <span className="logo-icon">💪</span>
                 <div className="logo-text">
-                  <h1 className="brand-title">FitMitra</h1>
-                  <p className="brand-tagline">AI Fitness</p>
+                  <h1 className="brand-title">
+                    {userData?.profile?.role === 'GYM_OWNER' && userData?.gym_profile?.gym_name
+                      ? userData.gym_profile.gym_name
+                      : 'FitMitra'}
+                  </h1>
+                  <p className="brand-tagline">
+                    {userData?.profile?.role === 'GYM_OWNER' ? 'Gym Management' : 'AI Fitness'}
+                  </p>
                 </div>
               </div>
             </Link>
@@ -160,6 +191,17 @@ const Navbar = () => {
 
           {/* Right Side Actions */}
           <div className="nav-actions">
+            {/* Theme Toggle */}
+            <motion.button
+              className="theme-toggle-btn"
+              onClick={toggleTheme}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              title={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
+            >
+              {isDarkMode ? <FaSun className="sun-icon" /> : <FaMoon className="moon-icon" />}
+            </motion.button>
+
             {/* Notifications - only for logged in users */}
             {isLoggedIn && (
               <motion.button
@@ -268,6 +310,9 @@ const Navbar = () => {
                 </>
               ) : (
                 <div className="auth-buttons">
+                  <Link to="/signup/gym-owner" className="gym-owner-link" style={{ marginRight: '15px', color: 'inherit', textDecoration: 'none', fontWeight: 500 }}>
+                    For Gyms
+                  </Link>
                   <motion.button
                     className="btn-login"
                     whileHover={{ scale: 1.05 }}
@@ -434,11 +479,12 @@ const Navbar = () => {
               {/* Mobile Footer */}
               <div className="mobile-footer">
                 <div className="mobile-links">
-                  <Link to="/privacy">Privacy</Link>
-                  <Link to="/terms">Terms</Link>
-                  <Link to="/contact">Help</Link>
+                  <Link to="/faq" onClick={() => setMobileMenuOpen(false)}>FAQ</Link>
+                  <Link to="/privacy" onClick={() => setMobileMenuOpen(false)}>Privacy</Link>
+                  <Link to="/terms" onClick={() => setMobileMenuOpen(false)}>Terms</Link>
+                  <Link to="/contact" onClick={() => setMobileMenuOpen(false)}>Support</Link>
                 </div>
-                <p className="mobile-copyright">© 2024 FitMitra. All rights reserved.</p>
+                <p className="mobile-copyright">© 2024 FitMitra. All Rights Reserved.</p>
               </div>
             </motion.div>
           </>

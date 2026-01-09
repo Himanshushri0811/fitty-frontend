@@ -16,6 +16,11 @@ const DietSection = () => {
     const navigate = useNavigate();
     const synth = window.speechSynthesis;
 
+    // Get today's day name
+    const now = new Date();
+    const systemDay = now.getDay(); // 0: Sun, 1: Mon...
+    const todayName = DAYS[(systemDay + 6) % 7];
+
     // State
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [showLoginPrompt, setShowLoginPrompt] = useState(false);
@@ -25,7 +30,7 @@ const DietSection = () => {
     const [selectedGoal, setSelectedGoal] = useState("");
     const [selectedDietType, setSelectedDietType] = useState("");
 
-    const [currentDay, setCurrentDay] = useState("Monday");
+    const [currentDay, setCurrentDay] = useState(todayName);
     const [activeFilter, setActiveFilter] = useState("All");
     const [selectedMeal, setSelectedMeal] = useState(null);
 
@@ -39,7 +44,7 @@ const DietSection = () => {
         setIsLoggedIn(loggedInStatus);
 
         // Greeting Logic
-        const hour = new Date().getHours();
+        const hour = now.getHours();
         let greet = "Hello!";
         if (hour < 12) greet = "Good Morning ☀️";
         else if (hour < 17) greet = "Good Afternoon 🌤";

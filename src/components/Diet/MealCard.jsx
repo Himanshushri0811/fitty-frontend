@@ -2,16 +2,24 @@ import React from 'react';
 import './MealCard.css';
 
 const MealCard = ({ meal, onClick }) => {
+    if (!meal) return null;
+
     // Calculate percentages for macro visual bars (simplified logic)
-    const total = meal.protein + meal.carbs + meal.fat;
-    const pPct = (meal.protein / total) * 100;
-    const cPct = (meal.carbs / total) * 100;
-    const fPct = (meal.fat / total) * 100;
+    const protein = meal.protein || 0;
+    const carbs = meal.carbs || 0;
+    const fat = meal.fat || 0;
+    const total = (protein + carbs + fat) || 1; // Avoid division by zero
+
+    const pPct = (protein / total) * 100;
+    const cPct = (carbs / total) * 100;
+    const fPct = (fat / total) * 100;
+
+    const fallbackImage = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&q=80";
 
     return (
         <div className="meal-card" onClick={() => onClick(meal)}>
             <div className="meal-image-container">
-                <img src={meal.image} alt={meal.name} className="meal-image" />
+                <img src={meal.image || fallbackImage} alt={meal.name} className="meal-image" />
                 <span className="meal-type-badge">{meal.type}</span>
             </div>
 
@@ -19,17 +27,18 @@ const MealCard = ({ meal, onClick }) => {
                 <h3 className="meal-name">{meal.name}</h3>
 
                 <div className="meal-tags">
-                    {meal.tags.map(tag => (
+                    {(meal.tags || []).map(tag => (
                         <span key={tag} className="mini-tag">{tag}</span>
                     ))}
+                    {(!meal.tags || meal.tags.length === 0) && <span className="mini-tag">Balanced</span>}
                 </div>
 
                 <div className="meal-macros">
                     <div className="macro-legend">
-                        <div className="macro-item item-cal">🔥 <span>{meal.calories}</span></div>
-                        <div className="macro-item item-pro" style={{ color: '#00ff99' }}>P: <span>{meal.protein}g</span></div>
-                        <div className="macro-item item-carb" style={{ color: '#ff9900' }}>C: <span>{meal.carbs}g</span></div>
-                        <div className="macro-item item-fat" style={{ color: '#ff4444' }}>F: <span>{meal.fat}g</span></div>
+                        <div className="macro-item item-cal">🔥 <span>{meal.calories || 0}</span></div>
+                        <div className="macro-item item-pro" style={{ color: '#00ff99' }}>P: <span>{protein}g</span></div>
+                        <div className="macro-item item-carb" style={{ color: '#ff9900' }}>C: <span>{carbs}g</span></div>
+                        <div className="macro-item item-fat" style={{ color: '#ff4444' }}>F: <span>{fat}g</span></div>
                     </div>
 
                     <div className="macro-bars">

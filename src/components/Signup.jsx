@@ -1,5 +1,9 @@
 import React, { useState } from 'react';
+import { MdEmail, MdLock, MdCalendarToday } from 'react-icons/md';
+import { FaUser, FaDumbbell, FaTransgender, FaGoogle, FaFacebook } from 'react-icons/fa';
 import API from './axiosConfig';
+
+import { useAuth } from '../context/AuthContext';
 
 const GOALS = [
   { value: 'weight_loss', label: 'Weight Loss' },
@@ -10,6 +14,7 @@ const GOALS = [
 ];
 
 const Signup = ({ onSwitch }) => {
+  const { login } = useAuth();
   const [form, setForm] = useState({
     username: '',
     email: '',
@@ -36,9 +41,8 @@ const Signup = ({ onSwitch }) => {
       const res = await API.post('/api/accounts/signup/', form, {
         headers: { 'Content-Type': 'application/json' }
       });
-      localStorage.setItem('access_token', res.data.access);
-      localStorage.setItem('refresh_token', res.data.refresh);
-      window.location.href = '/profile';
+      // This will trigger PublicRoute to redirect to dashboard
+      login(res.data.user, { access: res.data.access, refresh: res.data.refresh });
     } catch (err) {
       setError(err.response?.data?.detail || 'Signup failed. Please try again.');
     } finally {
@@ -48,9 +52,52 @@ const Signup = ({ onSwitch }) => {
 
   return (
     <form className="auth-form" onSubmit={handleSubmit}>
-      <div>
-        <h2 className="form-title">Start Your Journey</h2>
-        <p className="form-subtitle">Create your personalized fitness profile</p>
+      <div className="form-header">
+        <h2 className="form-title">Join FitMitra</h2>
+        <p className="form-subtitle">Choose your path to begin</p>
+      </div>
+
+      <div className="role-selector-signup" style={{
+        display: 'flex',
+        gap: '12px',
+        marginBottom: '25px',
+        background: 'var(--bg-main)',
+        padding: '8px',
+        borderRadius: '16px',
+        border: '1px solid var(--border-color)'
+      }}>
+        <div
+          onClick={() => { }}
+          style={{
+            flex: 1,
+            textAlign: 'center',
+            padding: '12px',
+            borderRadius: '12px',
+            cursor: 'pointer',
+            background: 'linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%)',
+            color: 'white',
+            fontWeight: '700',
+            fontSize: '0.9rem'
+          }}
+        >
+          I am an Athlete
+        </div>
+        <div
+          onClick={() => window.location.href = '/signup/gym-owner'}
+          style={{
+            flex: 1,
+            textAlign: 'center',
+            padding: '12px',
+            borderRadius: '12px',
+            cursor: 'pointer',
+            background: 'transparent',
+            color: 'var(--text-dim)',
+            fontWeight: '600',
+            fontSize: '0.9rem'
+          }}
+        >
+          I am a Gym Owner
+        </div>
       </div>
 
       {error && <div className="error-message">{error}</div>}
@@ -58,91 +105,109 @@ const Signup = ({ onSwitch }) => {
       <div className="form-row">
         <div className="form-group">
           <label className="form-label">Username *</label>
-          <input
-            type="text"
-            name="username"
-            className="form-input"
-            placeholder="Choose a username"
-            value={form.username}
-            onChange={handleChange}
-            disabled={loading}
-          />
+          <div className="input-container">
+            <FaUser className="input-icon" />
+            <input
+              type="text"
+              name="username"
+              className="form-input"
+              placeholder="Username"
+              value={form.username}
+              onChange={handleChange}
+              disabled={loading}
+            />
+          </div>
         </div>
 
         <div className="form-group">
           <label className="form-label">Email *</label>
-          <input
-            type="email"
-            name="email"
-            className="form-input"
-            placeholder="your@email.com"
-            value={form.email}
-            onChange={handleChange}
-            disabled={loading}
-          />
+          <div className="input-container">
+            <MdEmail className="input-icon" />
+            <input
+              type="email"
+              name="email"
+              className="form-input"
+              placeholder="Email"
+              value={form.email}
+              onChange={handleChange}
+              disabled={loading}
+            />
+          </div>
         </div>
       </div>
 
       <div className="form-group">
         <label className="form-label">Password *</label>
-        <input
-          type="password"
-          name="password"
-          className="form-input"
-          placeholder="Create a strong password"
-          value={form.password}
-          onChange={handleChange}
-          disabled={loading}
-        />
+        <div className="input-container">
+          <MdLock className="input-icon" />
+          <input
+            type="password"
+            name="password"
+            className="form-input"
+            placeholder="Min 8 characters"
+            value={form.password}
+            onChange={handleChange}
+            disabled={loading}
+          />
+        </div>
       </div>
 
       <div className="form-row">
         <div className="form-group">
           <label className="form-label">Age</label>
-          <input
-            type="number"
-            name="age"
-            className="form-input"
-            placeholder="Age"
-            value={form.age}
-            onChange={handleChange}
-            disabled={loading}
-            min="10"
-            max="100"
-          />
+          <div className="input-container">
+            <MdCalendarToday className="input-icon" />
+            <input
+              type="number"
+              name="age"
+              className="form-input"
+              placeholder="Age"
+              value={form.age}
+              onChange={handleChange}
+              disabled={loading}
+              min="10"
+              max="100"
+            />
+          </div>
         </div>
 
         <div className="form-group">
           <label className="form-label">Gender</label>
-          <select
-            name="gender"
-            className="form-input"
-            value={form.gender}
-            onChange={handleChange}
-            disabled={loading}
-          >
-            <option value="">Select gender</option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-            <option value="other">Other</option>
-          </select>
+          <div className="input-container">
+            <FaTransgender className="input-icon" />
+            <select
+              name="gender"
+              className="form-input"
+              value={form.gender}
+              onChange={handleChange}
+              disabled={loading}
+            >
+              <option value="">Select</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
         </div>
       </div>
 
       <div className="form-group">
         <label className="form-label">Fitness Goal *</label>
-        <select
-          name="goal"
-          className="form-input"
-          value={form.goal}
-          onChange={handleChange}
-          disabled={loading}
-        >
-          <option value="">Select your primary goal</option>
-          {GOALS.map(g => (
-            <option key={g.value} value={g.value}>{g.label}</option>
-          ))}
-        </select>
+        <div className="input-container">
+          <FaDumbbell className="input-icon" />
+          <select
+            name="goal"
+            className="form-input"
+            value={form.goal}
+            onChange={handleChange}
+            disabled={loading}
+          >
+            <option value="">Choose your primary goal</option>
+            {GOALS.map(g => (
+              <option key={g.value} value={g.value}>{g.label}</option>
+            ))}
+          </select>
+        </div>
       </div>
 
       <button type="submit" className="submit-btn" disabled={loading}>
@@ -159,12 +224,12 @@ const Signup = ({ onSwitch }) => {
 
       <div className="social-buttons">
         <button type="button" className="social-btn google" disabled={loading}>
-          <span className="social-icon">G</span>
-          Continue with Google
+          <span className="social-icon"><FaGoogle /></span>
+          Google
         </button>
         <button type="button" className="social-btn facebook" disabled={loading}>
-          <span className="social-icon">f</span>
-          Continue with Facebook
+          <span className="social-icon"><FaFacebook /></span>
+          Facebook
         </button>
       </div>
 
@@ -172,6 +237,15 @@ const Signup = ({ onSwitch }) => {
         Already have an account?
         <span className="switch-link" onClick={onSwitch}> Login</span>
       </p>
+      <div style={{ textAlign: 'center', marginTop: '10px', fontSize: '0.9rem', color: '#808191' }}>
+        Are you a Gym Owner?
+        <span
+          style={{ color: '#FF4B2B', cursor: 'pointer', marginLeft: '5px', fontWeight: '600' }}
+          onClick={() => window.location.href = '/signup/gym-owner'}
+        >
+          Register here
+        </span>
+      </div>
     </form>
   );
 };
