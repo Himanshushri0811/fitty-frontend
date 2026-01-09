@@ -23,6 +23,7 @@ import { MdContactMail } from 'react-icons/md';
 import { RiDashboardFill } from 'react-icons/ri';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
+import API from './axiosConfig';
 import './Navbar.css';
 
 const Navbar = () => {
@@ -37,6 +38,32 @@ const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+  const [showNotifDropdown, setShowNotifDropdown] = useState(false);
+
+  useEffect(() => {
+    // Gym Owner Notification Logic
+    if (isLoggedIn && userData?.profile?.role === 'GYM_OWNER') {
+      const fetchGymNotifs = async () => {
+        try {
+          const membersRes = await API.get('/api/gym/members/');
+          const pending = membersRes.data.filter(m => m.fees_status === 'PENDING');
+          const newNotifs = pending.map(m => ({
+            id: m.id,
+            type: 'warning',
+            title: 'Fees Pending',
+            message: `${m.name}'s fees are due on ${m.fees_due_date}`,
+            date: m.fees_due_date
+          }));
+          setNotifications(newNotifs);
+        } catch (err) {
+          console.error("Failed to fetch gym notifications", err);
+        }
+      };
+      fetchGymNotifs();
+    }
+  }, [isLoggedIn, userData]);
+
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -202,16 +229,82 @@ const Navbar = () => {
               {isDarkMode ? <FaSun className="sun-icon" /> : <FaMoon className="moon-icon" />}
             </motion.button>
 
+            {/* Gym Owner Upgrade Button (Top Level) */}
+            {isLoggedIn && userData?.profile?.role === 'GYM_OWNER' && !isPremiumUser && (
+              <motion.button
+                className="upgrade-btn-nav"
+                onClick={() => navigate('/gym-plans')}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                style={{
+                  background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
+                  color: 'white',
+                  border: 'none',
+                  padding: '8px 16px',
+                  borderRadius: '20px',
+                  fontWeight: 'bold',
+                  fontSize: '0.85rem',
+                  cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', gap: '6px',
+                  marginRight: '10px',
+                  boxShadow: '0 2px 10px rgba(99, 102, 241, 0.3)'
+                }}
+              >
+                <FaCrown size={14} /> Upgrade
+              </motion.button>
+            )}
+
             {/* Notifications - only for logged in users */}
             {isLoggedIn && (
-              <motion.button
-                className="notification-btn"
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-              >
-                <FaBell />
-                <span className="notification-badge">3</span>
-              </motion.button>
+              <div style={{ position: 'relative' }}>
+                <motion.button
+                  className="notification-btn"
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  onClick={() => setShowNotifDropdown(!showNotifDropdown)}
+                >
+                  <FaBell />
+                  {notifications.length > 0 && <span className="notification-badge">{notifications.length}</span>}
+                </motion.button>
+
+                <AnimatePresence>
+                  {showNotifDropdown && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 10 }}
+                      style={{
+                        position: 'absolute', top: '50px', right: '-10px', width: '320px',
+                        background: 'var(--bg-secondary)', border: '1px solid var(--border-color)',
+                        borderRadius: '12px', boxShadow: 'var(--shadow-lg)', zIndex: 1000,
+                        padding: '15px'
+                      }}
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px', borderBottom: '1px solid var(--border-color)', paddingBottom: '8px' }}>
+                        <h4 style={{ margin: 0, fontSize: '1rem' }}>Notifications</h4>
+                        <button onClick={() => setShowNotifDropdown(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}><FaTimes /></button>
+                      </div>
+                      <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
+                        {notifications.length === 0 ? (
+                          <div style={{ textAlign: 'center', padding: '20px', color: 'var(--text-muted)' }}>
+                            <p style={{ fontSize: '0.9rem' }}>No new notifications</p>
+                          </div>
+                        ) : (
+                          notifications.map((n, i) => (
+                            <div key={i} style={{ padding: '10px', borderBottom: '1px solid var(--border-color)', marginBottom: '5px', display: 'flex', gap: '10px', alignItems: 'start' }}>
+                              <div style={{ color: 'var(--warning)', marginTop: '2px' }}><FaBell /></div>
+                              <div>
+                                <strong style={{ fontSize: '0.9rem', display: 'block', marginBottom: '2px' }}>{n.title}</strong>
+                                <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{n.message}</p>
+                              </div>
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
             )}
 
             {/* User Section */}
@@ -272,7 +365,8 @@ const Navbar = () => {
                               <div className="dropdown-email">{userData?.email || 'user@example.com'}</div>
                             </div>
                           </div>
-                          {!isPremiumUser && (
+                          {!isPremiumUser && userData?.profile?.role !== 'GYM_OWNER' && (
+                            /* Only show generic upgrade for normal users here */
                             <button
                               className="upgrade-btn"
                               onClick={() => navigate('/premium')}
@@ -280,6 +374,7 @@ const Navbar = () => {
                               <FaCrown /> Upgrade to Pro
                             </button>
                           )}
+                          {/* Gym Owners have their own button outside, or custom message here */}
                         </div>
 
                         <div className="dropdown-items">

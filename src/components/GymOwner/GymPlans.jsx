@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { MdCheckCircle, MdLock, MdStar, MdArrowBack } from 'react-icons/md';
+import { MdCheckCircle, MdLock, MdStar, MdArrowBack, MdTrendingUp, MdSupportAgent } from 'react-icons/md';
 import API from '../axiosConfig';
 import { useAuth } from '../../context/AuthContext';
 import './GymPlans.css';
@@ -16,6 +16,7 @@ const GymPlans = () => {
     // Note: VerifyPayment updates profile, but AuthContext might not have it immediately unless re-fetched.
     // relying on gym_profile.plan_type from user object if available, otherwise 'FREE'
     const currentPlan = user?.gym_profile?.plan_type || 'FREE';
+    const isPro = currentPlan !== 'FREE';
 
     const handlePayment = async (plan, amount) => {
         if (loading) return;
@@ -72,97 +73,68 @@ const GymPlans = () => {
                 <button className="back-btn" onClick={() => navigate('/gym-dashboard')}>
                     <MdArrowBack /> Back to Dashboard
                 </button>
-                <h1>Choose Your Growth Plan</h1>
-                <p>Unlock powerful tools to manage and scale your gym.</p>
+                <motion.div initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }}>
+                    <h1 className="text-gradient">Upgrade Your Gym</h1>
+                    <p>Unlock the full power of FitMitra for just ₹399/month</p>
+                </motion.div>
             </header>
 
             <div className="plans-grid">
                 {/* FREE PLAN */}
                 <motion.div
-                    className={`plan-card ${currentPlan === 'FREE' ? 'current-plan' : ''}`}
-                    whileHover={{ scale: 1.02 }}
+                    className="plan-card"
+                    whileHover={{ scale: 1.01 }}
+                    transition={{ type: 'spring', stiffness: 300 }}
                 >
                     <div className="card-header">
-                        <h2>Free</h2>
+                        <h2>Free Plan</h2>
                         <div className="price">₹0<span>/month</span></div>
+                        <span className="subtitle" style={{ color: 'var(--text-muted)' }}>Starter Access</span>
                     </div>
                     <ul className="features-list">
-                        <li><MdCheckCircle className="icon success" /> Basic Gym Profile</li>
-                        <li><MdCheckCircle className="icon success" /> Read-only Member View</li>
-                        <li><MdCheckCircle className="icon success" /> Manual Workout Posting</li>
-                        <li className="dimmed"><MdLock className="icon lock" /> Member Management</li>
-                        <li className="dimmed"><MdLock className="icon lock" /> AI Assistant</li>
-                        <li className="dimmed"><MdLock className="icon lock" /> Financial Analytics</li>
+                        <li><MdCheckCircle className="icon success" /> <strong>Up to 5 Members</strong></li>
+                        <li><MdCheckCircle className="icon success" /> Basic Member Directory</li>
+                        <li><MdCheckCircle className="icon success" /> <strong>Limited</strong> AI Chat (Text)</li>
+                        <li className="dimmed"><MdLock className="icon lock" /> <strong>Unlimited</strong> Members Added</li>
+                        <li className="dimmed"><MdLock className="icon lock" /> Revenue & Fee reminders</li>
+                        <li className="dimmed"><MdLock className="icon lock" /> AI Voice Assistant</li>
                     </ul>
                     <button className="plan-btn disabled" disabled>
-                        {currentPlan === 'FREE' ? 'Current Plan' : 'Basic Version'}
+                        {isPro ? 'Switch to Basic' : 'Current Plan'}
                     </button>
                 </motion.div>
 
-                {/* STARTER PLAN */}
+                {/* PRO PLAN - ₹399 */}
                 <motion.div
-                    className={`plan-card featured ${currentPlan === 'STARTER' ? 'current-plan' : ''}`}
+                    className="plan-card featured"
                     initial={{ y: 20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ delay: 0.1 }}
-                    whileHover={{ scale: 1.05 }}
+                    whileHover={{ scale: 1.03 }}
                 >
-                    {currentPlan === 'STARTER' && <div className="badge">Current Plan</div>}
-                    <div className="card-header highlight">
-                        <h2>Starter</h2>
-                        <div className="price">₹299<span>/month</span></div>
-                        <span className="subtitle">Most Popular</span>
+                    {isPro && <div className="badge">Active Plan</div>}
+                    <div className="card-header">
+                        <h2>Pro Plan</h2>
+                        <div className="price">₹399<span>/month</span></div>
+                        <span className="subtitle text-gradient">Most Popular</span>
                     </div>
                     <ul className="features-list">
-                        <li><MdCheckCircle className="icon success" /> <strong>Up to 50 Members</strong></li>
-                        <li><MdCheckCircle className="icon success" /> Add/Edit/Remove Members</li>
-                        <li><MdCheckCircle className="icon success" /> Payment History Tracking</li>
-                        <li><MdCheckCircle className="icon success" /> Basic Analytics</li>
-                        <li><MdCheckCircle className="icon success" /> Standard AI Support</li>
+                        <li><MdCheckCircle className="icon success" /> <strong>Unlimited</strong> Members</li>
+                        <li><MdCheckCircle className="icon success" /> <strong>AI Voice Assistant</strong> & Coach</li>
+                        <li><MdTrendingUp className="icon success" /> <strong>Revenue Features</strong> & Reminders</li>
+                        <li><MdCheckCircle className="icon success" /> <strong>Delete/Manage</strong> Members</li>
+                        <li><MdSupportAgent className="icon success" /> <strong>Priority</strong> Support 24/7</li>
+                        <li><MdStar className="icon gold" /> <strong>Verified</strong> Gym Badge</li>
                     </ul>
-                    {currentPlan === 'STARTER' ? (
-                        <button className="plan-btn disabled" disabled>Active</button>
+                    {isPro ? (
+                        <button className="plan-btn disabled" disabled>Already Active</button>
                     ) : (
                         <button
                             className="plan-btn primary"
-                            onClick={() => handlePayment('STARTER', 299)}
+                            onClick={() => handlePayment('PRO', 399)}
                             disabled={loading}
                         >
-                            {loading ? 'Processing...' : 'Upgrade using Razorpay'}
-                        </button>
-                    )}
-                </motion.div>
-
-                {/* PRO PLAN */}
-                <motion.div
-                    className={`plan-card ${currentPlan === 'PRO' ? 'current-plan' : ''}`}
-                    initial={{ y: 20, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ delay: 0.2 }}
-                    whileHover={{ scale: 1.02 }}
-                >
-                    {currentPlan === 'PRO' && <div className="badge">Current Plan</div>}
-                    <div className="card-header">
-                        <h2>Pro</h2>
-                        <div className="price">₹599<span>/month</span></div>
-                        <span className="subtitle highlight-text">Best Value</span>
-                    </div>
-                    <ul className="features-list">
-                        <li><MdCheckCircle className="icon success" /> <strong>Unlimited Members</strong></li>
-                        <li><MdStar className="icon gold" /> <strong>Advanced Revenue Insights</strong></li>
-                        <li><MdStar className="icon gold" /> <strong>Priority AI Business Coach</strong></li>
-                        <li><MdCheckCircle className="icon success" /> Automated Fee Reminders</li>
-                        <li><MdCheckCircle className="icon success" /> 24/7 Priority Support</li>
-                    </ul>
-                    {currentPlan === 'PRO' ? (
-                        <button className="plan-btn disabled" disabled>Active</button>
-                    ) : (
-                        <button
-                            className="plan-btn secondary"
-                            onClick={() => handlePayment('PRO', 599)}
-                            disabled={loading}
-                        >
-                            {loading ? 'Processing...' : 'Go Pro'}
+                            {loading ? 'Processing...' : 'Upgrade Now'}
                         </button>
                     )}
                 </motion.div>
@@ -172,3 +144,4 @@ const GymPlans = () => {
 };
 
 export default GymPlans;
+
