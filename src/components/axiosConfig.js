@@ -1,15 +1,10 @@
 import axios from 'axios';
 
-const baseURL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:8000';
+const baseURL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:8000'; // Force HTTP for Local
 
 const API = axios.create({
-<<<<<<< HEAD
-  baseURL: 'http://127.0.0.1:8000',
-  withCredentials: false, // Important: False to avoid CORS blocking with wildcard allowed origins
-=======
   baseURL: baseURL,
-  withCredentials: true,
->>>>>>> origin/main
+  withCredentials: false, // Important: False to avoid CORS blocking with wildcard allowed origins
 });
 
 let isRefreshing = false;
