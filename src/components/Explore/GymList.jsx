@@ -1,5 +1,6 @@
 import React from 'react';
 import GymCard from './GymCard';
+import './Explore.css';
 
 const GymList = ({ gyms, loading }) => {
     if (loading) {
