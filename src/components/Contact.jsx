@@ -68,9 +68,13 @@ const Contact = () => {
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.2 }}
         >
-          Get In Touch
+          We'd Love to Hear From You
         </motion.h1>
-        <p>Have questions about plans, gyms, or AI coaching? Our team is always here to help you on your fitness journey.</p>
+        <p>Whether you have a question about our features, need help with a workout plan, or just want to say hi, our friendly team is ready to answer all your questions.</p>
+        <div className="trust-badges">
+          <span className="trust-badge">⚡ Avg. Response: &lt; 24 Hours</span>
+          <span className="trust-badge">🔒 Your Privacy Matters</span>
+        </div>
       </div>
 
       <div className="contact-wrapper">

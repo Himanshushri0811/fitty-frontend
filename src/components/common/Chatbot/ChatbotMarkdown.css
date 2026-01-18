@@ -1,0 +1,55 @@
+/* --- Markdown Content Styling (Premium Neon) --- */
+.markdown-content {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: inherit;
+}
+
+.markdown-content p {
+    margin-bottom: 10px;
+}
+
+.markdown-content :first-child {
+    margin-top: 0;
+}
+
+.markdown-content :last-child {
+    margin-bottom: 0;
+}
+
+.markdown-content h1,
+.markdown-content h2,
+.markdown-content h3 {
+    font-weight: 700;
+    margin-top: 15px;
+    margin-bottom: 8px;
+    color: #00ff99;
+    font-size: 1.1em;
+}
+
+.markdown-content strong {
+    color: #00ff99;
+    font-weight: 700;
+}
+
+/* Specific overrides for User bubbles to ensure readability */
+.msg-user .markdown-content strong {
+    color: #000;
+    font-weight: 800;
+}
+
+.markdown-content ul,
+.markdown-content ol {
+    margin-left: 20px;
+    margin-bottom: 10px;
+}
+
+.markdown-content li {
+    margin-bottom: 4px;
+    list-style-type: disc;
+}
+
+.msg-user .markdown-content li {
+    list-style-type: disc;
+    color: #0c0c0e;
+}

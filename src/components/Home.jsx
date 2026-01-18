@@ -4,31 +4,44 @@ import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion'
 import {
   FaDumbbell,
   FaFire,
-  FaHeartbeat,
-  FaAppleAlt,
-  FaTrophy,
-  FaChartLine,
-  FaRunning,
-  FaUserFriends,
-  FaMobileAlt,
-  FaShieldAlt,
   FaArrowRight,
   FaPlay,
-  FaQuoteLeft,
   FaStar,
   FaCheckCircle,
   FaCrown,
-  FaBolt,
   FaRobot,
-  FaBrain,
-  FaYoutube,
+  FaLeaf,
+  FaRunning,
+  FaChartLine,
+  FaQuoteLeft,
+  FaShieldAlt,
   FaWhatsapp,
-  FaInstagram
+  FaInstagram,
+  FaYoutube
 } from 'react-icons/fa';
-import { GiMuscleUp, GiWeightLiftingUp, GiBiceps } from 'react-icons/gi';
-import { MdLocalFireDepartment, MdTimer, MdTrendingUp } from 'react-icons/md';
-import { TbDeviceAnalytics } from 'react-icons/tb';
 import './Home.css';
+
+// Simple Counter Component for stats
+const Counter = ({ from, to, duration }) => {
+  const [count, setCount] = useState(from);
+
+  useEffect(() => {
+    let start = from;
+    const end = to;
+    const totalDuration = duration * 1000;
+    const incrementTime = (totalDuration / (end - start)) * 10;
+
+    let timer = setInterval(() => {
+      start += 1;
+      setCount(start);
+      if (start === end) clearInterval(timer);
+    }, incrementTime);
+
+    return () => clearInterval(timer);
+  }, [from, to, duration]);
+
+  return <>{count}</>;
+};
 
 const Home = () => {
   const navigate = useNavigate();
@@ -41,504 +54,300 @@ const Home = () => {
   const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
   const scale = useTransform(scrollYProgress, [0, 0.5], [1, 0.8]);
 
-  const [activeFeature, setActiveFeature] = useState(0);
   const [showVideo, setShowVideo] = useState(false);
-  const [counterValues, setCounterValues] = useState({
-    members: 0,
-    workouts: 0,
-    transformations: 0,
-    calories: 0
-  });
 
-  // Animated counter effect
-  useEffect(() => {
-    const duration = 2000;
-    const steps = 100;
-    const increment = {
-      members: 50000 / steps,
-      workouts: 1200000 / steps,
-      transformations: 12000 / steps,
-      calories: 4500000 / steps
-    };
-
-    let currentValues = { members: 0, workouts: 0, transformations: 0, calories: 0 };
-    let step = 0;
-
-    const timer = setInterval(() => {
-      step++;
-      currentValues = {
-        members: Math.min(Math.round(increment.members * step), 50000),
-        workouts: Math.min(Math.round(increment.workouts * step), 1200000),
-        transformations: Math.min(Math.round(increment.transformations * step), 12000),
-        calories: Math.min(Math.round(increment.calories * step), 4500000)
-      };
-
-      setCounterValues(currentValues);
-
-      if (step >= steps) {
-        clearInterval(timer);
-      }
-    }, duration / steps);
-
-    // Feature rotation
-    const featureInterval = setInterval(() => {
-      setActiveFeature(prev => (prev + 1) % features.length);
-    }, 3000);
-
-    return () => {
-      clearInterval(timer);
-      clearInterval(featureInterval);
-    };
-  }, []);
-
-  // Hero animation variants
-  const heroVariants = {
-    hidden: { opacity: 0, y: 50 },
+  // Hero Animation Variants
+  const fadeInUp = {
+    hidden: { opacity: 0, y: 40 },
     visible: {
       opacity: 1,
       y: 0,
+      transition: { duration: 0.8, ease: "easeOut" }
+    }
+  };
+
+  const staggerContainer = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
       transition: {
-        duration: 0.8,
         staggerChildren: 0.2
       }
     }
   };
 
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0 }
+  // Letter animation for "FITMITRA"
+  const letterContainer = {
+    hidden: { opacity: 0 },
+    visible: (i = 1) => ({
+      opacity: 1,
+      transition: { staggerChildren: 0.12, delayChildren: 0.04 * i }
+    })
   };
 
-  // Features with enhanced data
-  const features = [
-    {
-      icon: <FaRobot />,
-      title: "AI-Personalized Workouts",
-      description: "Get custom workout plans tailored to your body type, goals, and fitness level with our advanced AI",
-      color: "#667eea",
-      gradient: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-      points: ["Adaptive plans", "Form correction", "Progress tracking"]
+  const letterChild = {
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { type: "spring", damping: 12, stiffness: 200 }
     },
-    {
-      icon: <FaAppleAlt />,
-      title: "Indian Diet Plans",
-      description: "Personalized meal plans with Indian recipes, macro tracking, and grocery lists",
-      color: "#10b981",
-      gradient: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
-      points: ["Vegetarian/Vegan options", "Regional cuisines", "Festival specials"]
-    },
-    {
-      icon: <GiMuscleUp />,
-      title: "Real-Time Posture Analysis",
-      description: "AI-powered posture correction with live feedback using your camera",
-      color: "#f59e0b",
-      gradient: "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)",
-      points: ["Instant corrections", "Exercise form analysis", "Injury prevention"]
-    },
-    {
-      icon: <TbDeviceAnalytics />,
-      title: "Advanced Progress Tracking",
-      description: "3D body scans, detailed analytics, and performance insights",
-      color: "#8b5cf6",
-      gradient: "linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)",
-      points: ["Body measurements", "Performance graphs", "Goal tracking"]
-    },
-    {
-      icon: <FaBrain />,
-      title: "Smart Health Monitoring",
-      description: "Track heart rate, calories, sleep, and overall wellness metrics",
-      color: "#ef4444",
-      gradient: "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)",
-      points: ["Health insights", "Recovery tracking", "Wellness scores"]
-    },
-    {
-      icon: <FaMobileAlt />,
-      title: "Hindi/English Voice Coach",
-      description: "Hands-free workout guidance with multilingual voice commands",
-      color: "#3b82f6",
-      gradient: "linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)",
-      points: ["Voice commands", "Real-time guidance", "Multi-language"]
+    hidden: {
+      opacity: 0,
+      y: 20,
+      transition: { type: "spring", damping: 12, stiffness: 200 }
     }
-  ];
+  };
 
-  // Success stories with enhanced data
-  const successStories = [
-    {
-      name: "Rajesh Kumar",
-      role: "Lost 15kg in 3 months",
-      text: "FitMitra's personalized Indian diet plans completely transformed my life. The AI workout plans were perfect for my body type!",
-      image: "https://i.pravatar.cc/400?img=11",
-      stats: ["-15kg", "+8% muscle", "98% consistency"],
-      duration: "3 months"
-    },
-    {
-      name: "Priya Sharma",
-      role: "Gained 5kg muscle",
-      text: "As a vegetarian, I struggled with protein intake. FitMitra's vegetarian meal plans and posture correction were game-changers!",
-      image: "https://i.pravatar.cc/400?img=5",
-      stats: ["+5kg muscle", "0 injuries", "100% vegetarian"],
-      duration: "4 months"
-    },
-    {
-      name: "Amit Patel",
-      role: "Fixed chronic back pain",
-      text: "The AI posture correction helped me fix years of back pain. The real-time feedback during workouts is incredible!",
-      image: "https://i.pravatar.cc/400?img=8",
-      stats: ["0 back pain", "+40% flexibility", "Daily posture"],
-      duration: "2 months"
-    }
-  ];
+  const brandName = "FITMITRA";
 
-  // Stats with icons
-  const stats = [
+  // Three Main Cards Data
+  const mainCards = [
     {
-      icon: <FaUserFriends />,
-      value: counterValues.members.toLocaleString() + "+",
-      label: "Active Members",
-      description: "Growing community"
+      icon: <FaLeaf />,
+      title: "Diet Plans",
+      desc: "Personalized Indian nutrition plans",
+      color: "from-green-400 to-green-600"
     },
     {
-      icon: <GiWeightLiftingUp />,
-      value: counterValues.workouts.toLocaleString() + "+",
-      label: "Workouts Completed",
-      description: "And counting"
+      icon: <FaRunning />,
+      title: "Activity Track",
+      desc: "Real-time workout monitoring",
+      color: "from-blue-400 to-blue-600"
     },
     {
-      icon: <FaTrophy />,
-      value: counterValues.transformations.toLocaleString() + "+",
-      label: "Transformations",
-      description: "Life changing results"
-    },
-    {
-      icon: <MdLocalFireDepartment />,
-      value: counterValues.calories.toLocaleString() + "+",
-      label: "Calories Burned",
-      description: "Total calories burned"
+      icon: <FaChartLine />,
+      title: "Progress Log",
+      desc: "Visual analytics of your journey",
+      color: "from-purple-400 to-purple-600"
     }
   ];
 
   return (
     <div className="home-page" ref={containerRef}>
-      {/* Floating Particles Background */}
-      <div className="floating-particles">
-        {[...Array(20)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="particle"
-            initial={{ y: 0, x: Math.random() * 100 }}
-            animate={{
-              y: [0, -100, 0],
-              x: [Math.random() * 100, Math.random() * 100 + 50, Math.random() * 100]
-            }}
-            transition={{
-              duration: 3 + Math.random() * 2,
-              repeat: Infinity,
-              ease: "linear"
-            }}
-          />
-        ))}
-      </div>
 
-      {/* Hero Section - Ultra Modern */}
-      <motion.section
-        className="hero-section"
-        initial="hidden"
-        animate="visible"
-        variants={heroVariants}
-      >
-        <div className="hero-gradient"></div>
+      {/* --- HERO SECTION --- */}
+      <section className="hero-section">
+        {/* Background Elements */}
+        <div className="hero-bg-glow"></div>
+        <div className="hero-grid-pattern"></div>
 
         <div className="container hero-container">
-          <motion.div className="hero-content" variants={itemVariants}>
-            <motion.div
-              className="hero-badge"
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: 0.5, type: "spring" }}
-            >
-              <FaCrown /> #1 AI Fitness App in India
+
+          {/* Left Content */}
+          <motion.div
+            className="hero-text-content"
+            initial="hidden"
+            animate="visible"
+            variants={staggerContainer}
+          >
+            <motion.div variants={fadeInUp} className="hero-brand-badge">
+              <span className="pulse-dot"></span> #1 AI Fitness Companion
             </motion.div>
 
-            <motion.h1 className="hero-title" variants={itemVariants}>
-              Transform Your Body with
-              <span className="gradient-text typing-animation">
-                AI-Powered Precision
-              </span>
+            <motion.h1 className="hero-heading" variants={fadeInUp}>
+              Reach Your Fitness Goals <br />
+              with{" "}
+              {/* Animated Text Character by Character */}
+              <motion.span
+                className="text-highlight"
+                variants={letterContainer}
+                initial="hidden"
+                animate="visible"
+                style={{ display: "inline-flex" }}
+              >
+                {Array.from(brandName).map((letter, index) => (
+                  <motion.span variants={letterChild} key={index}>
+                    {letter}
+                  </motion.span>
+                ))}
+              </motion.span>
             </motion.h1>
 
-            <motion.p className="hero-subtitle" variants={itemVariants}>
-              Personalized workouts, Indian diet plans, and real-time posture correction
-              designed specifically for the Indian lifestyle. Join 50,000+ success stories.
+            <motion.p variants={fadeInUp} className="hero-subtext">
+              Experience the next generation of fitness. AI-powered workout plans, smart diet tracking, and real-time posture correction designed for your success.
             </motion.p>
 
-            <motion.div className="hero-buttons" variants={itemVariants}>
+            <motion.div variants={fadeInUp} className="hero-cta-group">
               <motion.button
-                whileHover={{ scale: 1.05, boxShadow: "0 20px 40px rgba(255, 87, 34, 0.4)" }}
+                whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="btn-primary"
+                className="btn-primary-glow"
                 onClick={() => navigate('/auth?tab=signup')}
               >
-                <FaBolt /> Start 7-Day Free Trial
+                Get Started
               </motion.button>
-
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="btn-secondary"
+                className="btn-secondary-glass"
                 onClick={() => setShowVideo(true)}
               >
-                <FaPlay /> Watch Demo Video
+                <FaPlay size={12} /> Watch Demo
               </motion.button>
             </motion.div>
 
-            <motion.div className="hero-features" variants={itemVariants}>
-              <div className="feature-check">
-                <FaCheckCircle /> No credit card required
+            {/* Stats Row (Visible on Desktop) */}
+            <motion.div variants={fadeInUp} className="hero-stats-row">
+              <div className="h-stat">
+                <h3><Counter from={0} to={50} duration={2} />K+</h3>
+                <p>Active Users</p>
               </div>
-              <div className="feature-check">
-                <FaCheckCircle /> Cancel anytime
-              </div>
-              <div className="feature-check">
-                <FaCheckCircle /> 24/7 AI Support
+              <div className="h-divider"></div>
+              <div className="h-stat">
+                <h3>4.9/5</h3>
+                <p>User Rating</p>
               </div>
             </motion.div>
           </motion.div>
 
+          {/* Right Visual */}
           <motion.div
-            className="hero-visual"
-            initial={{ opacity: 0, x: 100 }}
+            className="hero-visual-content"
+            initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.5, duration: 1 }}
+            transition={{ duration: 1, delay: 0.2 }}
           >
-            <div className="floating-phone">
-              <div className="phone-screen">
-                <div className="screen-content">
-                  <div className="app-header">
-                    <div className="app-logo">💪</div>
-                    <span>FitMitra</span>
-                  </div>
-                  <div className="app-stats">
-                    <div className="stat">
-                      <div className="stat-value">98%</div>
-                      <div className="stat-label">Accuracy</div>
-                    </div>
-                    <div className="stat">
-                      <div className="stat-value">4.9★</div>
-                      <div className="stat-label">Rating</div>
-                    </div>
-                  </div>
-                  <div className="workout-preview">
-                    <div className="exercise">AI Recommended</div>
-                    <div className="exercise-name">Chest & Shoulders</div>
-                    <div className="timer">45:00</div>
-                  </div>
-                </div>
+            <div className="image-composition">
+              {/* Main Image */}
+              <div className="main-image-wrapper">
+                <img
+                  src="https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?q=80&w=2069&auto=format&fit=crop"
+                  alt="Fitness Model"
+                  className="hero-model-img"
+                />
+                <div className="image-overlay-gradient"></div>
               </div>
-            </div>
-          </motion.div>
-        </div>
 
-        {/* Animated Scroll Indicator */}
-        <motion.div
-          className="scroll-indicator"
-          animate={{ y: [0, 10, 0] }}
-          transition={{ duration: 1.5, repeat: Infinity }}
-        >
-          <div className="scroll-text">Scroll to explore</div>
-          <div className="scroll-arrow">↓</div>
-        </motion.div>
-      </motion.section>
-
-      {/* Animated Stats Section */}
-      <motion.section
-        className="stats-section"
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-      >
-        <div className="container">
-          <div className="stats-grid">
-            {stats.map((stat, index) => (
+              {/* Floating Glass Cards */}
               <motion.div
-                key={index}
-                className="stat-card"
-                initial={{ opacity: 0, y: 50 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                viewport={{ once: true }}
-                whileHover={{
-                  y: -15,
-                  boxShadow: "0 25px 50px rgba(102, 126, 234, 0.15)"
-                }}
+                className="glass-card card-top-right"
+                animate={{ y: [0, -10, 0] }}
+                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
               >
-                <motion.div
-                  className="stat-icon-wrapper"
-                  whileHover={{ rotate: 360 }}
-                  transition={{ duration: 0.5 }}
-                >
-                  <div className="stat-icon">
-                    {stat.icon}
-                  </div>
-                </motion.div>
-                <div className="stat-content">
-                  <div className="stat-value">{stat.value}</div>
-                  <div className="stat-label">{stat.label}</div>
-                  <div className="stat-description">{stat.description}</div>
-                </div>
-                <div className="stat-glow"></div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </motion.section>
-
-      {/* Interactive Features Showcase */}
-      <section className="features-section">
-        <div className="container">
-          <motion.div
-            className="section-header"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
-            <div className="section-badge">
-              <FaRobot /> AI-Powered Features
-            </div>
-            <h2>Why <span className="gradient-text">FitMitra</span> is Different</h2>
-            <p>Experience the future of fitness with our cutting-edge AI technology</p>
-          </motion.div>
-
-          {/* Feature Navigation */}
-          <div className="feature-navigation">
-            {features.map((feature, index) => (
-              <motion.button
-                key={index}
-                className={`feature-nav-btn ${activeFeature === index ? 'active' : ''}`}
-                onClick={() => setActiveFeature(index)}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.1 }}
-                viewport={{ once: true }}
-              >
-                <span className="nav-icon">{feature.icon}</span>
-                <span className="nav-text">{feature.title.split(' ')[0]}</span>
-              </motion.button>
-            ))}
-          </div>
-
-          {/* Active Feature Display */}
-          <div className="feature-display">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={activeFeature}
-                className="feature-detail"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.3 }}
-              >
-                <div className="feature-detail-content">
-                  <div
-                    className="feature-main-icon"
-                    style={{ background: features[activeFeature].gradient }}
-                  >
-                    {features[activeFeature].icon}
-                  </div>
-                  <h3>{features[activeFeature].title}</h3>
-                  <p>{features[activeFeature].description}</p>
-
-                  <div className="feature-points">
-                    {features[activeFeature].points.map((point, idx) => (
-                      <div key={idx} className="feature-point">
-                        <FaCheckCircle /> {point}
-                      </div>
-                    ))}
-                  </div>
-
-                  <button
-                    className="btn-feature"
-                    onClick={() => navigate(features[activeFeature].title.includes('Workout') ? '/workout' :
-                      features[activeFeature].title.includes('Diet') ? '/diet' : '/posture')}
-                  >
-                    Try it now <FaArrowRight />
-                  </button>
-                </div>
-
-                <div className="feature-visual">
-                  <div className="visual-container">
-                    <div className="visual-content">
-                      {/* Animated visual representation */}
-                      <div className="ai-animation">
-                        <div className="ai-core">
-                          <FaBrain />
-                        </div>
-                        <div className="ai-rays">
-                          {[...Array(8)].map((_, i) => (
-                            <div key={i} className="ai-ray" style={{ '--i': i }}></div>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                <div className="glass-icon icon-fire"><FaFire /></div>
+                <div>
+                  <h4>520 kcal</h4>
+                  <p>Burned Today</p>
                 </div>
               </motion.div>
-            </AnimatePresence>
-          </div>
+
+              <motion.div
+                className="glass-card card-bottom-left"
+                animate={{ y: [0, 10, 0] }}
+                transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+              >
+                <div className="glass-icon icon-heart"><FaCrown /></div>
+                <div>
+                  <h4>Premium</h4>
+                  <p>Plan Active</p>
+                </div>
+              </motion.div>
+            </div>
+          </motion.div>
         </div>
       </section>
 
-      {/* Social Proof & Testimonials */}
-      <section className="testimonials-section">
+      {/* --- FLOATING INFO CARDS SECTION --- */}
+      <section className="info-cards-section">
         <div className="container">
-          <motion.div
-            className="section-header"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
-            <div className="section-badge">
-              <FaStar /> Success Stories
-            </div>
-            <h2>Real People, <span className="gradient-text">Real Results</span></h2>
-            <p>Join thousands of Indians who transformed their lives with FitMitra</p>
-          </motion.div>
-
-          <div className="testimonials-carousel">
-            {successStories.map((story, index) => (
+          <div className="info-cards-grid">
+            {mainCards.map((card, index) => (
               <motion.div
                 key={index}
-                className="testimonial-card"
-                initial={{ opacity: 0, y: 50 }}
+                className="feature-glass-card"
+                initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.2 }}
+                transition={{ delay: index * 0.2 }}
                 viewport={{ once: true }}
                 whileHover={{ y: -10 }}
               >
-                <div className="testimonial-header">
-                  <img src={story.image} alt={story.name} className="testimonial-avatar" />
-                  <div className="testimonial-info">
-                    <h4>{story.name}</h4>
-                    <div className="testimonial-role">{story.role}</div>
-                    <div className="testimonial-duration">{story.duration}</div>
-                  </div>
-                  <div className="testimonial-rating">
-                    <FaStar /> <FaStar /> <FaStar /> <FaStar /> <FaStar />
-                  </div>
+                <div className={`feature-icon-box ${card.color}`}>
+                  {card.icon}
                 </div>
+                <h3>{card.title}</h3>
+                <p>{card.desc}</p>
+                <div className="card-bg-blur"></div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
 
-                <div className="testimonial-content">
-                  <FaQuoteLeft className="quote-icon" />
-                  <p>{story.text}</p>
-                </div>
+      {/* --- WHY CHOOSE US (Content Section) --- */}
+      <section className="content-section">
+        <div className="container">
+          <div className="section-header-center">
+            <motion.h2
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+            >Redefine Your Limits</motion.h2>
+            <p>Our comprehensive modules cover every aspect of your well-being.</p>
+          </div>
 
-                <div className="testimonial-stats">
-                  {story.stats.map((stat, idx) => (
-                    <div key={idx} className="stat-badge">
-                      {stat}
-                    </div>
-                  ))}
+          <div className="features-showcase-grid">
+            <motion.div
+              className="feature-block"
+              initial={{ opacity: 0, x: -50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+            >
+              <div className="f-image">
+                <img src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=2070&auto=format&fit=crop" alt="Gym" />
+              </div>
+              <div className="f-content">
+                <h3>AI Workout Coach</h3>
+                <p>Get real-time feedback on your form using computer vision technology.</p>
+                <button className="text-link" onClick={() => navigate('/workout')}>Explore Workouts <FaArrowRight /></button>
+              </div>
+            </motion.div>
+
+            <motion.div
+              className="feature-block reverse"
+              initial={{ opacity: 0, x: 50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+            >
+              <div className="f-image">
+                <img src="https://images.unsplash.com/photo-1490645935967-10de6ba17061?q=80&w=2053&auto=format&fit=crop" alt="Food" />
+              </div>
+              <div className="f-content">
+                <h3>Smart Nutrition</h3>
+                <p>Calorie tracking and personalized meal plans that adapt to your taste.</p>
+                <button className="text-link" onClick={() => navigate('/diet')}>View Diet Plans <FaArrowRight /></button>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* --- TESTIMONIALS --- */}
+      <section className="testimonials-section-dark">
+        <div className="container">
+          <h2 className="title-center">Success Stories</h2>
+          <div className="testimonial-slider">
+            {[1, 2, 3].map((val) => (
+              <motion.div
+                key={val}
+                className="t-card"
+                whileHover={{ y: -5, borderColor: "#6366f1" }}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: val * 0.1 }}
+              >
+                <div className="t-rating"><FaStar /><FaStar /><FaStar /><FaStar /><FaStar /></div>
+                <p className="t-text">"FitMitra completely changed the way I approach fitness. The AI suggestions are spot on!"</p>
+                <div className="t-user">
+                  <div className="t-avatar">
+                    <img src={`https://i.pravatar.cc/150?img=${val + 10}`} alt="User" style={{ width: '100%', borderRadius: '50%' }} />
+                  </div>
+                  <div>
+                    <h5>User {val}</h5>
+                    <span>Member since 2023</span>
+                  </div>
                 </div>
               </motion.div>
             ))}
@@ -546,110 +355,45 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Final CTA Section */}
-      <motion.section
-        className="cta-section"
-        style={{ opacity, scale }}
-      >
-        <div className="cta-gradient"></div>
-        <div className="container">
-          <motion.div
-            className="cta-card"
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5 }}
-            viewport={{ once: true }}
-          >
-            <div className="cta-badge">
-              <FaBolt /> Limited Time Offer
-            </div>
-
-            <h2>Start Your Transformation Journey Today!</h2>
-            <p>Get access to all premium features with our 7-day free trial</p>
-
-            <div className="cta-features">
-              <div className="cta-feature">
-                <FaCheckCircle /> AI-Personalized Workouts
-              </div>
-              <div className="cta-feature">
-                <FaCheckCircle /> Indian Diet Plans
-              </div>
-              <div className="cta-feature">
-                <FaCheckCircle /> Posture Correction
-              </div>
-              <div className="cta-feature">
-                <FaCheckCircle /> Progress Tracking
-              </div>
-            </div>
-
-            <div className="cta-buttons">
-              <motion.button
-                whileHover={{ scale: 1.05, boxShadow: "0 20px 40px rgba(255, 87, 34, 0.4)" }}
-                whileTap={{ scale: 0.95 }}
-                className="btn-primary btn-xl"
-                onClick={() => navigate('/auth?tab=signup')}
-              >
-                <FaCrown /> Start Free Trial
-              </motion.button>
-
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="btn-outline"
-                onClick={() => navigate('/auth?tab=login')}
-              >
-                Already a member? Sign In
-              </motion.button>
-            </div>
-
-            <div className="cta-footer">
-              <div className="security-badge">
-                <FaShieldAlt /> 256-bit SSL Secured
-              </div>
-              <div className="social-proof">
-                <span>Trusted by 50K+ Indians</span>
-                <div className="social-icons">
-                  <FaWhatsapp />
-                  <FaInstagram />
-                  <FaYoutube />
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-      </motion.section>
+      {/* --- FOOTER CTA --- */}
+      <section className="cta-banner-section">
+        <motion.div
+          className="cta-content-box"
+          whileHover={{ scale: 1.02 }}
+          transition={{ type: "spring", stiffness: 300 }}
+        >
+          <h2>Ready to transform?</h2>
+          <p>Join thousands of users hitting their goals every day.</p>
+          <button className="btn-white" onClick={() => navigate('/auth?tab=signup')}>Join Now Free</button>
+        </motion.div>
+      </section>
 
       {/* Video Modal */}
       <AnimatePresence>
         {showVideo && (
           <motion.div
-            className="video-modal"
+            className="video-modal-overlay"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setShowVideo(false)}
           >
-            <motion.div
-              className="modal-content"
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.8, opacity: 0 }}
-              onClick={e => e.stopPropagation()}
-            >
-              <button className="close-modal" onClick={() => setShowVideo(false)}>×</button>
-              <div className="video-container">
-                <iframe
-                  src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1"
-                  title="FitMitra Demo"
-                  frameBorder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                ></iframe>
-              </div>
-            </motion.div>
+            <div className="video-modal-content">
+              <button className="close-btn" onClick={() => setShowVideo(false)}>×</button>
+              <iframe
+                width="100%"
+                height="100%"
+                src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1"
+                title="Demo Video"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              ></iframe>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
+
     </div>
   );
 };
