@@ -1,334 +1,484 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import fittyVoice from "../utils/fittyVoice";
+import API from "./axiosConfig";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  Calendar, Dumbbell, Activity, Info, ChevronRight,
+  Edit2, Save, Play, Star, AlertCircle, Zap, TrendingUp, RefreshCw, PlayCircle, X
+} from "lucide-react";
+import { normalizeExerciseId } from "./utils/postureRules";
 import "./Workout.css";
-
-// ------------------- MOCK DATA -------------------
-const WORKOUT_PLANS = {
-  "Muscle Building": [
-    {
-      day: "Mon", focus: "Chest & Triceps", icon: "💪",
-      exercises: [
-        { id: 1, name: "Bench Press", sets: "4", reps: "8-12", rest: "90s", difficulty: "Hard", description: "Primary compound movement for chest development. Keep elbows at 45 degrees." },
-        { id: 2, name: "Incline Press", sets: "3", reps: "10-12", rest: "60s", difficulty: "Medium", description: "Targets upper chest fibers. Control the negative." },
-        { id: 3, name: "Tricep Pushdowns", sets: "3", reps: "12-15", rest: "60s", difficulty: "Medium", description: "Isolate lateral head of triceps. Keep elbows tucked." },
-        { id: 4, name: "Dips", sets: "3", reps: "10", rest: "60s", difficulty: "Hard", description: "Great for lower chest and tricep power." }
-      ],
-    },
-    {
-      day: "Tue", focus: "Back & Biceps", icon: "🔥",
-      exercises: [
-        { id: 5, name: "Deadlift", sets: "4", reps: "5-8", rest: "120s", difficulty: "Hard", description: "Full body compound. Keep back straight and core tight." },
-        { id: 6, name: "Pull Ups", sets: "3", reps: "AMRAP", rest: "90s", difficulty: "Medium", description: "Vertical pull for lat width. Full range of motion." },
-        { id: 7, name: "Barbell Rows", sets: "3", reps: "10-12", rest: "90s", difficulty: "Hard", description: "Build back thickness and strength." },
-        { id: 8, name: "Bicep Curls", sets: "3", reps: "12", rest: "60s", difficulty: "Easy", description: "Classic bicep isolation." }
-      ],
-    },
-    {
-      day: "Wed", focus: "Rest & Mobility", icon: "🧘", exercises: [
-        { id: 9, name: "Hip Mobility", sets: "2", reps: "5m", rest: "0", difficulty: "Easy", description: "Loosen hips for better squatting." },
-        { id: 10, name: "Thoracic Extension", sets: "2", reps: "3m", rest: "0", difficulty: "Easy", description: "Improve posture and back health." }
-      ]
-    },
-    {
-      day: "Thu", focus: "Shoulders & Abs", icon: "🥥", exercises: [
-        { id: 11, name: "Overhead Press", sets: "4", reps: "6-8", rest: "90s", difficulty: "Hard", description: "Vertical press for shoulders." },
-        { id: 12, name: "Lateral Raises", sets: "4", reps: "15", rest: "45s", difficulty: "Medium", description: "Build side delts for width." },
-        { id: 13, name: "Front Raises", sets: "3", reps: "12", rest: "45s", difficulty: "Medium", description: "Target front delts." },
-        { id: 14, name: "Hanging Leg Raises", sets: "3", reps: "15", rest: "60s", difficulty: "Hard", description: "Elite core exercise." }
-      ]
-    },
-    {
-      day: "Fri", focus: "Legs", icon: "🦵", exercises: [
-        { id: 15, name: "Squats", sets: "4", reps: "6-10", rest: "120s", difficulty: "Hard", description: "King of leg exercises." },
-        { id: 16, name: "Leg Press", sets: "3", reps: "12", rest: "90s", difficulty: "Medium", description: "Safely push heavy volume for quads." },
-        { id: 17, name: "Hamstring Curls", sets: "3", reps: "12", rest: "60s", difficulty: "Medium", description: "Isolate the back of the legs." },
-        { id: 18, name: "Calf Raises", sets: "4", reps: "20", rest: "45s", difficulty: "Easy", description: "Don't forget calves!" }
-      ]
-    },
-    {
-      day: "Sat", focus: "Cardio & Core", icon: "🏃", exercises: [
-        { id: 19, name: "Sprints", sets: "5", reps: "100m", rest: "90s", difficulty: "Hard", description: "Build explosive power." },
-        { id: 20, name: "Plank", sets: "3", reps: "1m", rest: "45s", difficulty: "Medium", description: "Hold it steady." }
-      ]
-    },
-    { day: "Sun", focus: "Rest", icon: "🛌", exercises: [] },
-  ],
-  "Fat Loss": [
-    {
-      day: "Mon", focus: "Full Body Circuit", icon: "⚡",
-      exercises: [
-        { id: 101, name: "Burpees", sets: "4", reps: "20", rest: "30s", difficulty: "Hard", animation: "/animations/burpees.json", description: "Metabolic conditioning." },
-        { id: 102, name: "Kettlebell Swings", sets: "4", reps: "20", rest: "45s", difficulty: "Medium", animation: "/animations/kb-swing.json", description: "Posterior chain power." },
-      ],
-    },
-    {
-      day: "Tue", focus: "HIIT Cardio", icon: "🔥", exercises: [
-        { id: 103, name: "Mountain Climbers", sets: "4", reps: "45s", rest: "15s", difficulty: "Medium", description: "Core and cardio burner." },
-        { id: 104, name: "Jump Squats", sets: "4", reps: "15", rest: "30s", difficulty: "Hard", description: "Lower body explosion." }
-      ]
-    },
-    {
-      day: "Wed", focus: "Active Recovery", icon: "🧘", exercises: [
-        { id: 105, name: "Yoga Stretches", sets: "1", reps: "15m", rest: "0", difficulty: "Easy", description: "Improve flexibility." }
-      ]
-    },
-    {
-      day: "Thu", focus: "Upper Body Burn", icon: "💪", exercises: [
-        { id: 106, name: "Push Ups", sets: "4", reps: "AMRAP", rest: "45s", difficulty: "Medium", description: "Chest and triceps endurance." },
-        { id: 107, name: "Plank Rows", sets: "3", reps: "12/side", rest: "45s", difficulty: "Medium", description: "Core and back isolation." }
-      ]
-    },
-    {
-      day: "Fri", focus: "Lower Body Blast", icon: "🦵", exercises: [
-        { id: 108, name: "Walking Lunges", sets: "3", reps: "20", rest: "60s", difficulty: "Medium", description: "Dynamic leg strength." },
-        { id: 109, name: "Glute Bridges", sets: "3", reps: "15", rest: "45s", difficulty: "Easy", description: "Posterior isolation." }
-      ]
-    },
-    {
-      day: "Sat", focus: "Long Run", icon: "🏃", exercises: [
-        { id: 110, name: "5K Run", sets: "1", reps: "30m", rest: "0", difficulty: "Medium", description: "Endurance builder." }
-      ]
-    },
-    { day: "Sun", focus: "Rest", icon: "🛌", exercises: [] },
-  ]
-};
 
 export default function Workout() {
   const navigate = useNavigate();
-  const synth = window.speechSynthesis;
-
-  // --- STATE ---
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  // Wizard State: 1 = Goal Selection, 2 = Plan Display
-  const [step, setStep] = useState(1);
-  const [selectedGoal, setSelectedGoal] = useState("");
-
-  // Plan State
+  // Data
+  const [weeklyPlan, setWeeklyPlan] = useState([]);
   const [selectedDayIndex, setSelectedDayIndex] = useState(0);
-  const [activeExercise, setActiveExercise] = useState(null);
-  const [greeting, setGreeting] = useState("");
+  const [aiExplanation, setAiExplanation] = useState("");
+  const [showExplanation, setShowExplanation] = useState(false);
+  const [showPlanSelector, setShowPlanSelector] = useState(false); // New Modal for switching plans
 
-  // --- EFFECTS ---
+  // Edit Mode
+  const [isEditing, setIsEditing] = useState(false);
+  const [editFocus, setEditFocus] = useState("");
+  const [selectedVideo, setSelectedVideo] = useState(null); // Video Modal State
+  const [videoUrlInput, setVideoUrlInput] = useState(""); // For editing video URL
+  const [isSavingVideo, setIsSavingVideo] = useState(false);
+
+
+  // Post-Workout Logic
+  const [activeExercise, setActiveExercise] = useState(null);
+  const [showFeedbackModal, setShowFeedbackModal] = useState(false);
+  const [feedbackData, setFeedbackData] = useState({ difficulty: "Medium", fatigue: 5, form: "Good" });
+
   useEffect(() => {
     const token = localStorage.getItem('access_token');
-    const status = !!token;
-    setIsLoggedIn(status);
-
-    // Initial Greeting & Dynamic Day
-    const now = new Date();
-    const hour = now.getHours();
-    const systemDay = now.getDay(); // 0: Sun, 1: Mon...
-    const dayIndex = (systemDay + 6) % 7; // Map so 0 is Mon, 6 is Sun
-
-    let timeGreet = "Hello";
-    if (hour < 12) timeGreet = "Good Morning";
-    else if (hour < 17) timeGreet = "Good Afternoon";
-    else timeGreet = "Good Evening";
-
-    setGreeting(`${timeGreet}, Champion! 🏋️`);
-    setSelectedDayIndex(dayIndex);
-
-    // Voice Intro if logged in
-    if (status && step === 1) {
-      speak(`${timeGreet}. Welcome to the Iron Temple. Today is ${WORKOUT_PLANS["Muscle Building"][dayIndex].day}. What is your training focus?`);
+    if (token) {
+      setIsLoggedIn(true);
+      fetchWorkoutPlan();
+    } else {
+      setLoading(false);
     }
   }, []);
 
-  // --- VOICE FUNCTION ---
-  const speak = (text) => {
-    fittyVoice.speak(text);
-  };
+  const fetchWorkoutPlan = async (force = false, goal = null) => {
+    try {
+      let url = "/api/accounts/workout/plan/";
+      const params = [];
+      if (force) params.push("force=true");
+      if (goal) params.push(`goal=${encodeURIComponent(goal)}`);
 
-  // --- HANDLERS ---
-  const handleProtectedAction = (actionCallback) => {
-    if (!isLoggedIn) {
-      setShowLoginPrompt(true);
-    } else {
-      actionCallback();
+      if (params.length > 0) url += "?" + params.join("&");
+
+      const res = await API.get(url);
+      setWeeklyPlan(res.data);
+      if (goal) { // Update local display if goal changed
+        localStorage.setItem('user_goal', goal);
+        setShowPlanSelector(false);
+        fittyVoice.speak(`Plan switched to ${goal}. Let's go.`);
+      } else if (force) {
+        fittyVoice.speak("Plan refreshed with latest data.");
+      }
+
+
+      // select today
+      const todayIndex = (new Date().getDay() + 6) % 7; // Mon=0
+      setSelectedDayIndex(todayIndex);
+
+      setLoading(false);
+    } catch (err) {
+      console.error("Failed to fetch plan", err);
+      setLoading(false);
     }
   };
 
-  const handleGoalSelect = (goal) => {
-    setSelectedGoal(goal);
-    // Motivational confirmation
-    let msg = "";
-    if (goal === "Muscle Building") msg = "Excellent choice. Let's build some serious mass. Moving to your weekly schedule.";
-    else if (goal === "Fat Loss") msg = "Time to shred. Intensity will be high. Loading your circuit plan.";
-
-    speak(msg);
-    setStep(2);
+  const fetchExplanation = async () => {
+    try {
+      setShowExplanation(true);
+      if (!aiExplanation) {
+        const res = await API.get("/api/accounts/workout/explain/");
+        setAiExplanation(res.data.explanation);
+      }
+    } catch (err) {
+      console.error("AI Explain Error", err);
+      setAiExplanation("AI is currently restocking whey protein. Try again later.");
+    }
   };
 
-  const handleStartWorkout = () => {
-    speak("Starting session. Redirecting to AI Posture Corrector. Stay focused.");
-    handleProtectedAction(() => {
-      navigate('/posture');
-    });
+  const handleSaveEdit = async () => {
+    try {
+      const day = weeklyPlan[selectedDayIndex];
+      const updatedPlan = [...weeklyPlan];
+      updatedPlan[selectedDayIndex].focus = editFocus;
+      setWeeklyPlan(updatedPlan);
+
+      await API.put("/api/accounts/workout/plan/", {
+        day_index: selectedDayIndex,
+        focus: editFocus
+      });
+
+      setIsEditing(false);
+      fittyVoice.speak("Plan updated.");
+    } catch (err) {
+      console.error("Update failed", err);
+    }
   };
 
-  const handleDayClick = (index) => {
-    handleProtectedAction(() => setSelectedDayIndex(index));
+  const handleStartSession = () => {
+    // Navigate to Posture Check with the first exercise of the day or user selection
+    const day = weeklyPlan[selectedDayIndex];
+    if (day && day.exercises.length > 0) {
+      // Just pick the first one for auto-setup or let user pick.
+      // The user asked for "Start Session" to go to posture.
+      navigate("/posture", {
+        state: {
+          workoutContext: day.focus,
+          exercises: day.exercises.map(e => e.name)
+        }
+      });
+      fittyVoice.speak("Starting session. Let's crush it.");
+    }
   };
 
-  // --- DERIVED DATA ---
-  const currentPlan = WORKOUT_PLANS[selectedGoal] || WORKOUT_PLANS["Muscle Building"];
-  const currentDay = currentPlan[selectedDayIndex];
+  const submitFeedback = async () => {
+    try {
+      await API.post("/api/accounts/workout/feedback/", {
+        day_index: selectedDayIndex,
+        ...feedbackData
+      });
+      setShowFeedbackModal(false);
+      fittyVoice.speak("Feedback received. adjusting your future training.");
+      // Optionally refetch plan to see immediate updates if logic allows
+      fetchWorkoutPlan();
+    } catch (err) {
+      console.error("Feedback failed", err);
+    }
+  };
+
+  const handleSaveVideoUrl = async () => {
+    if (!selectedVideo || !videoUrlInput.trim()) return;
+    setIsSavingVideo(true);
+    try {
+      const day = weeklyPlan[selectedDayIndex];
+      const updatedExercises = day.exercises.map(ex =>
+        ex.name === selectedVideo.name ? { ...ex, video_url: videoUrlInput } : ex
+      );
+
+      // Update local state
+      const updatedPlan = [...weeklyPlan];
+      updatedPlan[selectedDayIndex].exercises = updatedExercises;
+      setWeeklyPlan(updatedPlan);
+
+      // Update selected video to reflect change immediately in UI (if we were re-rendering from prop)
+      setSelectedVideo({ ...selectedVideo, video_url: videoUrlInput });
+
+      // Persist to backend
+      await API.put("/api/accounts/workout/plan/", {
+        day_index: selectedDayIndex,
+        exercises: updatedExercises
+      });
+
+      fittyVoice.speak("Video link saved.");
+    } catch (err) {
+      console.error("Failed to save video URL", err);
+      fittyVoice.speak("Could not save video link.");
+    } finally {
+      setIsSavingVideo(false);
+    }
+  };
+
+  // Effect to reset input when modal opens
+  useEffect(() => {
+    if (selectedVideo) {
+      setVideoUrlInput(selectedVideo.video_url || "");
+    }
+  }, [selectedVideo]);
+
+
+  if (loading) return <div className="loading-spinner">Loading your plan...</div>;
+
+  if (!isLoggedIn) {
+    return (
+      <div className="workout-container restricted">
+        <div className="login-gate">
+          <h1>Unlock Your Personal Plan</h1>
+          <p>Sign in to get AI-generated workouts tailored to your goal.</p>
+          <button onClick={() => navigate('/auth?tab=login')}>Login Now</button>
+        </div>
+      </div>
+    );
+  }
+
+  const currentDay = weeklyPlan[selectedDayIndex];
 
   return (
-    <div className={`workout-container ${!isLoggedIn ? 'restricted-mode' : ''}`}>
-
-      {/* 1. GREETING BOX (Visible only in Step 2 or if logged in) */}
-      {isLoggedIn && (
-        <div className="greeting-box animate-fade-in">
-          <h2>{greeting}</h2>
-          <p className="motivational-text">
-            {selectedGoal ? `Focus: ${selectedGoal}` : "Ready to dominate?"}
+    <div className="workout-container">
+      {/* HEADER */}
+      <header className="page-header">
+        <div>
+          <h1 className="gradient-text">Weekly Schedule</h1>
+          <p className="subtitle" onClick={() => setShowPlanSelector(true)} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            Goal: <span className="highlight-goal">{localStorage.getItem('user_goal') || 'Fitness'}</span>
+            <Edit2 size={14} />
           </p>
         </div>
-      )}
-
-      {/* --- WIZARD: STEP 1 (GOAL SELECTION) --- */}
-      {step === 1 && (
-        <div className="wizard-step animate-slide-up">
-          <h1 className="step-title">Choose Your Battlefield ⚔️</h1>
-          <div className="goal-options-large">
-            {Object.keys(WORKOUT_PLANS).map(goal => (
-              <button
-                key={goal}
-                className="big-option-btn card-glass"
-                onClick={() => handleProtectedAction(() => handleGoalSelect(goal))}
-              >
-                <span className="goal-icon-large">{goal === "Muscle Building" ? "💪" : "🔥"}</span>
-                {goal}
-              </button>
-            ))}
-          </div>
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <button className="ai-insight-btn" onClick={() => fetchWorkoutPlan(true)}>
+            <RefreshCw size={18} /> Refresh
+          </button>
+          <button className="ai-insight-btn" onClick={fetchExplanation}>
+            <Zap size={18} fill="currentColor" /> Why this workout?
+          </button>
         </div>
-      )}
+      </header>
 
-      {/* --- WIZARD: STEP 2 (WEEKLY PLAN) --- */}
-      {step === 2 && (
-        <div className="plan-dashboard animate-slide-up">
+      {/* DAYS STRIP */}
+      <div className="days-strip">
+        {weeklyPlan.map((day, idx) => (
+          <motion.div
+            key={idx}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className={`date-card ${idx === selectedDayIndex ? 'active' : ''}`}
+            onClick={() => setSelectedDayIndex(idx)}
+          >
+            <span className="day-name">{day.day_name.substring(0, 3)}</span>
+            {idx === selectedDayIndex && <motion.div layoutId="active-pill" className="active-pill" />}
+          </motion.div>
+        ))}
+      </div>
 
-          <div className="plan-header-actions">
-            <button className="back-btn-small" onClick={() => setStep(1)}>← Change Goal</button>
-          </div>
-
-          {/* WEEKLY GRID (Horizontal Scroll) */}
-          <div className="weekly-grid">
-            {currentPlan.map((dayData, index) => (
-              <div
-                key={dayData.day}
-                className={`day-card ${index === selectedDayIndex ? 'active' : ''}`}
-                onClick={() => handleDayClick(index)}
-              >
-                <div className="day-icon">{dayData.icon}</div>
-                <div className="day-info">
-                  <h3>{dayData.day}</h3>
-                  <span>{dayData.focus}</span>
-                </div>
-                {!isLoggedIn && <div className="lock-icon">🔒</div>}
-              </div>
-            ))}
-          </div>
-
-          {/* ACTIVE DAY EXERCISES */}
-          <div className="exercise-section card-glass">
-            <div className="section-title">
-              <div className="title-left">
-                <h2>{currentDay.day} — {currentDay.focus}</h2>
-                <span className="exercise-count">{currentDay.exercises.length} Exercises</span>
-              </div>
-              <button className="start-workout-btn pulse-glow" onClick={handleStartWorkout}>
-                Start Session 🚀
-              </button>
-            </div>
-
-            {currentDay.exercises.length > 0 ? (
-              <div className="exercise-list">
-                {currentDay.exercises.map((exercise) => (
-                  <div
-                    key={exercise.id}
-                    className="exercise-item"
-                    onClick={() => handleProtectedAction(() => setActiveExercise(exercise))}
-                  >
-                    <div className="ex-content">
-                      <h4 className="ex-name">{exercise.name}</h4>
-                      <div className="ex-meta">
-                        <span className="tag sets">{exercise.sets} Sets</span>
-                        <span className="tag reps">{exercise.reps} Reps</span>
-                        <span className="tag difficulty">{exercise.difficulty}</span>
-                      </div>
-                    </div>
-                    <div className="ex-arrow">ℹ️</div>
-                  </div>
-                ))}
+      {/* ACTIVE DAY VIEW */}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={selectedDayIndex}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          className="day-detail-card"
+        >
+          <div className="day-header">
+            {isEditing ? (
+              <div className="edit-box">
+                <input
+                  value={editFocus}
+                  onChange={(e) => setEditFocus(e.target.value)}
+                  placeholder="Enter focus..."
+                />
+                <button onClick={handleSaveEdit} className="save-icon"><Save size={20} /></button>
               </div>
             ) : (
-              <div className="empty-state">
-                <p>Rest & Recovery. Stretch, Hydrate, Repeat. 🧘</p>
+              <div className="focus-row">
+                <h2>{currentDay?.focus}</h2>
+                <button onClick={() => { setEditFocus(currentDay.focus); setIsEditing(true); }} className="edit-icon">
+                  <Edit2 size={16} />
+                </button>
+              </div>
+            )}
+
+            <div className="day-actions">
+              <button className="start-btn pulse" onClick={handleStartSession}>
+                Start Session <Play size={20} fill="currentColor" />
+              </button>
+              <button className="feedback-btn-text" onClick={() => setShowFeedbackModal(true)}>
+                Log Past Session
+              </button>
+            </div>
+          </div>
+
+          {/* EXERCISES */}
+          <div className="exercises-list">
+            {currentDay?.exercises?.length > 0 ? (
+              currentDay.exercises.map((ex, i) => (
+                <div key={i} className="exercise-row">
+                  <div className="ex-icon"><Dumbbell /></div>
+                  <div className="ex-info">
+                    <h3>{ex.name}</h3>
+                    <p>{ex.description}</p>
+                    {/* Video Button */}
+                    <button className="video-trigger" onClick={(e) => { e.stopPropagation(); setSelectedVideo(ex); }}>
+                      <PlayCircle size={14} /> Watch Demo
+                    </button>
+                    {ex.adaptive_note && <span className="adaptive-badge">{ex.adaptive_note}</span>}
+                  </div>
+                  <div className="ex-stats">
+                    <span className="stat-pill">{ex.sets} Sets</span>
+                    <span className="stat-pill">{ex.reps} Reps</span>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="rest-day-state">
+                <Activity size={48} />
+                <h3>Rest & Recovery</h3>
+                <p>Take it easy today. Mobility work is optional.</p>
               </div>
             )}
           </div>
+        </motion.div>
+      </AnimatePresence>
 
-        </div>
-      )}
+      {/* AI EXPLANATION MODAL */}
+      <AnimatePresence>
+        {showExplanation && (
+          <motion.div className="modal-overlay" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowExplanation(false)}>
+            <motion.div className="modal-card ai-card" onClick={e => e.stopPropagation()}>
+              <div className="ai-header">
+                <Zap size={24} color="#FFD700" />
+                <h3>Coach's Insight</h3>
+              </div>
+              <div className="ai-body">
+                {aiExplanation ? (
+                  <p>{aiExplanation}</p>
+                ) : (
+                  <div className="typing-indicator"><span>.</span><span>.</span><span>.</span></div>
+                )}
+              </div>
+              <button onClick={() => setShowExplanation(false)}>Got it!</button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      {/* LOGIN PROMPT (Glass Overlay) */}
-      {!isLoggedIn && (
-        <div className="login-overlay-glass">
-          <div className="login-modal-glass">
-            <span className="lock-emoji">🔒</span>
-            <h2>Unlock Pro Workouts</h2>
-            <p>Sign in to access elite training schedules and AI posture correction.</p>
-            <button className="login-btn-glass" onClick={() => navigate('/auth?tab=login')}>Login Now</button>
-          </div>
-        </div>
-      )}
+      {/* FEEDBACK MODAL */}
+      <AnimatePresence>
+        {showFeedbackModal && (
+          <motion.div className="modal-overlay" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+            <div className="modal-card feedback-card">
+              <h3>Session Feedback</h3>
 
-      {/* EXERCISE MODAL */}
-      {activeExercise && (
-        <div className="modal-overlay" onClick={() => setActiveExercise(null)}>
-          <div className="modal-content glass-modal" onClick={(e) => e.stopPropagation()}>
-            <button className="close-btn" onClick={() => setActiveExercise(null)}>&times;</button>
-            <div className="modal-header">
-              <h3>{activeExercise.name}</h3>
-              <span className={`difficulty-badge ${activeExercise.difficulty.toLowerCase()}`}>
-                {activeExercise.difficulty}
-              </span>
+              <div className="fb-section">
+                <label>Difficulty</label>
+                <div className="segment-control">
+                  {['Easy', 'Medium', 'Hard'].map(opt => (
+                    <button
+                      key={opt}
+                      className={feedbackData.difficulty === opt ? 'active' : ''}
+                      onClick={() => setFeedbackData({ ...feedbackData, difficulty: opt })}
+                    >{opt}</button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="fb-section">
+                <label>Fatigue (1-10)</label>
+                <input
+                  type="range" min="1" max="10"
+                  value={feedbackData.fatigue}
+                  onChange={(e) => setFeedbackData({ ...feedbackData, fatigue: parseInt(e.target.value) })}
+                />
+                <span className="value-display">{feedbackData.fatigue}</span>
+              </div>
+
+              <div className="fb-section">
+                <label>Form Quality</label>
+                <select
+                  value={feedbackData.form}
+                  onChange={(e) => setFeedbackData({ ...feedbackData, form: e.target.value })}
+                >
+                  <option>Good</option>
+                  <option>Needs Improvement</option>
+                  <option>Poor</option>
+                </select>
+              </div>
+
+              <div className="fb-actions">
+                <button className="cancel" onClick={() => setShowFeedbackModal(false)}>Cancel</button>
+                <button className="submit" onClick={submitFeedback}>Submit & Adapt</button>
+              </div>
             </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-            <div className="modal-body">
-              {/* Animation Placeholder */}
-              <div className="animation-placeholder">
-                <div className="pulse-circle"></div>
-                <span>Anim: {activeExercise.animation ? "Ready" : "N/A"}</span>
+      {/* VIDEO PLAYER MODAL */}
+      <AnimatePresence>
+        {selectedVideo && (
+          <motion.div className="modal-overlay" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setSelectedVideo(null)}>
+            <motion.div className="modal-card video-card" onClick={e => e.stopPropagation()}>
+              <div className="modal-header">
+                <h3>{selectedVideo.name}</h3>
+                <button className="close-btn" onClick={() => setSelectedVideo(null)}>
+                  <X size={24} />
+                </button>
               </div>
+              <div className="video-frame">
+                {selectedVideo.video_url ? (
+                  <div className="video-contain-wrapper">
+                    <div className="video-wrapper">
+                      <video controls autoPlay src={selectedVideo.video_url}>
+                        Your browser does not support the video tag.
+                      </video>
+                      <div className="video-overlay-controls">
+                        <button
+                          className="ai-coach-btn-top"
+                          onClick={() => {
+                            const normalizedId = normalizeExerciseId(selectedVideo.name);
+                            navigate("/posture", {
+                              state: {
+                                exercises: [selectedVideo.name],
+                                exerciseId: normalizedId
+                              }
+                            });
+                          }}
+                        >
+                          <Zap size={14} fill="currentColor" /> AI Coach
+                        </button>
 
-              <div className="detail-grid">
-                <div className="detail-item">
-                  <label>Sets</label> <strong>{activeExercise.sets}</strong>
-                </div>
-                <div className="detail-item">
-                  <label>Reps</label> <strong>{activeExercise.reps}</strong>
-                </div>
-                <div className="detail-item">
-                  <label>Rest</label> <strong>{activeExercise.rest}</strong>
-                </div>
-              </div>
+                        <button
+                          className="change-video-btn-top"
+                          onClick={() => {
+                            setVideoUrlInput(selectedVideo.video_url);
+                            setSelectedVideo({ ...selectedVideo, video_url: "" });
+                          }}
+                        >
+                          <Edit2 size={14} /> Change Video
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="empty-video-state">
+                    <Dumbbell size={48} className="bounce" />
+                    <p>No video uploaded yet.</p>
 
-              <div className="description-box">
-                <h4>Technique Focus</h4>
-                <p>{activeExercise.description}</p>
+                    <div className="video-input-group">
+                      <input
+                        type="text"
+                        placeholder="Paste your .mp4 or video link here..."
+                        value={videoUrlInput}
+                        onChange={(e) => setVideoUrlInput(e.target.value)}
+                        className="video-url-input"
+                      />
+                      <button onClick={handleSaveVideoUrl} disabled={isSavingVideo} className="save-video-btn">
+                        {isSavingVideo ? "Saving..." : "Save Video Link"}
+                      </button>
+                    </div>
+                    <button
+                      className="ai-form-check-btn"
+                      style={{ marginTop: '15px' }}
+                      onClick={() => {
+                        const normalizedId = normalizeExerciseId(selectedVideo.name);
+                        navigate("/posture", {
+                          state: {
+                            exercises: [selectedVideo.name],
+                            exerciseId: normalizedId
+                          }
+                        });
+                      }}
+                    >
+                      <Zap size={16} fill="white" /> Check Form in AI
+                    </button>
+                  </div>
+                )}
               </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* PLAN SELECTOR MODAL */}
+      <AnimatePresence>
+        {showPlanSelector && (
+          <motion.div className="modal-overlay" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowPlanSelector(false)}>
+            <div className="modal-card" onClick={e => e.stopPropagation()}>
+              <h3>Switch Training Goal</h3>
+              <div className="grid-options">
+                {['Muscle Building', 'Weight Loss', 'Flexibility & Mobility', 'Endurance Building'].map(g => (
+                  <button key={g} className="goal-switch-btn" onClick={() => fetchWorkoutPlan(true, g)}>
+                    {g}
+                  </button>
+                ))}
+              </div>
+              <button className="close-simple" onClick={() => setShowPlanSelector(false)}>Cancel</button>
             </div>
-          </div>
-        </div>
-      )}
-
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
