@@ -11,7 +11,9 @@ import {
     Dumbbell,
     Utensils
 } from 'lucide-react';
+import axios from 'axios';
 import StatsChart from './components/StatsChart';
+import TodaysPlan from './TodaysPlan';
 import './UserDashboard.css';
 
 const UserDashboard = () => {

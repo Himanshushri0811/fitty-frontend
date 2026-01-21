@@ -74,6 +74,27 @@
     padding: 2px 8px;
     border-radius: 4px;
     color: var(--d-text-gray);
+    white-space: nowrap;
+}
+
+.budget-low {
+    color: #81C784;
+    border: 1px solid #81C78444;
+}
+
+.budget-high {
+    color: #FFD54F;
+    border: 1px solid #FFD54F44;
+}
+
+.smart-tip-badge {
+    font-size: 0.7rem;
+    background: rgba(0, 160, 255, 0.1);
+    color: #4fc3f7;
+    padding: 2px 8px;
+    border-radius: 4px;
+    border: 1px solid #4fc3f744;
+    cursor: help;
 }
 
 /* Macros visual cues */
