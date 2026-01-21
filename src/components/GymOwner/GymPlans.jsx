@@ -24,7 +24,7 @@ const GymPlans = () => {
 
         try {
             // 1. Create Order
-            const orderRes = await API.post('/api/gym/payment/create-order/', {
+            const orderRes = await API.post('/api/subscriptions/order/create/', {
                 amount: amount * 100, // Convert to paise
                 plan: plan
             });
@@ -42,7 +42,7 @@ const GymPlans = () => {
                 handler: async (response) => {
                     try {
                         // 3. Verify Payment
-                        await API.post('/api/gym/payment/verify/', response);
+                        await API.post('/api/subscriptions/verify/', response);
                         alert(`🎉 Successfully upgraded to ${plan} Plan!`);
                         navigate('/gym-dashboard'); // Redirect to dashboard
                         window.location.reload(); // Reload to refresh auth state/features

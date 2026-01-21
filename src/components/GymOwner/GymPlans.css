@@ -18,7 +18,7 @@
     transform: translateY(-50%);
     background: var(--bg-card);
     border: 1px solid var(--border-color);
-    color: var(--text-muted);
+    color: var(--text-secondary);
     padding: 8px 16px;
     border-radius: 8px;
     cursor: pointer;
@@ -31,7 +31,7 @@
 
 .back-btn:hover {
     background: var(--bg-secondary);
-    color: var(--text-main);
+    color: var(--primary);
     border-color: var(--primary);
 }
 
@@ -55,7 +55,6 @@
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 2rem;
     max-width: 1000px;
-    /* Reduced max-width since we only have 2 cards now mainly */
     margin: 0 auto;
 }
 
@@ -84,6 +83,11 @@
 .plan-card:hover {
     transform: translateY(-5px);
     box-shadow: var(--shadow-lg);
+}
+
+.plan-card.current-plan {
+    border-color: var(--success);
+    box-shadow: 0 0 15px rgba(16, 185, 129, 0.2);
 }
 
 .badge {
@@ -132,10 +136,11 @@
     text-transform: uppercase;
     letter-spacing: 1px;
     font-weight: 700;
+    color: var(--primary);
 }
 
-.plan-card.featured .subtitle {
-    color: var(--primary);
+.highlight-text {
+    color: var(--warning);
 }
 
 .features-list {
@@ -174,7 +179,7 @@
 }
 
 .icon.gold {
-    color: #f59e0b;
+    color: var(--warning);
 }
 
 .plan-btn {
@@ -199,6 +204,18 @@
     transform: translateY(-2px);
 }
 
+.plan-btn.secondary {
+    background: var(--warning);
+    color: white;
+    /* Use a solid color or a different gradient if preferred */
+    background: linear-gradient(90deg, #f1c40f 0%, #f39c12 100%);
+}
+
+.plan-btn.secondary:hover {
+    box-shadow: 0 6px 20px rgba(241, 196, 15, 0.3);
+    transform: translateY(-2px);
+}
+
 .plan-btn.disabled {
     background: var(--bg-card);
     border: 1px solid var(--border-color);
@@ -217,222 +234,8 @@
         display: inline-flex;
         margin-bottom: 1rem;
     }
-}
 
-
-.plans-header {
-    text-align: center;
-    margin-bottom: 3rem;
-    position: relative;
-}
-
-.back-btn {
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    background: transparent;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: #ccc;
-    padding: 8px 16px;
-    border-radius: 8px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    transition: all 0.3s ease;
-}
-
-.back-btn:hover {
-    background: rgba(255, 255, 255, 0.1);
-    color: #fff;
-}
-
-.plans-header h1 {
-    font-size: 2.5rem;
-    font-weight: 700;
-    background: linear-gradient(to right, #4facfe 0%, #00f2fe 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    margin-bottom: 0.5rem;
-}
-
-.plans-header p {
-    color: #a0a0a0;
-    font-size: 1.1rem;
-}
-
-.plans-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 2rem;
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-.plan-card {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 20px;
-    padding: 2rem;
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    overflow: hidden;
-}
-
-.plan-card.featured {
-    background: rgba(255, 255, 255, 0.08);
-    /* Slightly lighter */
-    border: 1px solid rgba(79, 172, 254, 0.5);
-    /* Blue border */
-    transform: scale(1.02);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-}
-
-.plan-card.current-plan {
-    border-color: #2ecc71;
-}
-
-.badge {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    background: rgba(46, 204, 113, 0.2);
-    color: #2ecc71;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    border: 1px solid #2ecc71;
-}
-
-.card-header {
-    text-align: center;
-    margin-bottom: 2rem;
-    padding-bottom: 2rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.card-header h2 {
-    font-size: 1.5rem;
-    margin-bottom: 0.5rem;
-    color: #fff;
-}
-
-.card-header .price {
-    font-size: 2.5rem;
-    font-weight: 700;
-    color: #fff;
-}
-
-.card-header .price span {
-    font-size: 1rem;
-    color: #aaa;
-    font-weight: 400;
-}
-
-.subtitle {
-    display: block;
-    margin-top: 0.5rem;
-    font-size: 0.9rem;
-    color: #4facfe;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.highlight-text {
-    color: #f1c40f;
-    /* Gold for Pro */
-}
-
-.features-list {
-    list-style: none;
-    padding: 0;
-    margin-bottom: 2rem;
-    flex-grow: 1;
-}
-
-.features-list li {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 1rem;
-    color: #e0e0e0;
-    font-size: 0.95rem;
-}
-
-.features-list li.dimmed {
-    color: #666;
-}
-
-.icon {
-    font-size: 1.2rem;
-    min-width: 24px;
-}
-
-.icon.success {
-    color: #2ecc71;
-}
-
-.icon.lock {
-    color: #555;
-}
-
-.icon.gold {
-    color: #f1c40f;
-}
-
-.plan-btn {
-    width: 100%;
-    padding: 1rem;
-    border-radius: 12px;
-    font-weight: 600;
-    font-size: 1rem;
-    cursor: pointer;
-    border: none;
-    transition: all 0.3s ease;
-}
-
-.plan-btn.primary {
-    background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
-    color: #fff;
-    box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
-}
-
-.plan-btn.primary:hover {
-    box-shadow: 0 6px 20px rgba(79, 172, 254, 0.5);
-    transform: translateY(-2px);
-}
-
-.plan-btn.secondary {
-    background: linear-gradient(90deg, #f1c40f 0%, #f39c12 100%);
-    color: #fff;
-}
-
-.plan-btn.secondary:hover {
-    box-shadow: 0 6px 20px rgba(241, 196, 15, 0.3);
-    transform: translateY(-2px);
-}
-
-.plan-btn.disabled {
-    background: rgba(255, 255, 255, 0.1);
-    color: #888;
-    cursor: not-allowed;
-}
-
-@media (max-width: 768px) {
-    .plans-header h1 {
-        font-size: 2rem;
-    }
-
-    .back-btn {
-        position: relative;
-        transform: none;
-        display: inline-flex;
-        margin-bottom: 1rem;
+    .plans-grid {
+        grid-template-columns: 1fr;
     }
 }

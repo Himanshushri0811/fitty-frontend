@@ -10,7 +10,7 @@ import {
 import API from '../axiosConfig';
 import './GymDashboard.css';
 
-const FREE_MEMBER_LIMIT = 5;
+const FREE_MEMBER_LIMIT = 50;
 
 const GymDashboard = () => {
     const navigate = useNavigate();
@@ -49,6 +49,22 @@ const GymDashboard = () => {
         navigate('/gym-plans');
     };
 
+    const handleLogout = () => {
+        // Assuming useAuth provides logout
+        // But we need to access context or pass it. 
+        // Simplest: redirect to logout route or clear storage.
+        // Actually, we can assume wrapper handles it or use navigate('/logout') if exists.
+        // Better: We must import useAuth hook here if not present.
+        // Looking at imports, useAuth is NOT imported in GymDashboard.jsx but it is in Navbar.jsx?
+        // Wait, step 232 showed strict imports. NO useAuth in GymDashboard.jsx.
+        // We should add it or just clear token manually. 
+        // Let's rely on window.location.reload for now or navigate to a logout route.
+        // Actually, let's just create a quick cleaner logout here.
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = '/';
+    };
+
     if (loading) return <div className="gym-loading">Loading Dashboard...</div>;
 
     const isPremium = paymentStatus;
@@ -78,6 +94,9 @@ const GymDashboard = () => {
                     </button>
                     <button className={activeTab === 'profile' ? 'active' : ''} onClick={() => setActiveTab('profile')}>
                         <MdSettings /> Profile
+                    </button>
+                    <button className="logout-btn" onClick={handleLogout} style={{ marginTop: 'auto', color: '#ef4444' }}>
+                        <MdDelete /> Logout
                     </button>
                 </nav>
 
@@ -137,7 +156,7 @@ const GymDashboard = () => {
                             onUpgrade={handleUpgradeClick}
                         />
                     )}
-                    {activeTab === 'profile' && <ProfileTab gymName={gymName} />}
+                    {activeTab === 'profile' && <ProfileTab gymName={gymName} planType={planType} isPremium={isPremium} />}
                 </div>
             </div>
         </div>
@@ -242,7 +261,7 @@ const OverviewTab = ({ stats, isPremium, onUpgrade }) => (
 
 const AddMemberTab = ({ onMemberAdded, isPremium, memberCount, onUpgrade }) => {
     const [formData, setFormData] = useState({
-        name: '', mobile: '', join_date: '', fees_status: 'PENDING', fees_due_date: ''
+        name: '', mobile: '', join_date: '', fees_status: 'PENDING', fees_due_date: '', gender: 'Male'
     });
     const [submitting, setSubmitting] = useState(false);
 
@@ -255,7 +274,7 @@ const AddMemberTab = ({ onMemberAdded, isPremium, memberCount, onUpgrade }) => {
         try {
             await API.post('/api/gym/members/', formData);
             alert("Member added successfully!");
-            setFormData({ name: '', mobile: '', join_date: '', fees_status: 'PENDING', fees_due_date: '' });
+            setFormData({ name: '', mobile: '', join_date: '', fees_status: 'PENDING', fees_due_date: '', gender: 'Male' });
             onMemberAdded();
         } catch (err) {
             alert("Error adding member.");
@@ -314,12 +333,22 @@ const AddMemberTab = ({ onMemberAdded, isPremium, memberCount, onUpgrade }) => {
                         <input type="date" value={formData.fees_due_date} onChange={e => setFormData({ ...formData, fees_due_date: e.target.value })} required />
                     </div>
                 </div>
-                <div className="input-group">
-                    <label>Initial Fees Status</label>
-                    <select value={formData.fees_status} onChange={e => setFormData({ ...formData, fees_status: e.target.value })}>
-                        <option value="PENDING">Pending</option>
-                        <option value="PAID">Paid</option>
-                    </select>
+                <div className="form-row">
+                    <div className="input-group">
+                        <label>Initial Fees Status</label>
+                        <select value={formData.fees_status} onChange={e => setFormData({ ...formData, fees_status: e.target.value })}>
+                            <option value="PENDING">Pending</option>
+                            <option value="PAID">Paid</option>
+                        </select>
+                    </div>
+                    <div className="input-group">
+                        <label>Gender</label>
+                        <select value={formData.gender} onChange={e => setFormData({ ...formData, gender: e.target.value })}>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
                 </div>
                 <button type="submit" className="form-submit" disabled={submitting}>
                     {submitting ? 'Adding...' : 'Add Member'}
@@ -366,13 +395,13 @@ const MembersTable = ({ members, onDeleteRefresh, isPremium }) => {
                     </thead>
                     <tbody>
                         {members.map(m => (
-                            <tr key={m.id}>
+                            <tr key={m.id} style={{ position: 'relative' }}>
                                 <td>{m.name}</td>
                                 <td>{m.mobile}</td>
                                 <td>{m.join_date}</td>
                                 <td>
-                                    <span className={`status-badge ${m.fees_status.toLowerCase()}`}>
-                                        {m.fees_status}
+                                    <span className={`status-badge ${m.fees_status?.toLowerCase() || 'pending'}`}>
+                                        {m.fees_status || 'PENDING'}
                                     </span>
                                 </td>
                                 <td>{m.fees_due_date}</td>
@@ -421,7 +450,7 @@ const FeesTab = ({ members, isPremium, onUpgrade }) => {
                             <h4 style={{ marginBottom: '5px' }}>{m.name}</h4>
                             <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Due: {m.fees_due_date}</p>
                         </div>
-                        <span className={`status-badge ${m.fees_status.toLowerCase()}`}>{m.fees_status}</span>
+                        <span className={`status-badge ${m.fees_status?.toLowerCase() || 'pending'}`}>{m.fees_status || 'PENDING'}</span>
                     </div>
                 ))}
             </div>
@@ -439,7 +468,7 @@ const FeesTab = ({ members, isPremium, onUpgrade }) => {
     );
 };
 
-const ProfileTab = ({ gymName }) => (
+const ProfileTab = ({ gymName, planType, isPremium }) => (
     <div className="gym-profile-tab animate-fade-in">
         <header className="page-header">
             <h1>Gym Profile</h1>
@@ -450,9 +479,24 @@ const ProfileTab = ({ gymName }) => (
                 <span style={{ color: 'var(--text-muted)' }}>Gym Name</span>
                 <span style={{ fontWeight: '600' }}>{gymName}</span>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 0' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid var(--border-color)' }}>
                 <span style={{ color: 'var(--text-muted)' }}>Status</span>
                 <span style={{ color: 'var(--primary)', fontWeight: 'bold' }}>Active</span>
+            </div>
+            {/* Added: Plan Details for Gym Owner */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 0' }}>
+                <span style={{ color: 'var(--text-muted)' }}>Current Plan</span>
+                <div style={{ textAlign: 'right' }}>
+                    <span style={{
+                        fontWeight: '800',
+                        color: isPremium ? 'var(--success)' : 'var(--warning)',
+                        textTransform: 'uppercase',
+                        letterSpacing: '1px'
+                    }}>
+                        {planType || 'FREE'}
+                    </span>
+                    {!isPremium && <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>Upgrade to Pro for more features.</p>}
+                </div>
             </div>
         </div>
     </div>

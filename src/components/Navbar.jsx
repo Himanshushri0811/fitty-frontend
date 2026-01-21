@@ -70,7 +70,7 @@ const Navbar = () => {
 
   useEffect(() => {
     // Gym Owner Notification Logic
-    if (isLoggedIn && userData?.profile?.role === 'GYM_OWNER') {
+    if (isLoggedIn && userData?.role === 'GYM_OWNER') {
       const fetchGymNotifs = async () => {
         try {
           const membersRes = await API.get('/api/gym/members/');
@@ -166,7 +166,7 @@ const Navbar = () => {
       ];
     }
 
-    if (userData?.profile?.role === 'GYM_OWNER') {
+    if (userData?.role === 'GYM_OWNER') {
       return [
         { path: '/gym-dashboard', label: 'Dashboard', icon: <RiDashboardFill /> },
         { path: '/profile', label: 'Profile', icon: <FaUser /> },
@@ -193,12 +193,12 @@ const Navbar = () => {
       { path: '/settings', label: 'Settings', icon: <FaCog /> },
     ];
 
-    if (userData?.profile?.role === 'USER') {
+    if (userData?.role === 'USER') {
       baseItems.unshift(
         { path: '/dashboard', label: 'Dashboard', icon: <RiDashboardFill /> },
         { path: '/messages', label: 'Messages', icon: <MdContactMail /> }
       );
-    } else if (userData?.profile?.role === 'GYM_OWNER') {
+    } else if (userData?.role === 'GYM_OWNER') {
       baseItems.unshift({ path: '/gym-dashboard', label: 'Dashboard', icon: <RiDashboardFill /> });
     }
 
@@ -229,13 +229,20 @@ const Navbar = () => {
       >
         <div className="nav-container">
           {/* Brand Logo */}
-          <Link to={isLoggedIn ? (userData?.profile?.role === 'GYM_OWNER' ? '/gym-dashboard' : '/dashboard') : '/'} className="brand-link">
+          {/* Brand Logo or Gym Name */}
+          <Link to={isLoggedIn ? (userData?.role === 'GYM_OWNER' ? '/gym-dashboard' : '/dashboard') : '/'} className="brand-link">
             <motion.div
-              className="brand-logo"
+              className={userData?.role === 'GYM_OWNER' ? "gym-brand-name" : "brand-logo"}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              <img src="/fittyIcon.png" alt="FitMitra Logo" className="logo-image" />
+              {isLoggedIn && userData?.role === 'GYM_OWNER' ? (
+                <h2 style={{ color: 'var(--primary)', margin: 0, fontSize: '1.5rem', fontWeight: '800' }}>
+                  {userData?.gym_name || userData?.name || "Your Gym"}
+                </h2>
+              ) : (
+                <img src="/fittyIcon.png" alt="FitMitra Logo" className="logo-image" />
+              )}
             </motion.div>
           </Link>
 
@@ -304,7 +311,7 @@ const Navbar = () => {
             </motion.button>
 
             {/* Gym Owner Upgrade Button */}
-            {isLoggedIn && userData?.profile?.role === 'GYM_OWNER' && !isPremiumUser && (
+            {isLoggedIn && userData?.role === 'GYM_OWNER' && !isPremiumUser && (
               <motion.button
                 className="upgrade-btn-nav"
                 onClick={() => navigate('/gym-plans')}
@@ -362,7 +369,8 @@ const Navbar = () => {
             )}
 
             {/* User Section (Logged In) */}
-            {isLoggedIn ? (
+            {/* User Section (Logged In) - Hidden for Gym Owners as per request */}
+            {isLoggedIn && userData?.role !== 'GYM_OWNER' ? (
               <div className="user-section" ref={dropdownRef}>
                 <motion.div
                   className="user-profile-trigger"
@@ -413,10 +421,9 @@ const Navbar = () => {
                 </AnimatePresence>
               </div>
             ) : (
-              // Only show this on desktop; mobile has its own menu
-              <div className="desktop-auth-buttons">
-                {/* Auth buttons are in nav-links now */}
-              </div>
+              // For Gym Owners or Non-Logged In (handled by auth check above)
+              // If Gym Owner, we show nothing here (or maybe just Logout if needed, but sidebar has it now)
+              null
             )}
 
             {/* Mobile Toggle */}
