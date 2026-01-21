@@ -1,0 +1,205 @@
+.water-floating-icon {
+    position: fixed;
+    bottom: 25px;
+    left: 25px;
+    /* Moved to left to avoid overlapping with Chatbot */
+    width: 65px;
+    height: 65px;
+    background: linear-gradient(135deg, #00C6FB 0%, #005BEA 100%);
+    border-radius: 50%;
+    box-shadow: 0 4px 15px rgba(0, 198, 251, 0.4);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    z-index: 1000;
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    color: white;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.water-floating-icon:hover {
+    transform: scale(1.1);
+}
+
+.water-floating-icon:active {
+    transform: scale(0.95);
+}
+
+.water-icon-emoji {
+    font-size: 24px;
+    line-height: 1;
+    margin-bottom: 2px;
+}
+
+.water-count-badge {
+    font-size: 11px;
+    font-weight: 700;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 2px 6px;
+    border-radius: 10px;
+}
+
+/* Modal Overlay */
+.water-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(5px);
+    z-index: 1001;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.3s ease;
+}
+
+.water-modal-content {
+    background: rgba(255, 255, 255, 0.95);
+    width: 90%;
+    max-width: 350px;
+    border-radius: 20px;
+    padding: 25px;
+    text-align: center;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    position: relative;
+    animation: slideUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.dark-mode .water-modal-content {
+    background: rgba(30, 30, 30, 0.95);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.water-modal-close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: #888;
+    transition: color 0.2s;
+}
+
+.water-modal-close:hover {
+    color: #333;
+}
+
+.water-modal-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 5px;
+    color: #005BEA;
+}
+
+.water-progress-circle {
+    width: 120px;
+    height: 120px;
+    margin: 20px auto;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    background: conic-gradient(#00C6FB var(--progress), #e0e0e0 0deg);
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.water-progress-inner {
+    width: 100px;
+    height: 100px;
+    background: #fff;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.dark-mode .water-progress-inner {
+    background: #2a2a2a;
+}
+
+.water-stats-large {
+    font-size: 24px;
+    font-weight: 800;
+    color: #333;
+}
+
+.dark-mode .water-stats-large {
+    color: #fff;
+}
+
+.water-stats-unit {
+    font-size: 12px;
+    color: #777;
+}
+
+.water-add-btn {
+    background: linear-gradient(135deg, #00C6FB 0%, #005BEA 100%);
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 30px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 5px 20px rgba(0, 198, 251, 0.3);
+    transition: all 0.3s ease;
+    width: 100%;
+    margin-top: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.water-add-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 198, 251, 0.4);
+}
+
+.water-add-btn:active {
+    transform: translateY(1px);
+}
+
+.praise-message {
+    margin-top: 15px;
+    font-size: 14px;
+    color: #00C6FB;
+    font-weight: 600;
+    min-height: 20px;
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(50px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Reminder notification style - could be toast, but here keeping simple */

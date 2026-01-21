@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -11,7 +11,9 @@ import './App.css';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Chatbot from './components/common/Chatbot/Chatbot';
+import WaterIntake from './components/WaterIntake/WaterIntake';
 import { AuthProvider } from './context/AuthContext';
+
 import { PublicRoute, ProtectedRoute, GymOwnerRoute, AdminRoute } from './components/RouteGuards';
 
 /* =======================
@@ -19,7 +21,8 @@ import { PublicRoute, ProtectedRoute, GymOwnerRoute, AdminRoute } from './compon
 ======================= */
 import Home from './components/Home';
 import Contact from './components/Contact';
-import Auth from './components/Auth';
+// import Auth from './components/Auth';
+import AuthPage from './components/AuthPage/AuthPage';
 
 import Workout from './components/Workout';
 import Posture from './components/Posture';
@@ -53,7 +56,7 @@ import ActivityLogs from './components/Admin/ActivityLogs';
 /* =======================
    Gym Owner Section
 ======================= */
-import GymOwnerSignup from './components/GymOwner/GymOwnerSignup';
+// import GymOwnerSignup from './components/GymOwner/GymOwnerSignup';
 import GymDashboard from './components/GymOwner/GymDashboard';
 import GymPlans from './components/GymOwner/GymPlans';
 
@@ -80,10 +83,12 @@ function App() {
                 {/* ---------- Public Routes (Redirect if Logged In) ---------- */}
                 <Route element={<PublicRoute />}>
                   <Route path="/" element={<Home />} />
-                  <Route path="/auth" element={<Auth />} />
-                  <Route path="/login" element={<Auth initialTab="login" />} />
-                  <Route path="/signup" element={<Auth initialTab="signup" />} />
-                  <Route path="/signup/gym-owner" element={<GymOwnerSignup />} />
+                  <Route path="/auth" element={<AuthPage />} />
+                  <Route path="/login" element={<Navigate to="/auth?tab=login" replace />} />
+                  <Route path="/signup" element={<Navigate to="/auth?tab=signup" replace />} />
+
+                  {/* Gym Owner Signup integrated into AuthPage */}
+                  <Route path="/signup/gym-owner" element={<Navigate to="/auth?tab=signup" replace />} />
                 </Route>
 
                 {/* ---------- Protected Routes ---------- */}
@@ -137,7 +142,9 @@ function App() {
 
           {/* ===== Global Utilities ===== */}
           <Chatbot />
+          <WaterIntake />
           <Footer />
+
 
         </div >
       </Router >

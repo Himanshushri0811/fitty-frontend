@@ -27,10 +27,23 @@ const MealCard = ({ meal, onClick }) => {
                 <h3 className="meal-name">{meal.name}</h3>
 
                 <div className="meal-tags">
+                    {/* Budget Badge */}
+                    {meal.budget && (
+                        <span className={`mini-tag budget-${meal.budget.toLowerCase()}`}>
+                            {meal.budget === 'Low' ? '💰 Saver' : meal.budget === 'High' ? '💎 Premium' : '⚖️ Balanced'}
+                        </span>
+                    )}
+
+                    {/* Good For Badge */}
                     {(meal.tags || []).map(tag => (
                         <span key={tag} className="mini-tag">{tag}</span>
                     ))}
-                    {(!meal.tags || meal.tags.length === 0) && <span className="mini-tag">Balanced</span>}
+
+                    {meal.description && (
+                        <div className="smart-tip-badge" title={meal.description}>
+                            💡 Why?
+                        </div>
+                    )}
                 </div>
 
                 <div className="meal-macros">

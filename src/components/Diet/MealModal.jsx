@@ -1,7 +1,7 @@
 import React from 'react';
 import './MealModal.css';
 
-const MealModal = ({ meal, onClose }) => {
+const MealModal = ({ meal, onClose, onReplaceClick }) => {
     if (!meal) return null;
 
     return (
@@ -12,6 +12,7 @@ const MealModal = ({ meal, onClose }) => {
                 <div className="modal-header-img-wrapper">
                     <img src={meal.image} alt={meal.name} className="modal-header-img" />
                     <button className="modal-close-btn" onClick={onClose}>&times;</button>
+                    <button className="modal-replace-btn" onClick={onReplaceClick}>🔄 Replace</button>
                 </div>
 
                 <div className="modal-content">
@@ -42,6 +43,23 @@ const MealModal = ({ meal, onClose }) => {
                             <span className="n-label">Fats</span>
                         </div>
                     </div>
+
+                    {/* Smart Insights */}
+                    {(meal.description || (meal.benefits && meal.benefits.length > 0)) && (
+                        <div className="smart-insights-section">
+                            <h3>🧠 Smart Insights</h3>
+                            {meal.description && (
+                                <p className="smart-desc">{meal.description}</p>
+                            )}
+                            {meal.benefits && (
+                                <div className="benefits-tags">
+                                    {meal.benefits.map((b, i) => (
+                                        <span key={i} className="benefit-pill">✨ {b}</span>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    )}
 
                     {/* Ingredients */}
                     <div className="ingredients-section">
