@@ -10,7 +10,7 @@ export const PublicRoute = () => {
 
     if (isAuthenticated) {
         if (user?.is_staff || user?.is_superuser) return <Navigate to="/admin/dashboard" replace />;
-        if (user?.profile?.role === 'GYM_OWNER') return <Navigate to="/gym-dashboard" replace />;
+        if (user?.role === 'GYM_OWNER') return <Navigate to="/gym-dashboard" replace />;
         return <Navigate to="/dashboard" replace />;
     }
 
@@ -45,10 +45,10 @@ export const GymOwnerRoute = () => {
 
     if (!isAuthenticated) return <Navigate to="/auth?tab=login" replace />;
 
-    if (user?.profile?.role !== 'GYM_OWNER') {
+    if (user?.role !== 'GYM_OWNER') {
         return <Navigate to="/dashboard" replace />;
     }
 
-    // RoleGuard component handles the payment lock logic
-    return <RoleGuard><Outlet /></RoleGuard>;
+    // RoleGuard component handles the payment lock logic - REMOVED to allow Free Plan
+    return <Outlet />;
 };

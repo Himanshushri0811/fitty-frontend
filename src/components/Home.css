@@ -589,3 +589,114 @@
 .btn-white:hover {
   transform: scale(1.05);
 }
+
+/* --- RESPONSIVE DESIGN --- */
+@media (max-width: 1024px) {
+  .hero-heading {
+    font-size: 3rem;
+  }
+
+  .hero-grid-pattern {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-section {
+    padding-top: 100px;
+    /* Account for fixed mobile navbar */
+    text-align: center;
+  }
+
+  .hero-container {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .hero-text-content {
+    padding-right: 0;
+    align-items: center;
+  }
+
+  .hero-heading {
+    font-size: 2.5rem;
+  }
+
+  .hero-cta-group {
+    justify-content: center;
+  }
+
+  .hero-subtext {
+    margin: 0 auto 32px;
+  }
+
+  .hero-stats-row {
+    justify-content: center;
+  }
+
+  .hero-visual-content {
+    display: none;
+    /* Or show simpler version. Hiding complex composition on mobile often cleaner */
+  }
+
+  .info-cards-section {
+    margin-top: 0;
+    padding-top: 20px;
+  }
+
+  .section-header-center h2 {
+    font-size: 2rem;
+  }
+
+  .feature-block,
+  .feature-block.reverse {
+    flex-direction: column;
+    gap: 30px;
+  }
+
+  .f-image {
+    width: 100%;
+  }
+
+  .f-content {
+    text-align: center;
+  }
+
+  .text-link {
+    justify-content: center;
+  }
+
+  .cta-content-box {
+    padding: 40px 20px;
+  }
+
+  .cta-content-box h2 {
+    font-size: 1.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-heading {
+    font-size: 2rem;
+  }
+
+  .hero-cta-group {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .btn-primary-glow,
+  .btn-secondary-glass {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .hero-stats-row {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .h-divider {
+    display: none;
+  }
+}
