@@ -32,7 +32,7 @@ const GymPlans = () => {
 
             // 2. Razorpay Options
             const options = {
-                key: process.env.REACT_APP_RAZORPAY_KEY_ID || 'rzp_test_S1nr3QbOsO5BDg',
+                key: process.env.REACT_APP_RAZORPAY_KEY_ID,
                 amount: order.amount,
                 currency: order.currency,
                 name: "FitMitra Manager",
@@ -62,7 +62,8 @@ const GymPlans = () => {
 
         } catch (err) {
             console.error("Payment Error:", err);
-            alert("Could not initiate payment. Please try again.");
+            const errMsg = err.response?.data?.error || "Could not initiate payment. Please check your network.";
+            alert(`Payment Error: ${errMsg}`);
             setLoading(false);
         }
     };
@@ -75,7 +76,7 @@ const GymPlans = () => {
                 </button>
                 <motion.div initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }}>
                     <h1 className="text-gradient">Upgrade Your Gym</h1>
-                    <p>Unlock the full power of FitMitra for just ₹399/month</p>
+                    <p>Unlock the full power of FitMitra for just ₹299/month</p>
                 </motion.div>
             </header>
 
@@ -104,7 +105,7 @@ const GymPlans = () => {
                     </button>
                 </motion.div>
 
-                {/* PRO PLAN - ₹399 */}
+                {/* PRO PLAN - ₹299 */}
                 <motion.div
                     className="plan-card featured"
                     initial={{ y: 20, opacity: 0 }}
@@ -115,7 +116,7 @@ const GymPlans = () => {
                     {isPro && <div className="badge">Active Plan</div>}
                     <div className="card-header">
                         <h2>Pro Plan</h2>
-                        <div className="price">₹399<span>/month</span></div>
+                        <div className="price">₹299<span>/month</span></div>
                         <span className="subtitle text-gradient">Most Popular</span>
                     </div>
                     <ul className="features-list">
@@ -131,7 +132,7 @@ const GymPlans = () => {
                     ) : (
                         <button
                             className="plan-btn primary"
-                            onClick={() => handlePayment('PRO', 399)}
+                            onClick={() => handlePayment('PRO', 299)}
                             disabled={loading}
                         >
                             {loading ? 'Processing...' : 'Upgrade Now'}

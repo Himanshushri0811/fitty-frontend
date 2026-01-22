@@ -4,14 +4,14 @@ export const chatbotService = {
     /**
      * Send a message to the AI
      * @param {string} message - User message
-     * @param {Object} context - Page context { page: '/dashboard' }
-     * @returns {Promise<Object>} - Contextual response
+     * @param {string|null} sessionId - Current Session ID
+     * @returns {Promise<Object>} - Reply and new SessionID
      */
-    sendMessage: async (message, context = {}) => {
+    sendMessage: async (message, sessionId = null) => {
         try {
             const response = await API.post('/api/ai/chat/', {
                 message,
-                context
+                session_id: sessionId
             });
             return response.data;
         } catch (error) {
@@ -21,16 +21,16 @@ export const chatbotService = {
     },
 
     /**
-     * Fetch current user profile for personalization
-     * @returns {Promise<Object>}
+     * Get chat history / active session
+     * @returns {Promise<Object>} - { history: [], session_id: "..." }
      */
-    getUserProfile: async () => {
+    getHistory: async () => {
         try {
-            const response = await API.get('/api/accounts/profile/');
+            const response = await API.get('/api/ai/chat/');
             return response.data;
         } catch (error) {
-            console.error('Profile fetch error:', error);
-            return null;
+            console.error('History fetch error:', error);
+            return { history: [] };
         }
     }
 };
