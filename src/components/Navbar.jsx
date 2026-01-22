@@ -169,8 +169,8 @@ const Navbar = () => {
     if (userData?.role === 'GYM_OWNER') {
       return [
         { path: '/gym-dashboard', label: 'Dashboard', icon: <RiDashboardFill /> },
-        { path: '/profile', label: 'Profile', icon: <FaUser /> },
-        { path: '/gym-members', label: 'Members', icon: <FaUser /> }, // Added for gym owner context
+        { path: '/gym-members', label: 'Members', icon: <FaUser /> },
+        { path: '/fitty', label: 'Fitty AI', icon: <FaRobot /> },
       ];
     }
 
@@ -180,7 +180,7 @@ const Navbar = () => {
       { path: '/workout', label: 'Workout', icon: <FaDumbbell /> },
       { path: '/diet', label: 'Diet', icon: <FaUtensils /> },
       { path: '/explore', label: 'Explore', icon: <FaFire /> },
-      { path: '/voice-assistant', label: 'Assistant', icon: <FaRobot /> },
+      { path: '/fitty', label: 'Fitty AI', icon: <FaRobot /> },
     ];
   };
 

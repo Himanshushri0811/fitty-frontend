@@ -10,7 +10,7 @@ import './App.css';
 ======================= */
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
-import Chatbot from './components/common/Chatbot/Chatbot';
+// import Chatbot from './components/common/Chatbot/Chatbot';
 import WaterIntake from './components/WaterIntake/WaterIntake';
 import { AuthProvider } from './context/AuthContext';
 
@@ -33,7 +33,8 @@ import Diet from './components/Diet/DietSection'; // Updated to new DietSection
 // import HealthTracking from './components/HealthTracking';
 
 import Profile from './components/Profile';
-import VoiceAssistant from './components/VoiceAssistant';
+import VoiceAssistant from './components/VoiceAssistant'; // Keeping old one just in case
+import FittyPage from './components/Fitty/FittyPage';
 
 import Faq from './components/Faq';
 import PrivacyPolicy from './components/PrivacyPolicy';
@@ -101,7 +102,9 @@ function App() {
                   <Route path="/profile/:username" element={<UserProfile />} />
                   <Route path="/profile/:username/followers" element={<FollowList type="followers" />} />
                   <Route path="/profile/:username/following" element={<FollowList type="following" />} />
+                  <Route path="/profile/:username/following" element={<FollowList type="following" />} />
                   <Route path="/messages" element={<Messages />} />
+                  <Route path="/fitty" element={<FittyPage />} />
                 </Route>
 
                 {/* ---------- Gym Owner Routes ---------- */}
@@ -141,7 +144,6 @@ function App() {
           </div>
 
           {/* ===== Global Utilities ===== */}
-          <Chatbot />
           <WaterIntake />
           <Footer />
 
