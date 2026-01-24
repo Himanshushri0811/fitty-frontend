@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MdEmail, MdLock } from 'react-icons/md';
+import { MdEmail, MdLock, MdVisibility, MdVisibilityOff } from 'react-icons/md';
 import { FaGoogle, FaFacebook } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 import { useAuth } from '../../context/AuthContext';
@@ -10,6 +10,7 @@ const LoginForm = ({ onSwitch }) => {
     const [form, setForm] = useState({ username: '', password: '' });
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
 
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });
@@ -81,14 +82,31 @@ const LoginForm = ({ onSwitch }) => {
                 <div className="input-wrapper">
                     <MdLock className="input-icon-left" />
                     <input
-                        type="password"
+                        type={showPassword ? "text" : "password"}
                         name="password"
                         className="auth-input"
-                        placeholder="••••••••"
+                        placeholder="Password"
                         value={form.password}
                         onChange={handleChange}
                         disabled={loading}
                     />
+                    <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        style={{
+                            position: 'absolute',
+                            right: '12px',
+                            background: 'none',
+                            border: 'none',
+                            color: 'var(--text-muted)',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            zIndex: 2
+                        }}
+                    >
+                        {showPassword ? <MdVisibilityOff size={20} /> : <MdVisibility size={20} />}
+                    </button>
                 </div>
             </div>
 

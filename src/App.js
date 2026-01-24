@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -67,90 +67,131 @@ import UserDashboard from './components/UserDashboard/UserDashboard';
 /* =======================
    App Component
 ======================= */
+/* =======================
+   App Layout
+======================= */
+function AppLayout() {
+  const location = useLocation(); // Hook usage requires being inside Router
+  const hideFooter = location.pathname === '/fitty';
+
+  return (
+    <div className="app">
+      {/* ===== Global Navbar ===== */}
+      <Navbar />
+
+      {/* ===== Main Content Area ===== */}
+      <div className="main-content">
+        <AnimatePresence mode="wait">
+          <Routes>
+            {/* ---------- Public Routes (Redirect if Logged In) ---------- */}
+            <Route element={<PublicRoute />}>
+              <Route path="/" element={<Home />} />
+              <Route path="/auth" element={<AuthPage />} />
+              <Route path="/login" element={<Navigate to="/auth?tab=login" replace />} />
+              <Route path="/signup" element={<Navigate to="/auth?tab=signup" replace />} />
+
+              {/* Gym Owner Signup integrated into AuthPage */}
+              <Route path="/signup/gym-owner" element={<Navigate to="/auth?tab=signup" replace />} />
+            </Route>
+
+            {/* ---------- Protected Routes ---------- */}
+            <Route element={<ProtectedRoute />}>
+              <Route path="/dashboard" element={<UserDashboard />} />
+              <Route path="/workout" element={<Workout />} />
+              <Route path="/posture" element={<Posture />} />
+              <Route path="/diet" element={<Diet />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/profile/:username" element={<UserProfile />} />
+              <Route path="/profile/:username/followers" element={<FollowList type="followers" />} />
+              <Route path="/profile/:username/following" element={<FollowList type="following" />} />
+              <Route path="/messages" element={<Messages />} />
+              <Route path="/fitty" element={<FittyPage />} />
+            </Route>
+
+            {/* ---------- Gym Owner Routes ---------- */}
+            <Route element={<GymOwnerRoute />}>
+              <Route path="/gym-dashboard" element={<GymDashboard />} />
+              <Route path="/gym-plans" element={<GymPlans />} />
+            </Route>
+
+            {/* ---------- Admin Panel ---------- */}
+            <Route path="/admin" element={<AdminRoute />}>
+              <Route path="" element={<AdminLayout />}>
+                <Route path="dashboard" element={<AdminDashboard />} />
+                <Route path="users" element={<UserManagement />} />
+                <Route path="gyms" element={<GymManagement />} />
+                <Route path="logs" element={<ActivityLogs />} />
+              </Route>
+            </Route>
+
+            {/* ---------- Publicly Accessible Pages (Always) ---------- */}
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/explore" element={<Explore />} />
+            <Route path="/motivation" element={<Motivation />} />
+            {/* <Route path="/success-stories" element={<SuccessStories />} /> */}
+            {/* <Route path="/nutrition" element={<Nutrition />} /> */}
+            {/* <Route path="/health-tracking" element={<HealthTracking />} /> */}
+            <Route path="/voice-assistant" element={<VoiceAssistant />} />
+            <Route path="/faq" element={<Faq />} />
+            <Route path="/privacy" element={<PrivacyPolicy />} />
+            <Route path="/terms" element={<Terms />} />
+
+
+            {/* ---------- 404 Fallback ---------- */}
+            <Route path="*" element={<Home />} />
+
+          </Routes>
+        </AnimatePresence>
+      </div>
+
+      {/* ===== Global Utilities ===== */}
+      {!hideFooter && <WaterIntake />}
+
+      {/* Conditionally Render Footer */}
+      {!hideFooter && <Footer />}
+
+      {/* Hide Zoho on Fitty Page (Smart Toggle) */}
+      {React.useEffect(() => {
+        const updateZoho = (action) => {
+          // 1. API Method
+          if (window.$zoho?.salesiq?.floatwindow) {
+            window.$zoho.salesiq.floatwindow.visible(action);
+          }
+          // 2. DOM Method
+          const ids = ['zsiq_float', 'zsiq_widget', 'zsiq_mfloat'];
+          ids.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+              el.style.display = action === 'hide' ? 'none' : 'block';
+            }
+          });
+        };
+
+        if (location.pathname === '/fitty') {
+          // Fitty Page: Hide aggressively and keep hiding (in case it loads late)
+          updateZoho('hide');
+          const interval = setInterval(() => updateZoho('hide'), 1000);
+          return () => clearInterval(interval);
+        } else {
+          // Other Pages: Show ONCE to restore, then stop.
+          // This prevents overriding the user if they manually close/minimize it later.
+          updateZoho('show');
+          // One backup check in case we navigated from Fitty strictly
+          const t = setTimeout(() => updateZoho('show'), 2000);
+          return () => clearTimeout(t);
+        }
+      }, [location.pathname])}
+    </div>
+  );
+}
+
 function App() {
   return (
-    <AuthProvider>
-      <Router>
-        <div className="app">
-
-          {/* ===== Global Navbar ===== */}
-          <Navbar />
-
-          {/* ===== Main Content Area ===== */}
-          <div className="main-content">
-            <AnimatePresence mode="wait">
-              <Routes>
-
-                {/* ---------- Public Routes (Redirect if Logged In) ---------- */}
-                <Route element={<PublicRoute />}>
-                  <Route path="/" element={<Home />} />
-                  <Route path="/auth" element={<AuthPage />} />
-                  <Route path="/login" element={<Navigate to="/auth?tab=login" replace />} />
-                  <Route path="/signup" element={<Navigate to="/auth?tab=signup" replace />} />
-
-                  {/* Gym Owner Signup integrated into AuthPage */}
-                  <Route path="/signup/gym-owner" element={<Navigate to="/auth?tab=signup" replace />} />
-                </Route>
-
-                {/* ---------- Protected Routes ---------- */}
-                <Route element={<ProtectedRoute />}>
-                  <Route path="/dashboard" element={<UserDashboard />} />
-                  <Route path="/workout" element={<Workout />} />
-                  <Route path="/posture" element={<Posture />} />
-                  <Route path="/diet" element={<Diet />} />
-                  <Route path="/profile" element={<Profile />} />
-                  <Route path="/profile/:username" element={<UserProfile />} />
-                  <Route path="/profile/:username/followers" element={<FollowList type="followers" />} />
-                  <Route path="/profile/:username/following" element={<FollowList type="following" />} />
-                  <Route path="/profile/:username/following" element={<FollowList type="following" />} />
-                  <Route path="/messages" element={<Messages />} />
-                  <Route path="/fitty" element={<FittyPage />} />
-                </Route>
-
-                {/* ---------- Gym Owner Routes ---------- */}
-                <Route element={<GymOwnerRoute />}>
-                  <Route path="/gym-dashboard" element={<GymDashboard />} />
-                  <Route path="/gym-plans" element={<GymPlans />} />
-                </Route>
-
-                {/* ---------- Admin Panel ---------- */}
-                <Route path="/admin" element={<AdminRoute />}>
-                  <Route path="" element={<AdminLayout />}>
-                    <Route path="dashboard" element={<AdminDashboard />} />
-                    <Route path="users" element={<UserManagement />} />
-                    <Route path="gyms" element={<GymManagement />} />
-                    <Route path="logs" element={<ActivityLogs />} />
-                  </Route>
-                </Route>
-
-                {/* ---------- Publicly Accessible Pages (Always) ---------- */}
-                <Route path="/contact" element={<Contact />} />
-                <Route path="/explore" element={<Explore />} />
-                <Route path="/motivation" element={<Motivation />} />
-                {/* <Route path="/success-stories" element={<SuccessStories />} /> */}
-                {/* <Route path="/nutrition" element={<Nutrition />} /> */}
-                {/* <Route path="/health-tracking" element={<HealthTracking />} /> */}
-                <Route path="/voice-assistant" element={<VoiceAssistant />} />
-                <Route path="/faq" element={<Faq />} />
-                <Route path="/privacy" element={<PrivacyPolicy />} />
-                <Route path="/terms" element={<Terms />} />
-
-
-                {/* ---------- 404 Fallback ---------- */}
-                <Route path="*" element={<Home />} />
-
-              </Routes>
-            </AnimatePresence>
-          </div>
-
-          {/* ===== Global Utilities ===== */}
-          <WaterIntake />
-          <Footer />
-
-
-        </div >
-      </Router >
-    </AuthProvider >
+    <Router>
+      <AuthProvider>
+        <AppLayout />
+      </AuthProvider>
+    </Router>
   );
 }
 

@@ -11,9 +11,12 @@
     --fitty-border: #30363d;
 }
 
+/* Fitty Page - Locked Layout */
+/* Fitty Page - Flex Layout (Original Style with overflow fix) */
 .fitty-page-container {
     display: flex;
-    height: 100vh;
+    /* Adjust for navbar height, but stay in flow */
+    height: calc(100vh - 80px);
     width: 100%;
     background-color: var(--fitty-bg);
     color: var(--fitty-text);
@@ -108,7 +111,8 @@
 .message-wrapper {
     display: flex;
     gap: 1rem;
-    max-width: 800px;
+    max-width: 1000px;
+    /* Increased from 800px */
     width: 100%;
     margin: 0 auto;
 }
@@ -127,6 +131,8 @@
     justify-content: center;
     color: black;
     font-weight: bold;
+    flex-shrink: 0;
+    /* Prevent shrinking */
 }
 
 .message-bubble {
@@ -134,10 +140,13 @@
     padding: 1rem 1.5rem;
     border-radius: 12px;
     border-top-left-radius: 0;
-    max-width: 80%;
+    max-width: 90%;
+    /* Increased from 80% */
     line-height: 1.6;
     font-size: 0.95rem;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    /* Ensure it takes available space up to max-width */
 }
 
 .message-wrapper.user .message-bubble {
@@ -235,6 +244,113 @@
     }
 }
 
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.spin-animation {
+    animation: spin 1s linear infinite;
+}
+
+.mobile-only {
+    display: none;
+}
+
+@media screen and (max-width: 768px) {
+    .mobile-only {
+        display: block;
+    }
+}
+
+/* Light Theme Variables Override */
+.fitty-page-container.light-theme {
+    --fitty-bg: #ffffff;
+    --fitty-sidebar: #f6f8fa;
+    --fitty-accent: #008060;
+    /* Darker green for white bg */
+    --fitty-accent-glow: rgba(0, 128, 96, 0.2);
+    --fitty-text: #24292f;
+    --fitty-text-dim: #57606a;
+    --fitty-msg-user: #008060;
+    --fitty-msg-bot: #f1f3f5;
+    --fitty-border: #d0d7de;
+}
+
+/* Ensure text on user message in light mode is white */
+.fitty-page-container.light-theme .message-wrapper.user .message-bubble {
+    color: white;
+}
+
+.fitty-page-container.light-theme .fitty-avatar {
+    color: white;
+}
+
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+    .fitty-page-container {
+        flex-direction: column;
+        height: calc(100vh - 60px);
+        /* Smaller header offset */
+    }
+
+    /* Mobile Sidebar - Offcanvas */
+    .fitty-sidebar {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        z-index: 1000;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+        width: 80%;
+        max-width: 300px;
+        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.5);
+    }
+
+    .fitty-sidebar.open {
+        transform: translateX(0);
+    }
+
+    /* Overlay when sidebar matches */
+    .sidebar-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.6);
+        z-index: 999;
+        backdrop-filter: blur(2px);
+    }
+
+    .fitty-chat-header {
+        padding: 0.8rem 1rem;
+    }
+
+    .fitty-messages-area {
+        padding: 1rem;
+    }
+
+    .fitty-input-container {
+        padding: 1rem;
+    }
+
+    .message-wrapper {
+        max-width: 100%;
+    }
+
+    .message-bubble {
+        max-width: 95%;
+        font-size: 0.9rem;
+    }
+}
+
 /* Markdown Styles override */
 .message-bubble h1,
 .message-bubble h2,
@@ -258,4 +374,8 @@
 
 .message-bubble th {
     background: rgba(255, 255, 255, 0.05);
+}
+
+.fitty-page-container.light-theme .message-bubble th {
+    background: rgba(0, 0, 0, 0.05);
 }
