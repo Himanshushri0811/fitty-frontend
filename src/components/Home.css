@@ -3,8 +3,9 @@
 /* --- HERO SECTION --- */
 .hero-section {
   position: relative;
-  /* Adjust calculation based on Navbar height (80px) defined in App.css */
-  height: calc(100vh - 80px);
+  /* Pull up behind the navbar since main-content has padding-top: 80px */
+  margin-top: -80px;
+  height: 100vh;
   min-height: 600px;
   width: 100%;
   overflow: hidden;
@@ -46,12 +47,7 @@
 }
 
 /* Light mode Overlay Adjustment */
-[data-theme='light'] .hero-overlay {
-  background: linear-gradient(to bottom,
-      rgba(255, 255, 255, 0.1) 0%,
-      rgba(255, 255, 255, 0.3) 50%,
-      rgba(255, 255, 255, 0.8) 100%);
-}
+/* Light mode Overlay Adjustment - REMOVED */
 
 /* However, since we want text on top of image, usually white text is best for Hero 
    regardless of theme, if the image is dark. 
@@ -62,10 +58,7 @@
    Best practice: distinct overlays.
 */
 
-[data-theme='light'] .hero-overlay {
-  background: rgba(255, 255, 255, 0.65);
-  backdrop-filter: blur(2px);
-}
+/* Removed Light Mode Overlay Washout */
 
 [data-theme='dark'] .hero-overlay {
   background: rgba(0, 0, 0, 0.6);
@@ -134,8 +127,9 @@
 }
 
 [data-theme='light'] .hero-headline {
-  color: var(--text-main);
-  text-shadow: none;
+  color: white;
+  /* Keep white in light mode too */
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
 .cursor {

@@ -39,22 +39,24 @@
    ============================ */
 
 /* LIGHT MODE SCROLLED: White Glass + Dark Text */
+/* LIGHT MODE SCROLLED: Always Transparent */
 [data-theme='light'] .navbar.scrolled {
-  background: rgba(255, 255, 255, 0.85) !important;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  background: transparent !important;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border-bottom: none;
+  box-shadow: none;
   color: #0f172a !important;
   /* Force Dark Text */
 }
 
 /* DARK MODE SCROLLED: Dark Glass + White Text */
+/* DARK MODE SCROLLED: Always Transparent */
 [data-theme='dark'] .navbar.scrolled {
-  background: rgba(15, 23, 42, 0.85) !important;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  background: transparent !important;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border-bottom: none;
   color: #f8fafc !important;
 }
 
@@ -62,7 +64,7 @@
 @media (prefers-color-scheme: light) {
   .navbar.scrolled {
     color: #0f172a;
-    background: rgba(255, 255, 255, 0.85);
+    background: transparent;
   }
 }
 
@@ -133,14 +135,23 @@
   /* Default to white for transparent navbar */
   line-height: 1;
   transition: color 0.3s ease;
+
+  /* Feature Request: Thin Border + Light Shadow */
+  -webkit-text-stroke: 0.5px rgba(255, 255, 255, 0.5);
+  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
+/* --- LOGO IMAGE STYLES --- */
 .logo-text-accent {
   background: linear-gradient(135deg, #a78bfa 0%, #e879f9 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
+  text-shadow: 0 4px 12px rgba(232, 121, 249, 0.4);
+  /* Glow + Shadow */
+  -webkit-text-stroke: 0.5px rgba(232, 121, 249, 0.3);
 }
+
 
 /* LOGO TEXT COLOR FIXES */
 /* Default (Unscrolled): Always White (Hero is dark) */
@@ -150,7 +161,7 @@
 
 /* Scrolled + Light Mode: DARK Text */
 [data-theme='light'] .navbar.scrolled .logo-text {
-  color: #0f172a !important;
+  color: white !important;
 }
 
 /* Scrolled + Dark Mode: WHITE Text */
@@ -282,6 +293,8 @@
   background: rgba(0, 0, 0, 0.05);
   /* Light mode bg */
   border-color: transparent;
+  color: #1e293b;
+  /* Ensure dark icon color */
 }
 
 [data-theme='dark'] .navbar.scrolled .theme-toggle-btn,
@@ -300,7 +313,8 @@
 [data-theme='light'] .navbar.scrolled .notification-btn,
 [data-theme='light'] .navbar.scrolled .mobile-toggle {
   color: #0f172a !important;
-  background: rgba(0, 0, 0, 0.05);
+  background: rgba(255, 255, 255, 0.8);
+  /* More contrast */
   border-color: rgba(0, 0, 0, 0.1);
 }
 
