@@ -228,74 +228,74 @@ const Navbar = () => {
         transition={{ duration: 0.5, type: 'spring', stiffness: 120 }}
       >
         <div className="nav-container">
-          {/* Brand Logo */}
-          {/* Brand Logo or Gym Name */}
-          <Link to={isLoggedIn ? (userData?.role === 'GYM_OWNER' ? '/gym-dashboard' : '/dashboard') : '/'} className="brand-link">
-            <motion.div
-              className="logo-brand-composed"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <div className="logo-icon-circle">
-                <FaFire />
-              </div>
-              <span className="logo-text">Fit<span className="logo-text-accent">Mitra</span></span>
-            </motion.div>
+          {/* Brand Logic: FitMitra vs. Gym Name */}
+          <Link
+            to={isLoggedIn ? (userData?.role === 'GYM_OWNER' ? '/gym-dashboard' : '/dashboard') : '/'}
+            className="brand-link"
+          >
+            {isLoggedIn && userData?.role === 'GYM_OWNER' && userData?.gym_name ? (
+              <motion.div
+                className="gym-brand-display"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                style={{ display: 'flex', alignItems: 'center', gap: '10px' }}
+              >
+                {/* Gym Logo / Icon could go here, defaulting to FaFire for now or a different icon */}
+                <div className="logo-icon-circle" style={{ background: '#a855f7' }}>
+                  <FaDumbbell style={{ color: 'white', fontSize: '1rem' }} />
+                </div>
+                <span className="logo-text" style={{ fontSize: '1.2rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '250px', display: 'block' }}>
+                  {userData.gym_name}
+                </span>
+              </motion.div>
+            ) : (
+              <motion.div
+                className="logo-brand-composed"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <div className="logo-icon-circle">
+                  <FaFire />
+                </div>
+                <span className="logo-text">Fit<span className="logo-text-accent">Mitra</span></span>
+              </motion.div>
+            )}
           </Link>
 
-          {/* Desktop Navigation */}
-          <div className="nav-links">
-            {navItems.map((item, index) => (
-              <motion.div
-                key={item.path}
-                className="nav-item-wrapper"
-              >
-                <Link
-                  to={item.path}
-                  className={`nav-link ${location.pathname === item.path ? 'active' : ''}`}
+          {/* Desktop Navigation - Hidden for Gym Owner as per requirement to rely on Dashboard links */}
+          {(!isLoggedIn || userData?.role !== 'GYM_OWNER') && (
+            <div className="nav-links">
+              {navItems.map((item, index) => (
+                <motion.div
+                  key={item.path}
+                  className="nav-item-wrapper"
                 >
-                  <span className="nav-icon">{item.icon}</span>
-                  <span className="nav-label">{item.label}</span>
-                  {location.pathname === item.path && (
-                    <motion.div
-                      className="nav-indicator"
-                      layoutId="nav-indicator"
-                    />
-                  )}
-                </Link>
-              </motion.div>
-            ))}
-
-            {/* Added Login link ONLY for non-logged-in users in Desktop view */}
-            {!isLoggedIn && (
-              <>
+                  <Link
+                    to={item.path}
+                    className={`nav-link ${location.pathname === item.path ? 'active' : ''}`}
+                  >
+                    <span className="nav-icon">{item.icon}</span>
+                    <span className="nav-label">{item.label}</span>
+                    {location.pathname === item.path && (
+                      <motion.div
+                        className="nav-indicator"
+                        layoutId="nav-indicator"
+                      />
+                    )}
+                  </Link>
+                </motion.div>
+              ))}
+              {/* Login Link for Guests */}
+              {!isLoggedIn && (
                 <Link to="/auth?tab=login" className="nav-link special-link highlight">
                   <FaSignInAlt className="nav-icon" /> Login
                 </Link>
-              </>
-            )}
-          </div>
+              )}
+            </div>
+          )}
 
-          {/* Welcome Message (Below Navbar for mobile, inline for desktop if space permits, but using absolute usually looks cleaner) */}
-          <AnimatePresence>
-            {showWelcome && (
-              <motion.div
-                className="welcome-message-container"
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-              >
-                <span className="welcome-text">
-                  {isLoggedIn ? `Welcome, ${userData?.name?.split(' ')[0] || 'User'}` : 'Welcome to FitMitra'}
-                </span>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-
-          {/* Right Side Actions */}
+          {/* Navbar Actions Area */}
           <div className="nav-actions">
-
             {/* Theme Toggle */}
             <motion.button
               className="theme-toggle-btn"
@@ -307,67 +307,105 @@ const Navbar = () => {
               {isDarkMode ? <FaSun className="sun-icon" /> : <FaMoon className="moon-icon" />}
             </motion.button>
 
-            {/* Gym Owner Upgrade Button */}
-            {isLoggedIn && userData?.role === 'GYM_OWNER' && !isPremiumUser && (
-              <motion.button
-                className="upgrade-btn-nav"
-                onClick={() => navigate('/gym-plans')}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <FaCrown size={14} /> <span className="upgrade-text">Upgrade</span>
-              </motion.button>
-            )}
+            {/* Gym Owner Specific Actions */}
+            {isLoggedIn && userData?.role === 'GYM_OWNER' && (
+              <>
+                {/* Upgrade Button if not premium */}
+                {!isPremiumUser && (
+                  <motion.button
+                    className="upgrade-btn-nav"
+                    onClick={() => navigate('/gym-plans')}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <FaCrown size={14} /> <span className="upgrade-text">Upgrade</span>
+                  </motion.button>
+                )}
 
-            {/* Notifications */}
-            {isLoggedIn && (
-              <div style={{ position: 'relative' }}>
-                <motion.button
-                  className="notification-btn"
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                  onClick={() => setShowNotifDropdown(!showNotifDropdown)}
-                >
-                  <FaBell />
-                  {notifications.length > 0 && <span className="notification-badge">{notifications.length}</span>}
-                </motion.button>
+                {/* Gym Notifications */}
+                <div style={{ position: 'relative' }}>
+                  <motion.button
+                    className="notification-btn"
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    onClick={() => setShowNotifDropdown(!showNotifDropdown)}
+                  >
+                    <FaBell />
+                    {notifications.length > 0 && <span className="notification-badge">{notifications.length}</span>}
+                  </motion.button>
 
-                <AnimatePresence>
-                  {showNotifDropdown && (
-                    <motion.div
-                      className="notification-dropdown"
-                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                    >
-                      <div className="notif-header">
-                        <h4>Notifications</h4>
-                        <button onClick={() => setShowNotifDropdown(false)}><FaTimes /></button>
-                      </div>
-                      <div className="notif-body">
-                        {notifications.length === 0 ? (
-                          <div className="no-notif">No new notifications</div>
-                        ) : (
-                          notifications.map((n, i) => (
-                            <div key={i} className="notif-item">
-                              <div className="notif-icon"><FaBell /></div>
-                              <div className="notif-content">
-                                <strong>{n.title}</strong>
-                                <p>{n.message}</p>
+                  <AnimatePresence>
+                    {showNotifDropdown && (
+                      <motion.div
+                        className="notification-dropdown"
+                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                      >
+                        <div className="notif-header">
+                          <h4>Notifications</h4>
+                          <button onClick={() => setShowNotifDropdown(false)}><FaTimes /></button>
+                        </div>
+                        <div className="notif-body">
+                          {notifications.length === 0 ? (
+                            <div className="no-notif">No new messages</div>
+                          ) : (
+                            notifications.map((n, i) => (
+                              <div key={i} className="notif-item">
+                                <div className="notif-icon warning"><FaInfoCircle /></div>
+                                <div className="notif-content">
+                                  <strong>{n.title}</strong>
+                                  <p>{n.message}</p>
+                                </div>
                               </div>
-                            </div>
-                          ))
-                        )}
+                            ))
+                          )}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+
+                {/* Simple Gym Owner Profile Dropdown */}
+                <div className="user-section" ref={dropdownRef}>
+                  <motion.div
+                    className="user-profile-trigger"
+                    onClick={() => setDropdownOpen(!dropdownOpen)}
+                  >
+                    <div className="user-avatar-container">
+                      <div className="user-avatar-compact gym-owner-avatar">
+                        {userData?.name?.charAt(0) || 'G'}
                       </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
+                    </div>
+                    <FaChevronDown className={`dropdown-arrow-compact ${dropdownOpen ? 'rotate' : ''}`} />
+                  </motion.div>
+
+                  <AnimatePresence>
+                    {dropdownOpen && (
+                      <motion.div className="user-dropdown" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
+                        <div className="dropdown-header">
+                          <div className="dropdown-user-info">
+                            <p className="d-name">{userData.name}</p>
+                            <p className="d-email">Owner</p>
+                          </div>
+                        </div>
+                        <div className="dropdown-items">
+                          <Link to="/gym-settings" className="dropdown-item" onClick={() => setDropdownOpen(false)}>
+                            <FaCog /> <span>Gym Settings</span>
+                          </Link>
+                          <button className="dropdown-item logout" onClick={handleLogout}>
+                            <FaSignOutAlt /> <span>Logout</span>
+                          </button>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </>
             )}
 
-            {/* User Section (Logged In) */}
-            {/* User Section (Logged In) - Hidden for Gym Owners as per request */}
-            {isLoggedIn && userData?.role !== 'GYM_OWNER' ? (
+            {/* Normal User (Athlete) Dropdown */}
+            {isLoggedIn && userData?.role !== 'GYM_OWNER' && (
               <div className="user-section" ref={dropdownRef}>
                 <motion.div
                   className="user-profile-trigger"
@@ -417,10 +455,6 @@ const Navbar = () => {
                   )}
                 </AnimatePresence>
               </div>
-            ) : (
-              // For Gym Owners or Non-Logged In (handled by auth check above)
-              // If Gym Owner, we show nothing here (or maybe just Logout if needed, but sidebar has it now)
-              null
             )}
 
             {/* Mobile Toggle */}

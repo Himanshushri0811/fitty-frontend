@@ -60,6 +60,7 @@ import ActivityLogs from './components/Admin/ActivityLogs';
 // import GymOwnerSignup from './components/GymOwner/GymOwnerSignup';
 import GymDashboard from './components/GymOwner/GymDashboard';
 import GymPlans from './components/GymOwner/GymPlans';
+import GymSettings from './components/GymOwner/GymSettings';
 
 // Import UserDashboard
 import UserDashboard from './components/UserDashboard/UserDashboard';
@@ -113,6 +114,7 @@ function AppLayout() {
             <Route element={<GymOwnerRoute />}>
               <Route path="/gym-dashboard" element={<GymDashboard />} />
               <Route path="/gym-plans" element={<GymPlans />} />
+              <Route path="/gym-settings" element={<GymSettings />} />
             </Route>
 
             {/* ---------- Admin Panel ---------- */}

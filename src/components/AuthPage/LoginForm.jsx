@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import { MdEmail, MdLock, MdVisibility, MdVisibilityOff } from 'react-icons/md';
-import { FaGoogle, FaFacebook } from 'react-icons/fa';
+import { FaUser, FaGoogle, FaFacebook } from 'react-icons/fa';
 import API from '../axiosConfig';
 import { useAuth } from '../../context/AuthContext';
 import './Auth.css';
-import './Login.css';
 
-const LoginForm = ({ onSwitch }) => {
+const LoginForm = () => {
     const { login } = useAuth();
     const [form, setForm] = useState({ username: '', password: '' });
     const [showPassword, setShowPassword] = useState(false);
@@ -25,13 +24,10 @@ const LoginForm = ({ onSwitch }) => {
         }
         setLoading(true);
         try {
-            // Backend expects 'username' but logic handles email too
             const res = await API.post('/api/accounts/login/', form, {
                 headers: { 'Content-Type': 'application/json' }
             });
-
             login(res.data.user, { access: res.data.access, refresh: res.data.refresh });
-
         } catch (err) {
             console.error(err);
             setError(err.response?.data?.error || 'Invalid credentials. Please try again.');
@@ -42,53 +38,53 @@ const LoginForm = ({ onSwitch }) => {
 
     return (
         <div className="login-form-wrapper">
-            <div className="form-header">
-                <h2 className="form-title">Welcome Back</h2>
-                <p className="form-subtitle">Enter your details to access your account</p>
+            <div className="form-title-group">
+                <h2>Welcome Back</h2>
+                <p>Continue your fitness journey</p>
             </div>
 
-            {error && <div className="error-message">{error}</div>}
+            {error && <div className="error-msg"><MdLock /> {error}</div>}
 
             <form onSubmit={handleSubmit}>
-                <div className="form-group">
-                    <label className="form-label">Email or Username</label>
-                    <div className="input-container">
-                        <MdEmail className="input-icon" />
-                        <input
-                            type="text"
-                            name="username"
-                            className="form-input"
-                            placeholder="Enter your email or username"
-                            value={form.username}
-                            onChange={handleChange}
-                            disabled={loading}
-                            autoComplete="username"
-                        />
-                    </div>
+                {/* Username / Email */}
+                <div className="input-container">
+                    <input
+                        type="text"
+                        className="auth-input"
+                        placeholder="Username or Email"
+                        value={form.username}
+                        onChange={handleChange}
+                        name="username"
+                        required
+                    />
+                    <FaUser className="input-icon-left" />
                 </div>
 
-                <div className="form-group">
-                    <label className="form-label">Password</label>
-                    <div className="input-container">
-                        <MdLock className="input-icon" />
-                        <input
-                            type={showPassword ? 'text' : 'password'}
-                            name="password"
-                            className="form-input"
-                            placeholder="Enter your password"
-                            value={form.password}
-                            onChange={handleChange}
-                            disabled={loading}
-                            autoComplete="current-password"
-                        />
-                        <button
-                            type="button"
-                            className="show-password-btn"
-                            onClick={() => setShowPassword(!showPassword)}
-                        >
-                            {showPassword ? <MdVisibilityOff /> : <MdVisibility />}
-                        </button>
-                    </div>
+                {/* Password */}
+                <div className="input-container">
+                    <input
+                        type={showPassword ? 'text' : 'password'}
+                        className="auth-input"
+                        placeholder="Password"
+                        value={form.password}
+                        onChange={handleChange}
+                        name="password"
+                        required
+                    />
+                    <MdLock className="input-icon-left" />
+                    <button
+                        type="button"
+                        className="password-toggle"
+                        onClick={() => setShowPassword(!showPassword)}
+                    >
+                        {showPassword ? <MdVisibilityOff /> : <MdVisibility />}
+                    </button>
+                </div>
+
+                <div style={{ textAlign: 'right', marginBottom: '20px' }}>
+                    <button type="button" style={{ background: 'none', border: 'none', color: '#94a3b8', fontSize: '0.9rem', cursor: 'pointer' }}>
+                        Forgot password?
+                    </button>
                 </div>
 
                 <button type="submit" className="submit-btn" disabled={loading}>
@@ -96,23 +92,12 @@ const LoginForm = ({ onSwitch }) => {
                 </button>
             </form>
 
-            <div className="divider">
-                <span>Or continue with</span>
-            </div>
+            <div className="social-divider">or continue with</div>
 
-            <div className="social-buttons">
-                <button type="button" className="social-btn" disabled={loading}>
-                    <FaGoogle /> Google
-                </button>
-                <button type="button" className="social-btn" disabled={loading}>
-                    <FaFacebook /> Facebook
-                </button>
+            <div className="social-btn-row">
+                <button className="social-btn"><FaGoogle /></button>
+                <button className="social-btn"><FaFacebook /></button>
             </div>
-
-            <p className="switch-text">
-                New to FitMitra?
-                <span className="switch-link" onClick={onSwitch}>Create Account</span>
-            </p>
         </div>
     );
 };
