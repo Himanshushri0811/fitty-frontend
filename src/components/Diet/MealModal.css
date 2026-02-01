@@ -1,17 +1,133 @@
-/* MealModal.css */
-.smart-insights-section {
-    margin-bottom: 20px;
-    background: rgba(0, 160, 255, 0.05);
-    padding: 15px;
-    border-radius: 12px;
-    border: 1px solid rgba(0, 160, 255, 0.1);
+/* MealModal.css - Deep Dive Layout */
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.85);
+    /* Darker backdrop */
+    backdrop-filter: blur(12px);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.3s ease-out;
 }
 
-.smart-desc {
+.meal-modal-container {
+    background: #1a1a1a;
+    width: 85%;
+    max-width: 1000px;
+    height: 80vh;
+    /* Fixed height for split layout */
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    display: flex;
+    /* Flex Row */
+    overflow: hidden;
+    /* Important for border radius */
+    position: relative;
+}
+
+/* --- LEFTSIDE CONTENT --- */
+.modal-left-content {
+    flex: 6;
+    /* 60% */
+    padding: 40px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-header-row {
+    margin-bottom: 20px;
+}
+
+.modal-header-row h2 {
+    font-size: 2.5rem;
+    background: linear-gradient(45deg, #fff, #aaa);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 5px 0 10px;
+}
+
+.meal-type-badge {
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+    color: var(--accent-primary, #00d4ff);
+    font-weight: 700;
+}
+
+.prep-time-row {
+    display: flex;
+    gap: 15px;
+    color: #888;
+    font-size: 0.95rem;
+}
+
+/* Compact Macros */
+.nutrient-grid-compact {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 30px;
+}
+
+.macro-pill {
+    padding: 8px 16px;
+    border-radius: 12px;
+    font-weight: 600;
     font-size: 0.9rem;
-    color: var(--d-text-secondary);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.p-pill {
+    color: #00ff99;
+    border: 1px solid rgba(0, 255, 153, 0.2);
+}
+
+.c-pill {
+    color: #ff9900;
+    border: 1px solid rgba(255, 153, 0, 0.2);
+}
+
+.f-pill {
+    color: #ff4444;
+    border: 1px solid rgba(255, 68, 68, 0.2);
+}
+
+/* Deep Dive Content */
+.deep-dive-section {
+    flex: 1;
+    /* Pushes footer down */
+}
+
+.dd-block {
+    margin-bottom: 25px;
+}
+
+.dd-block h3 {
+    font-size: 1.1rem;
+    color: #fff;
     margin-bottom: 10px;
-    line-height: 1.5;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.dd-block p {
+    color: #ccc;
+    line-height: 1.6;
+    font-size: 1rem;
+}
+
+.fun-fact-text {
+    font-style: italic;
+    color: #ffd700 !important;
 }
 
 .benefits-tags {
@@ -21,202 +137,121 @@
 }
 
 .benefit-pill {
-    background: rgba(0, 160, 255, 0.1);
-    color: #4fc3f7;
-    font-size: 0.8rem;
-    padding: 4px 10px;
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    padding: 5px 12px;
     border-radius: 20px;
-    font-weight: 500;
+    font-size: 0.85rem;
 }
 
-.modal-overlay {
-    position: fixed;
-    top: 0;
+/* Actions */
+.modal-actions-footer {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.replace-btn-large {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(90deg, #ff4444, #ff8844);
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.replace-btn-large:hover {
+    transform: scale(1.02);
+}
+
+/* --- RIGHTSIDE IMAGE --- */
+.modal-right-image {
+    flex: 4;
+    /* 40% */
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.image-overlay-gradient {
+    position: absolute;
+    bottom: 0;
     left: 0;
     right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.7);
-    backdrop-filter: blur(8px);
-    z-index: 2000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    animation: fadeIn 0.2s ease-out;
+    top: 0;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.8) 100%);
 }
 
-.meal-modal-container {
-    background: var(--bg-secondary);
-    width: 90%;
-    max-width: 600px;
-    max-height: 90vh;
-    overflow-y: auto;
-    border-radius: 24px;
-    border: 1px solid var(--border-color);
-    box-shadow: var(--card-shadow);
-    position: relative;
-}
-
-.modal-header-img {
-    width: 100%;
-    height: 250px;
-    object-fit: cover;
-    position: relative;
-}
-
-.modal-close-btn {
+.close-btn-absolute {
     position: absolute;
-    top: 15px;
-    right: 15px;
-    background: rgba(0, 0, 0, 0.6);
+    top: 20px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
     border: none;
     color: white;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
+    font-size: 1.5rem;
     cursor: pointer;
-    font-size: 1.2rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s;
+    transition: background 0.2s;
+    z-index: 10;
 }
 
-.modal-replace-btn {
-    position: absolute;
-    top: 15px;
-    left: 15px;
-    background: rgba(0, 0, 0, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    color: white;
-    padding: 6px 12px;
-    border-radius: 20px;
-    cursor: pointer;
-    font-size: 0.8rem;
-    backdrop-filter: blur(5px);
-    transition: all 0.2s;
-}
-
-.modal-replace-btn:hover {
+.close-btn-absolute:hover {
     background: rgba(255, 255, 255, 0.2);
 }
 
-.modal-close-btn:hover {
-    background: #fff;
-    color: #000;
+.best-time-badge {
+    position: absolute;
+    bottom: 30px;
+    left: 30px;
+    right: 30px;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(10px);
+    padding: 15px;
+    border-radius: 12px;
+    color: #fff;
+    font-weight: 500;
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.modal-content {
-    padding: 2rem;
-}
-
-.modal-title-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 1.5rem;
-}
-
-.modal-title-row h2 {
-    font-size: 1.8rem;
-    margin: 0;
-    color: var(--text-main);
-}
-
-.prep-time {
-    background: var(--bg-main);
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 0.85rem;
-    color: var(--accent-primary);
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    border: 1px solid var(--border-color);
-}
-
-/* Nutrient Grid */
-.nutrient-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1rem;
-    margin-bottom: 2rem;
-    background: var(--bg-main);
-    padding: 1rem;
-    border-radius: 16px;
-    border: 1px solid var(--border-color);
-}
-
-.nutrient-item {
-    text-align: center;
-}
-
-.n-value {
-    display: block;
-    font-size: 1.5rem;
-    font-weight: 800;
-    color: var(--text-main);
-}
-
-.n-label {
-    font-size: 0.8rem;
-    color: var(--text-dim);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-/* Ingredients List */
-.ingredients-section h3 {
-    font-size: 1.2rem;
-    color: var(--accent-primary);
-    margin-bottom: 1rem;
-    border-bottom: 1px solid var(--border-color);
-    padding-bottom: 0.5rem;
-}
-
-.ingredients-list {
-    list-style: none;
-    padding: 0;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 0.8rem;
-}
-
-.ingredients-list li {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    color: var(--text-dim);
-    font-size: 0.95rem;
-}
-
-.check-icon {
-    color: var(--accent-primary);
-    font-size: 1.2rem;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: scale(0.95);
+/* --- RESPONSIVE --- */
+@media (max-width: 900px) {
+    .meal-modal-container {
+        flex-direction: column-reverse;
+        /* Image on top */
+        height: 90vh;
+        /* Taller on mobile */
+        overflow-y: scroll;
+        /* Scroll whole modal */
+        width: 95%;
     }
 
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
-}
-
-@media (max-width: 600px) {
-    .modal-header-img {
-        height: 180px;
+    .modal-right-image {
+        min-height: 250px;
+        flex: none;
+        border-left: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     }
 
-    .modal-title-row {
-        flex-direction: column;
-        gap: 10px;
+    .modal-left-content {
+        flex: none;
+        overflow: visible;
+        padding: 20px;
     }
 
-    .nutrient-grid {
-        grid-template-columns: repeat(2, 1fr);
+    .close-btn-absolute {
+        top: 10px;
+        right: 10px;
     }
 }

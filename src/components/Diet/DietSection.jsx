@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import WeeklyDiet from './WeeklyDiet';
 import MealModal from './MealModal';
-import GroceryList from './GroceryList';
 import FoodSearchModal from './FoodSearchModal';
-import DailyDietSummary from './DailyDietSummary';
+import DietSmartBox from './SmartBox/DietSmartBox';
+import NutritionLogger from './NutritionLogger';
 import { fetchDietPlan, updateDietProfile, replaceMeal } from '../../services/dietService';
 import fittyVoice from '../../utils/fittyVoice';
 import './DietSection.css';
@@ -13,6 +12,12 @@ const GOALS = ["Weight Loss", "Muscle Gain", "Maintenance"];
 const DIET_TYPES = ["Veg", "Non-Veg"];
 const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 const FILTERS = ["All", "High Protein", "Vegan", "Low Carb"];
+
+/* INLINE CSS FOR GOAL SWITCHER (Adding to DietSection.css ideally, but user file map shows css is imported. 
+   I will add these styles to SmartBox.css or DietSection.css? 
+   The user context provided access to 'd:\demo_project\FITMITRA\Frontent\src\components\Diet\SmartBox\SmartBox.css'. 
+   I'll edit SmartBox.css since it is open and related to the dashboard view.
+*/
 
 const DietSection = () => {
     const navigate = useNavigate();
@@ -27,8 +32,8 @@ const DietSection = () => {
     const [showLoginPrompt, setShowLoginPrompt] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
-    // Wizard State
-    const [step, setStep] = useState(1);
+    // Wizard State (Deprecated, Default to Dashboard=4)
+    const [step, setStep] = useState(4);
     const [selectedGoal, setSelectedGoal] = useState("");
     const [budget, setBudget] = useState("Medium");
 
@@ -138,6 +143,32 @@ const DietSection = () => {
         }
     };
 
+    // --- DASHBOARD HANDLERS ---
+    const handleGoalChangeDashboard = async (newGoal) => {
+        if (!isLoggedIn) return setShowLoginPrompt(true);
+        setSelectedGoal(newGoal);
+        setIsLoading(true);
+        try {
+            // Need to get current diet type or assume from state
+            const type = activeFilter === "All" ? "Veg" : activeFilter;
+            await updateDietProfile({ goal: newGoal, diet_type: type, budget_level: budget });
+            await loadUserPlan(); // This will refresh the SmartBox too via key change
+        } catch (e) { console.error(e); }
+        finally { setIsLoading(false); }
+    };
+
+    const handleDietTypeChangeDashboard = async (newType) => {
+        if (!isLoggedIn) return setShowLoginPrompt(true);
+        setActiveFilter(newType); // Hack: Using activeFilter to store type for now
+        setIsLoading(true);
+        try {
+            await updateDietProfile({ goal: selectedGoal || "Weight Loss", diet_type: newType, budget_level: budget });
+            await loadUserPlan();
+        } catch (e) { console.error(e); }
+        finally { setIsLoading(false); }
+    };
+
+
     // --- MEAL HANDLING ---
 
     const handleReplaceMealClick = () => {
@@ -204,13 +235,14 @@ const DietSection = () => {
         const mappedMeals = dailySlots.flatMap((slot, index) => {
             return slot.items.map((item, i) => ({
                 id: `${currentDay}-${slot.name}-${i}`,
+                food_id: item.food_item_id, // For fetching Deep Dive
                 type: slot.name, // "Breakfast"
                 name: item.food_name || item.custom_name,
                 calories: item.calories || 0,
                 protein: item.protein || 0,
                 carbs: item.carbs || 0,
                 fat: item.fats || 0,
-                image: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&q=80", // Placeholder
+                image: item.food_image || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&q=80", // Placeholder
                 tags: item.food_good_for || ["Healthy"],
                 ingredients: item.food_name ? [item.food_name] : ["Custom Meal"],
                 description: item.food_description,
@@ -230,130 +262,47 @@ const DietSection = () => {
     return (
         <div className={`diet-container ${!isLoggedIn ? 'restricted' : ''}`}>
 
-            {/* 1. Greeting Box */}
-            {isLoggedIn && (
-                <div className="greeting-box animate-fade-in">
-                    <h2>{greeting}</h2>
-                    <p className="motivational-text">
-                        {step === 4 ? "Your personalized plan is ready!" : "Let's start your journey!"}
-                    </p>
-                </div>
-            )}
+            {/* --- DASHBOARD ALWAYS VISIBLE --- */}
+            {isLoading && <div className="loading-spinner">Loading your updated plan...</div>}
 
-            {/* --- WIZARD THIS --- */}
-            {isLoading && <div className="loading-spinner">Loading your plan...</div>}
-
-            {/* Step 1: Goal Selection */}
-            {!isLoading && step === 1 && (
-                <div className="wizard-step animate-slide-up">
-                    <h2 className="step-title">What is your primary goal? 🎯</h2>
-                    <div className="goal-options-large">
-                        {GOALS.map(goal => (
-                            <button
-                                key={goal}
-                                className="big-option-btn"
-                                onClick={() => handleProtectedAction(() => handleGoalSelect(goal))}
-                            >
-                                {goal}
-                            </button>
-                        ))}
-                    </div>
-                </div>
-            )}
-
-            {/* Step 2: Budget Selection */}
-            {!isLoading && step === 2 && (
-                <div className="wizard-step animate-slide-up">
-                    <button className="back-btn-small" onClick={() => setStep(1)}>← Back</button>
-                    <h2 className="step-title">What is your weekly budget? 💰</h2>
-                    <div className="goal-options-large">
-                        {["Low", "Medium", "High"].map(b => (
-                            <button
-                                key={b}
-                                className="big-option-btn"
-                                onClick={() => {
-                                    setBudget(b);
-                                    setStep(3);
-                                    speak(`Got it. ${b} budget.`);
-                                }}
-                            >
-                                {b}
-                            </button>
-                        ))}
-                    </div>
-                </div>
-            )}
-
-            {/* Step 3: Diet Type Selection */}
-            {!isLoading && step === 3 && (
-                <div className="wizard-step animate-slide-up">
-                    <button className="back-btn-small" onClick={() => setStep(2)}>← Back</button>
-                    <h2 className="step-title">Diet Preference 🥗🍖</h2>
-                    <div className="goal-options-large">
-                        {DIET_TYPES.map(type => (
-                            <button
-                                key={type}
-                                className="big-option-btn"
-                                onClick={() => handleDietTypeSelect(type)}
-                            >
-                                {type}
-                            </button>
-                        ))}
-                    </div>
-                </div>
-            )}
-
-            {/* Step 4: The PLAN */}
+            {/* Step 4: The PLAN (Now Default) */}
             {!isLoading && step === 4 && (
                 <div className="plan-dashboard animate-fade-in">
 
+                    {/* NEW: Goal Switcher */}
+                    <div className="goal-switcher-container">
+                        <select
+                            className="goal-select"
+                            value={selectedGoal || "Weight Loss"}
+                            onChange={(e) => handleGoalChangeDashboard(e.target.value)}
+                        >
+                            {GOALS.map(g => <option key={g} value={g}>{g}</option>)}
+                        </select>
+
+                        <select
+                            className="goal-select"
+                            value={activeFilter === "All" ? "Veg" : activeFilter}
+                            onChange={(e) => handleDietTypeChangeDashboard(e.target.value)}
+                        >
+                            {DIET_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
+                        </select>
+                    </div>
+
+                    {/* NEW: AI SMART BOX */}
+                    <DietSmartBox key={weeklyPlan ? weeklyPlan._id : 'default'} /> {/* Use plan ID or simple counter to force refresh */}
+
                     {/* Header Actions */}
                     <div className="plan-header-actions">
-                        <button className="reset-btn" onClick={() => { setStep(1); setSelectedGoal(""); }}>Change Goal</button>
-
-                        {/* Water Tracker Mini */}
-                        <div className="water-tracker">
-                            <span className="water-icon">💧</span>
-                            <span className="water-count">{waterIntake} Glasses</span>
-                            <button className="add-water-btn" onClick={addWater}>+</button>
-                        </div>
+                        {/* Actions Removed */}
                     </div>
 
-                    {/* Day Selector */}
-                    <div className="day-selector">
-                        {DAYS.map(day => (
-                            <button
-                                key={day}
-                                className={`day-btn ${currentDay === day ? 'active' : ''}`}
-                                onClick={() => handleProtectedAction(() => setCurrentDay(day))}
-                            >
-                                {day.substring(0, 3)}
-                            </button>
-                        ))}
-                    </div>
+                    {/* Day Selector REMOVED */}
+                    {/* Daily Summary REMOVED */}
+                    {/* Meals Grid REMOVED */}
+                    {/* Grocery List REMOVED */}
 
-                    {/* Daily Summary */}
-                    <DailyDietSummary meals={displayedMeals} targets={targets} />
-
-
-
-                    {/* Filters */}
-                    {/* <div className="tag-filters">...</div> */}
-
-                    {/* Meals Grid */}
-                    {displayedMeals.length > 0 ? (
-                        <WeeklyDiet
-                            meals={displayedMeals}
-                            onMealClick={(meal) => setSelectedMeal(meal)}
-                        />
-                    ) : (
-                        <div className="empty-state">
-                            <p>No meals found for this day. Try generating a new plan.</p>
-                        </div>
-                    )}
-
-                    {/* Grocery List */}
-                    <GroceryList plan={dayData} />
+                    {/* NEW: Nutrition Logger */}
+                    <NutritionLogger />
 
                 </div>
             )}

@@ -1,16 +1,17 @@
 import React, { useState } from 'react';
 import { MdEmail, MdLock, MdVisibility, MdVisibilityOff } from 'react-icons/md';
 import { FaGoogle, FaFacebook } from 'react-icons/fa';
-import { motion } from 'framer-motion';
-import { useAuth } from '../../context/AuthContext';
 import API from '../axiosConfig';
+import { useAuth } from '../../context/AuthContext';
+import './Auth.css';
+import './Login.css';
 
 const LoginForm = ({ onSwitch }) => {
     const { login } = useAuth();
     const [form, setForm] = useState({ username: '', password: '' });
+    const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
-    const [showPassword, setShowPassword] = useState(false);
 
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });
@@ -20,127 +21,99 @@ const LoginForm = ({ onSwitch }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!form.username || !form.password) {
-            return setError('Please enter your credentials.');
+            return setError('Please enter username and password');
         }
         setLoading(true);
         try {
-            // NOTE: Using the same endpoint as before
+            // Backend expects 'username' but logic handles email too
             const res = await API.post('/api/accounts/login/', form, {
                 headers: { 'Content-Type': 'application/json' }
             });
-            // Trigger login context
+
             login(res.data.user, { access: res.data.access, refresh: res.data.refresh });
+
         } catch (err) {
             console.error(err);
-            setError(err.response?.data?.error || 'Invalid username or password.');
+            setError(err.response?.data?.error || 'Invalid credentials. Please try again.');
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <motion.form
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            onSubmit={handleSubmit}
-            className="auth-form-content"
-        >
-            <div className="auth-header">
-                <h2>Welcome Back</h2>
-                <p>Continue your fitness journey</p>
+        <div className="login-form-wrapper">
+            <div className="form-header">
+                <h2 className="form-title">Welcome Back</h2>
+                <p className="form-subtitle">Enter your details to access your account</p>
             </div>
 
-            {error && (
-                <motion.div
-                    className="error-box"
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                >
-                    {error}
-                </motion.div>
-            )}
+            {error && <div className="error-message">{error}</div>}
 
-            <div className="form-group">
-                <label className="form-label">Username</label>
-                <div className="input-wrapper">
-                    <MdEmail className="input-icon-left" />
-                    <input
-                        type="text"
-                        name="username"
-                        className="auth-input"
-                        placeholder="Username or email"
-                        value={form.username}
-                        onChange={handleChange}
-                        disabled={loading}
-                    />
+            <form onSubmit={handleSubmit}>
+                <div className="form-group">
+                    <label className="form-label">Email or Username</label>
+                    <div className="input-container">
+                        <MdEmail className="input-icon" />
+                        <input
+                            type="text"
+                            name="username"
+                            className="form-input"
+                            placeholder="Enter your email or username"
+                            value={form.username}
+                            onChange={handleChange}
+                            disabled={loading}
+                            autoComplete="username"
+                        />
+                    </div>
                 </div>
-            </div>
 
-            <div className="form-group">
-                <label className="form-label">Password</label>
-                <div className="input-wrapper">
-                    <MdLock className="input-icon-left" />
-                    <input
-                        type={showPassword ? "text" : "password"}
-                        name="password"
-                        className="auth-input"
-                        placeholder="Password"
-                        value={form.password}
-                        onChange={handleChange}
-                        disabled={loading}
-                    />
-                    <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        style={{
-                            position: 'absolute',
-                            right: '12px',
-                            background: 'none',
-                            border: 'none',
-                            color: 'var(--text-muted)',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            zIndex: 2
-                        }}
-                    >
-                        {showPassword ? <MdVisibilityOff size={20} /> : <MdVisibility size={20} />}
-                    </button>
+                <div className="form-group">
+                    <label className="form-label">Password</label>
+                    <div className="input-container">
+                        <MdLock className="input-icon" />
+                        <input
+                            type={showPassword ? 'text' : 'password'}
+                            name="password"
+                            className="form-input"
+                            placeholder="Enter your password"
+                            value={form.password}
+                            onChange={handleChange}
+                            disabled={loading}
+                            autoComplete="current-password"
+                        />
+                        <button
+                            type="button"
+                            className="show-password-btn"
+                            onClick={() => setShowPassword(!showPassword)}
+                        >
+                            {showPassword ? <MdVisibilityOff /> : <MdVisibility />}
+                        </button>
+                    </div>
                 </div>
+
+                <button type="submit" className="submit-btn" disabled={loading}>
+                    {loading ? 'Logging in...' : 'Log In'}
+                </button>
+            </form>
+
+            <div className="divider">
+                <span>Or continue with</span>
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '20px' }}>
-                <a href="#" style={{ fontSize: '0.85rem', color: 'var(--primary)', fontWeight: '600' }}>Forgot password?</a>
-            </div>
-
-            <button type="submit" className="submit-btn" disabled={loading}>
-                {loading ? 'Logging in...' : 'Log In'}
-            </button>
-
-            <div style={{ margin: '24px 0', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-                or continue with
-            </div>
-
-            <div style={{ display: 'flex', gap: '12px' }}>
-                <button type="button" className="btn-outline" style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}>
+            <div className="social-buttons">
+                <button type="button" className="social-btn" disabled={loading}>
                     <FaGoogle /> Google
                 </button>
-                <button type="button" className="btn-outline" style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}>
+                <button type="button" className="social-btn" disabled={loading}>
                     <FaFacebook /> Facebook
                 </button>
             </div>
 
-            <p style={{ textAlign: 'center', marginTop: '30px', fontSize: '0.95rem', color: 'var(--text-secondary)' }}>
-                Don't have an account?
-                <span
-                    onClick={onSwitch}
-                    style={{ color: 'var(--primary)', fontWeight: 'bold', cursor: 'pointer', marginLeft: '5px' }}
-                >
-                    Sign Up
-                </span>
+            <p className="switch-text">
+                New to FitMitra?
+                <span className="switch-link" onClick={onSwitch}>Create Account</span>
             </p>
-        </motion.form>
+        </div>
     );
 };
 
