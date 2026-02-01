@@ -1,272 +1,239 @@
-/* DietSection.css Expanded */
+/* DietSection.css - Premium Glassmorphism Theme */
+
 :root {
-    --d-bg: var(--bg-main);
-    --d-card-bg: var(--bg-secondary);
-    --d-primary: var(--accent-primary);
-    --d-text: var(--text-main);
-    --d-text-gray: var(--text-dim);
-    --d-border: var(--border-color);
+  --glass-bg: rgba(255, 255, 255, 0.05); /* Very subtle for dark mode */
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+  --accent-glow: 0 0 20px rgba(99, 102, 241, 0.15); /* Indigo glow */
+  --text-primary: #ffffff;
+  --text-secondary: #9ca3af;
 }
 
-.diet-container {
-    min-height: 100vh;
-    background-color: var(--d-bg);
-    padding: 2rem 1rem;
-    color: var(--d-text);
-    font-family: 'Outfit', sans-serif;
-    position: relative;
+/* Light Mode Override (if applicable) */
+/* Ideally we rely on global vars, but let's ensure text visibility */
+.diet-page-container {
+  min-height: 100vh;
+  background: radial-gradient(circle at top right, #1f2937, #111827);
+  color: var(--text-primary);
+  padding: 2rem;
+  font-family: 'Outfit', sans-serif;
+  position: relative;
+  overflow-x: hidden;
 }
 
-/* --- Greeting Box --- */
-.greeting-box {
-    background: var(--bg-secondary);
-    border-left: 4px solid var(--d-primary);
-    padding: 1.5rem;
-    border-radius: 8px;
-    margin-bottom: 2rem;
-    box-shadow: var(--card-shadow);
+/* --- 1. PREMIUM FILTER BAR --- */
+.premium-filter-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  padding: 1rem 2rem;
+  margin-bottom: 2rem;
+  box-shadow: var(--glass-shadow);
+  flex-wrap: wrap;
+  gap: 1rem;
 }
 
-.greeting-box h2 {
-    font-size: 1.8rem;
-    margin: 0 0 0.5rem 0;
-    color: var(--text-main);
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+  min-width: 150px;
 }
 
-.motivational-text {
-    color: var(--d-text-gray);
-    font-style: italic;
-    font-size: 1rem;
+.filter-group label {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 600;
 }
 
-/* --- Wizard Steps --- */
-.wizard-step {
-    text-align: center;
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 2rem;
+.premium-filter-bar select {
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  appearance: none; /* Hide default arrow */
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23FFFFFF%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.7em top 50%;
+  background-size: 0.65em auto;
+  padding-right: 2rem;
+  outline: none;
 }
 
-.step-title {
-    font-size: 2rem;
-    margin-bottom: 2rem;
-    color: var(--text-main);
+.premium-filter-bar select option {
+  background: #1f2937; /* Dark background for dropdown */
+  color: white;
 }
 
-.big-option-btn {
-    background: var(--d-card-bg);
-    border: 2px solid var(--d-border);
-    padding: 2rem 3rem;
-    border-radius: 20px;
-    font-size: 1.2rem;
-    font-weight: 700;
-    color: var(--text-main);
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    min-width: 200px;
-    box-shadow: var(--card-shadow);
+.divider {
+  width: 1px;
+  height: 40px;
+  background: var(--glass-border);
+  margin: 0 1rem;
 }
 
-.big-option-btn:hover {
-    border-color: var(--d-primary);
-    transform: translateY(-5px);
-    box-shadow: 0 10px 30px rgba(99, 102, 241, 0.2);
+/* --- 2. GRID LAYOUT --- */
+.diet-dashboard-grid {
+  display: grid;
+  grid-template-columns: 2.5fr 1.5fr; /* Left (Main) vs Right (Side) */
+  gap: 2rem;
 }
 
-.back-btn-small {
-    background: transparent;
-    border: none;
-    color: var(--d-text-gray);
-    margin-bottom: 1rem;
-    cursor: pointer;
-    font-size: 0.9rem;
+@media (max-width: 900px) {
+  .diet-dashboard-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
-.back-btn-small:hover {
-    color: var(--accent-primary);
-    text-decoration: underline;
+/* --- CARDS & PANELS --- */
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--glass-border);
+  border-radius: 24px;
+  padding: 1.5rem;
+  box-shadow: var(--glass-shadow);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.reset-btn {
-    background: var(--bg-main);
-    border: 1px solid var(--d-border);
-    color: var(--d-text-gray);
-    padding: 0.5rem 1rem;
-    border-radius: 8px;
-    cursor: pointer;
+.glass-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
-.water-tracker {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    background: var(--bg-secondary);
-    padding: 0.5rem 1rem;
-    border-radius: 30px;
-    border: 1px solid var(--border-color);
-    box-shadow: var(--card-shadow);
+.glow-border {
+  /* Subtle animated border or static glow */
+  box-shadow: var(--accent-glow);
 }
 
-.water-count {
-    font-weight: 700;
-    color: #4da6ff;
+/* --- STATS CARD (Wrapper around DailySummary) --- */
+.stats-card {
+  margin-bottom: 2rem;
+  /* Override internal styles of DailyDietSummary via deep selector if needed, 
+     or rely on it being transparent */
+  background: linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
 }
 
-.add-water-btn {
-    background: #4da6ff;
-    color: #fff;
-    border: none;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    cursor: pointer;
-    font-size: 1.2rem;
-    line-height: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+/* --- TODAY'S PREVIEW --- */
+.todays-plan-preview h4 {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  font-size: 1.2rem;
+  border-bottom: 1px solid var(--glass-border);
+  padding-bottom: 1rem;
 }
 
-/* --- Reused Selectors & Misc --- */
-.day-selector {
-    display: flex;
-    justify-content: center;
-    gap: 0.5rem;
-    margin-bottom: 2rem;
-    overflow-x: auto;
-    padding-bottom: 10px;
+.mini-meal-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
-.day-btn {
-    background: transparent;
-    width: 50px;
-    height: 50px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 12px;
-    border: 1px solid var(--d-border);
-    color: var(--d-text-gray);
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    flex-shrink: 0;
+.mini-meal-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 0.8rem;
+  border-radius: 12px;
 }
 
-.day-btn.active {
-    background: var(--d-primary);
-    color: #000;
-    border-color: var(--d-primary);
+.mini-meal-row img {
+  width: 50px;
+  height: 50px;
+  border-radius: 10px;
+  object-fit: cover;
 }
 
-.tag-filters {
-    display: flex;
-    justify-content: center;
-    gap: 0.8rem;
-    margin-bottom: 2rem;
-    flex-wrap: wrap;
+.mini-meal-row span {
+  display: block;
+  font-weight: 600;
+  font-size: 1rem;
 }
 
-.filter-tag {
-    background: rgba(255, 255, 255, 0.05);
-    padding: 0.4rem 1rem;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    cursor: pointer;
-    color: var(--d-text-gray);
-    border: 1px solid transparent;
+.mini-meal-row small {
+  color: var(--text-secondary);
 }
 
-.filter-tag.active {
-    background: rgba(0, 255, 153, 0.1);
-    color: var(--d-primary);
-    border-color: var(--d-primary);
+/* --- LOADING --- */
+.loading-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  border-radius: 20px;
 }
 
-/* --- Login Glass Overlay --- */
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(255, 255, 255, 0.1);
+  border-left-color: #6366f1; /* Indigo */
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+/* --- LOGIN BLUR --- */
+.blur-mode > *:not(.login-overlay-glass) {
+    filter: blur(8px);
+    pointer-events: none;
+    user-select: none;
+}
+
 .login-overlay-glass {
     position: fixed;
-    inset: 0;
-    background: rgba(10, 10, 10, 0.7);
-    backdrop-filter: blur(15px);
-    z-index: 1000;
+    top: 0; left: 0; right: 0; bottom: 0;
     display: flex;
     align-items: center;
     justify-content: center;
+    z-index: 1000;
 }
 
 .login-modal-glass {
-    background: rgba(30, 30, 35, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(20, 20, 20, 0.8);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.1);
     padding: 3rem;
     border-radius: 24px;
     text-align: center;
-    max-width: 400px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+    color: white;
 }
 
-.lock-emoji {
-    font-size: 3rem;
-    display: block;
-    margin-bottom: 1rem;
-}
-
-.login-modal-glass h2 {
-    color: #fff;
-    margin-bottom: 1rem;
-}
-
-.login-btn-glass {
-    background: var(--d-primary);
-    color: #000;
+.login-modal-glass button {
+    background: #6366f1;
+    color: white;
     border: none;
-    padding: 1rem 2.5rem;
-    border-radius: 12px;
-    font-weight: 700;
+    padding: 1rem 2rem;
     font-size: 1rem;
+    border-radius: 12px;
     cursor: pointer;
-    margin-top: 1.5rem;
-    transition: transform 0.2s;
+    margin-top: 1rem;
+    font-weight: bold;
 }
-
-.login-btn-glass:hover {
-    transform: scale(1.05);
-    box-shadow: 0 0 20px rgba(0, 255, 153, 0.4);
-}
-
-/* Animations */
-.animate-fade-in {
-    animation: fadeIn 0.5s ease;
-}
-
-.animate-slide-up {
-    animation: slideUp 0.5s ease;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-
-    to {
-        opacity: 1;
-    }
-}
-
-@keyframes slideUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@media (max-width: 768px) {
-    .big-option-btn {
-        width: 100%;
-    }
+/* Override nested summary card */
+.stats-card .daily-summary-card {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+    margin: 0;
 }

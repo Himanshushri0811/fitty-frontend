@@ -31,6 +31,16 @@ export const updateDietProfile = async (profileData) => {
     }
 };
 
+export const fetchDietProfile = async () => {
+    try {
+        const response = await axios.get(`${API_URL}/profile/`, getAuthHeaders());
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching diet profile:", error);
+        throw error;
+    }
+};
+
 export const searchFoods = async (query) => {
     try {
         const response = await axios.get(`${API_URL}/foods/search/?q=${query}`, getAuthHeaders());
@@ -58,6 +68,17 @@ export const fetchDietCarousel = async () => {
         return response.data;
     } catch (error) {
         console.error("Error fetching carousel:", error);
+        throw error;
+    }
+};
+
+export const logFood = async (data) => {
+    // data: { items: [], totals: {} }
+    try {
+        const response = await axios.post(`${API_URL}/log-food/`, data, getAuthHeaders());
+        return response.data;
+    } catch (error) {
+        console.error("Error logging food:", error);
         throw error;
     }
 };

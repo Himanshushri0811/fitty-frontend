@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { logFood } from '../../services/dietService';
 import './NutritionLogger.css';
 
-const NutritionLogger = () => {
+const NutritionLogger = ({ onLogSuccess }) => {
     const [logText, setLogText] = useState("");
     const [result, setResult] = useState(null);
     const [isCalculating, setIsCalculating] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
 
     const handleCalculate = async () => {
         if (!logText.trim()) return;
@@ -27,6 +29,26 @@ const NutritionLogger = () => {
         }
     };
 
+    const handleSave = async () => {
+        if (!result) return;
+        setIsSaving(true);
+        try {
+            await logFood({
+                items: result.items || [logText],
+                totals: result
+            });
+            alert("Meal Logged Successfully!");
+            setResult(null);
+            setLogText("");
+            if (onLogSuccess) onLogSuccess();
+        } catch (error) {
+            console.error(error);
+            alert("Failed to save log.");
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
     return (
         <div className="nutrition-logger-container animate-fade-in">
             <h3>📝 Quick Nutrition Logger</h3>
@@ -39,13 +61,15 @@ const NutritionLogger = () => {
                     placeholder="Describe your meal here..."
                     rows={3}
                 />
-                <button
-                    className="calc-btn"
-                    onClick={handleCalculate}
-                    disabled={isCalculating || !logText}
-                >
-                    {isCalculating ? "Calculating..." : "Calculate Macros ✨"}
-                </button>
+                <div className="btn-row">
+                    <button
+                        className="calc-btn"
+                        onClick={handleCalculate}
+                        disabled={isCalculating || !logText}
+                    >
+                        {isCalculating ? "Calculating..." : "Calculate Macros ✨"}
+                    </button>
+                </div>
             </div>
 
             {result && (
@@ -59,17 +83,17 @@ const NutritionLogger = () => {
                         <div className="macro-item protein">
                             <span className="label">Protein</span>
                             <span className="value">{result.total_protein}g</span>
-                            <div className="bar"><div style={{ width: `${Math.min(result.total_protein, 100)}%` }}></div></div>
+                            <div className="bar"><div style={{ width: `${Math.min(result.total_protein || 0, 100)}%` }}></div></div>
                         </div>
                         <div className="macro-item carbs">
                             <span className="label">Carbs</span>
                             <span className="value">{result.total_carbs}g</span>
-                            <div className="bar"><div style={{ width: `${Math.min(result.total_carbs, 100)}%` }}></div></div>
+                            <div className="bar"><div style={{ width: `${Math.min(result.total_carbs || 0, 100)}%` }}></div></div>
                         </div>
                         <div className="macro-item fat">
                             <span className="label">Fat</span>
                             <span className="value">{result.total_fats}g</span>
-                            <div className="bar"><div style={{ width: `${Math.min(result.total_fats, 100)}%` }}></div></div>
+                            <div className="bar"><div style={{ width: `${Math.min(result.total_fats || 0, 100)}%` }}></div></div>
                         </div>
                     </div>
 
@@ -78,6 +102,15 @@ const NutritionLogger = () => {
                             <small>Detected: {result.items.join(", ")}</small>
                         </div>
                     )}
+
+                    <button
+                        className="save-log-btn"
+                        onClick={handleSave}
+                        disabled={isSaving}
+                        style={{ marginTop: '1rem', width: '100%', padding: '0.8rem', background: '#10b981', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}
+                    >
+                        {isSaving ? "Saving..." : "✅ Add to Daily Diary"}
+                    </button>
                 </div>
             )}
         </div>
