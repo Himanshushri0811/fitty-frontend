@@ -51,3 +51,13 @@ export const replaceMeal = async (data) => {
         throw error;
     }
 };
+
+export const fetchDietCarousel = async () => {
+    try {
+        const response = await axios.get(`${API_URL}/carousel/`, getAuthHeaders());
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching carousel:", error);
+        throw error;
+    }
+};

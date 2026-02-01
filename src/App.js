@@ -21,8 +21,7 @@ import { PublicRoute, ProtectedRoute, GymOwnerRoute, AdminRoute } from './compon
 ======================= */
 import Home from './components/Home';
 import Contact from './components/Contact';
-// import Auth from './components/Auth';
-import AuthPage from './components/AuthPage/AuthPage';
+import Auth from './components/AuthPage/Auth';
 
 import Workout from './components/Workout';
 import Posture from './components/Posture';
@@ -30,6 +29,7 @@ import Motivation from './components/Motivation';
 // import SuccessStories from './components/SuccessStories';
 // import Nutrition from './components/Nutrition';
 import Diet from './components/Diet/DietSection'; // Updated to new DietSection
+import FoodDetail from './components/Diet/FoodDetail';
 // import HealthTracking from './components/HealthTracking';
 
 import Profile from './components/Profile';
@@ -86,7 +86,7 @@ function AppLayout() {
             {/* ---------- Public Routes (Redirect if Logged In) ---------- */}
             <Route element={<PublicRoute />}>
               <Route path="/" element={<Home />} />
-              <Route path="/auth" element={<AuthPage />} />
+              <Route path="/auth" element={<Auth />} />
               <Route path="/login" element={<Navigate to="/auth?tab=login" replace />} />
               <Route path="/signup" element={<Navigate to="/auth?tab=signup" replace />} />
 
@@ -100,6 +100,7 @@ function AppLayout() {
               <Route path="/workout" element={<Workout />} />
               <Route path="/posture" element={<Posture />} />
               <Route path="/diet" element={<Diet />} />
+              <Route path="/diet/food/:id" element={<FoodDetail />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/profile/:username" element={<UserProfile />} />
               <Route path="/profile/:username/followers" element={<FollowList type="followers" />} />
@@ -168,18 +169,17 @@ function AppLayout() {
         };
 
         if (location.pathname === '/fitty') {
-          // Fitty Page: Hide aggressively and keep hiding (in case it loads late)
+          // Fitty Page: Hide aggressively
           updateZoho('hide');
           const interval = setInterval(() => updateZoho('hide'), 1000);
-          return () => clearInterval(interval);
-        } else {
-          // Other Pages: Show ONCE to restore, then stop.
-          // This prevents overriding the user if they manually close/minimize it later.
-          updateZoho('show');
-          // One backup check in case we navigated from Fitty strictly
-          const t = setTimeout(() => updateZoho('show'), 2000);
-          return () => clearTimeout(t);
+
+          // Only restore when LEAVING Fitty page
+          return () => {
+            clearInterval(interval);
+            updateZoho('show');
+          };
         }
+        // No else block needed - let Zoho maintain its state on other pages
       }, [location.pathname])}
     </div>
   );

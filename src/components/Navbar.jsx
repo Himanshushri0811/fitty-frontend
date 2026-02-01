@@ -232,17 +232,14 @@ const Navbar = () => {
           {/* Brand Logo or Gym Name */}
           <Link to={isLoggedIn ? (userData?.role === 'GYM_OWNER' ? '/gym-dashboard' : '/dashboard') : '/'} className="brand-link">
             <motion.div
-              className={userData?.role === 'GYM_OWNER' ? "gym-brand-name" : "brand-logo"}
+              className="logo-brand-composed"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              {isLoggedIn && userData?.role === 'GYM_OWNER' ? (
-                <h2 style={{ color: 'var(--primary)', margin: 0, fontSize: '1.5rem', fontWeight: '800' }}>
-                  {userData?.gym_name || userData?.name || "Your Gym"}
-                </h2>
-              ) : (
-                <img src="/fittyIcon.png" alt="FitMitra Logo" className="logo-image" />
-              )}
+              <div className="logo-icon-circle">
+                <FaFire />
+              </div>
+              <span className="logo-text">Fit<span className="logo-text-accent">Mitra</span></span>
             </motion.div>
           </Link>
 
@@ -440,11 +437,13 @@ const Navbar = () => {
       </motion.nav>
 
       {/* Mobile Menu Drawer */}
+      {/* NEW Mobile Side Drawer (Right Slide-In) */}
       <AnimatePresence>
         {mobileMenuOpen && (
           <>
+            {/* Backdrop Overlay */}
             <motion.div
-              className="mobile-overlay"
+              className="mobile-backdrop"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -452,68 +451,50 @@ const Navbar = () => {
             />
 
             <motion.div
-              className="mobile-menu"
+              className="mobile-side-drawer"
               initial={{ x: '100%' }}
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
             >
-              <div className="mobile-header">
-                <div className="mobile-brand">
-                  <img src="/fittyIcon.png" alt="Logo" className="mobile-logo-img" />
+              <div className="drawer-header">
+                {/* Logo inside Drawer */}
+                <div className="logo-brand-composed" onClick={() => setMobileMenuOpen(false)}>
+                  <div className="logo-icon-circle">
+                    <FaFire />
+                  </div>
+                  <span className="logo-text">Fit<span className="logo-text-accent">Mitra</span></span>
                 </div>
-                <button className="mobile-close" onClick={() => setMobileMenuOpen(false)}>
+
+                <button className="drawer-close-btn" onClick={() => setMobileMenuOpen(false)}>
                   <FaTimes />
                 </button>
               </div>
 
-              <div className="mobile-content">
+              <div className="drawer-content">
+                <Link to="/" className="drawer-item" onClick={() => setMobileMenuOpen(false)}>
+                  <FaHome className="drawer-icon" /> Home
+                </Link>
+
+                <Link to="/contact" className="drawer-item" onClick={() => setMobileMenuOpen(false)}>
+                  <MdContactMail className="drawer-icon" /> Contact
+                </Link>
+
                 {isLoggedIn && (
-                  <div className="mobile-user-profile">
-                    <div className="mobile-avatar">
-                      {userData?.profilePic ? (
-                        <img src={userData.profilePic} alt="User" />
-                      ) : (
-                        <div className="mobile-avatar-placeholder">
-                          {userData?.name?.charAt(0) || 'U'}
-                        </div>
-                      )}
-                    </div>
-                    <div className="mobile-user-details">
-                      <h4>{userData?.name || 'User'}</h4>
-                      <p>{userData?.email}</p>
-                    </div>
-                  </div>
+                  <Link to={userData?.role === 'GYM_OWNER' ? '/gym-dashboard' : '/dashboard'} className="drawer-item" onClick={() => setMobileMenuOpen(false)}>
+                    <RiDashboardFill className="drawer-icon" /> Dashboard
+                  </Link>
                 )}
 
-                <div className="mobile-links-list">
-                  {navItems.map((item) => (
-                    <Link
-                      key={item.path}
-                      to={item.path}
-                      className={`mobile-link-item ${location.pathname === item.path ? 'active' : ''}`}
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      <span className="icon">{item.icon}</span>
-                      {item.label}
-                    </Link>
-                  ))}
-
-                  {!isLoggedIn && (
-                    <>
-                      {/* Only Login, NO Signup */}
-                      <Link to="/auth?tab=login" className="mobile-link-item highlight" onClick={() => setMobileMenuOpen(false)}>
-                        <span className="icon"><FaSignInAlt /></span> Login
-                      </Link>
-                    </>
-                  )}
-
-                  {isLoggedIn && (
-                    <button className="mobile-link-item logout" onClick={() => { setMobileMenuOpen(false); handleLogout(); }}>
-                      <span className="icon"><FaSignOutAlt /></span> Logout
-                    </button>
-                  )}
-                </div>
+                {!isLoggedIn ? (
+                  <Link to="/auth?tab=login" className="drawer-btn login" onClick={() => setMobileMenuOpen(false)}>
+                    <FaSignInAlt /> Login
+                  </Link>
+                ) : (
+                  <button className="drawer-btn logout" onClick={() => { setMobileMenuOpen(false); handleLogout(); }}>
+                    <FaSignOutAlt /> Logout
+                  </button>
+                )}
               </div>
             </motion.div>
           </>
