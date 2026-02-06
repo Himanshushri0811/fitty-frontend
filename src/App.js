@@ -10,6 +10,7 @@ import './App.css';
 ======================= */
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+import BottomNav from './components/BottomNav';
 // import Chatbot from './components/common/Chatbot/Chatbot';
 import WaterIntake from './components/WaterIntake/WaterIntake';
 import { AuthProvider } from './context/AuthContext';
@@ -22,6 +23,7 @@ import { PublicRoute, ProtectedRoute, GymOwnerRoute, AdminRoute } from './compon
 import Home from './components/Home';
 import Contact from './components/Contact';
 import Auth from './components/AuthPage/Auth';
+import ResetPassword from './components/AuthPage/ResetPassword';
 
 import Workout from './components/Workout';
 import Posture from './components/Posture';
@@ -53,6 +55,7 @@ import AdminDashboard from './components/Admin/AdminDashboard';
 import UserManagement from './components/Admin/UserManagement';
 import GymManagement from './components/Admin/GymManagement';
 import ActivityLogs from './components/Admin/ActivityLogs';
+import ExerciseManagement from './components/Admin/ExerciseManagement';
 
 /* =======================
    Gym Owner Section
@@ -88,6 +91,7 @@ function AppLayout() {
             <Route element={<PublicRoute />}>
               <Route path="/" element={<Home />} />
               <Route path="/auth" element={<Auth />} />
+              <Route path="/auth/reset-password/:token" element={<ResetPassword />} />
               <Route path="/login" element={<Navigate to="/auth?tab=login" replace />} />
               <Route path="/signup" element={<Navigate to="/auth?tab=signup" replace />} />
 
@@ -103,7 +107,6 @@ function AppLayout() {
               <Route path="/diet" element={<Diet />} />
               <Route path="/diet/food/:id" element={<FoodDetail />} />
               <Route path="/profile" element={<Profile />} />
-              <Route path="/profile/:username" element={<UserProfile />} />
               <Route path="/profile/:username/followers" element={<FollowList type="followers" />} />
               <Route path="/profile/:username/following" element={<FollowList type="following" />} />
               <Route path="/messages" element={<Messages />} />
@@ -124,12 +127,14 @@ function AppLayout() {
                 <Route path="users" element={<UserManagement />} />
                 <Route path="gyms" element={<GymManagement />} />
                 <Route path="logs" element={<ActivityLogs />} />
+                <Route path="exercises" element={<ExerciseManagement />} />
               </Route>
             </Route>
 
             {/* ---------- Publicly Accessible Pages (Always) ---------- */}
             <Route path="/contact" element={<Contact />} />
             <Route path="/explore" element={<Explore />} />
+            <Route path="/profile/:username" element={<UserProfile />} />
             <Route path="/motivation" element={<Motivation />} />
             {/* <Route path="/success-stories" element={<SuccessStories />} /> */}
             {/* <Route path="/nutrition" element={<Nutrition />} /> */}
@@ -152,6 +157,7 @@ function AppLayout() {
 
       {/* Conditionally Render Footer */}
       {!hideFooter && <Footer />}
+      {!hideFooter && <BottomNav />}
 
       {/* Hide Zoho on Fitty Page (Smart Toggle) */}
       {React.useEffect(() => {

@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from '../axiosConfig';
 import {
     FaSpinner, FaUserPlus, FaUserMinus, FaComment,
-    FaCalendar, FaFire, FaDumbbell
+    FaCalendar, FaFire
 } from 'react-icons/fa';
 import './UserProfile.css';
 import PostCard from './PostCard';
@@ -23,19 +23,13 @@ const UserProfile = () => {
     const token = localStorage.getItem('access_token');
     const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
 
-    useEffect(() => {
-        fetchProfile();
-        fetchUserPosts();
-    }, [username]);
-
-    const fetchProfile = async () => {
+    const fetchProfile = useCallback(async () => {
         try {
             setLoading(true);
+            const headers = token ? { Authorization: `Bearer ${token}` } : {};
             const response = await axios.get(
-                `/api/social/profiles/${username}/`,
-                {
-                    headers: { Authorization: `Bearer ${token}` }
-                }
+                `/api/social/profile/${username}/`,
+                { headers }
             );
             setProfile(response.data);
             setFollowing(response.data.is_following || false);
@@ -46,24 +40,28 @@ const UserProfile = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [username, token]);
 
-    const fetchUserPosts = async () => {
+    const fetchUserPosts = useCallback(async () => {
         try {
             setPostsLoading(true);
+            const headers = token ? { Authorization: `Bearer ${token}` } : {};
             const response = await axios.get(
-                `/api/social/profiles/${username}/posts/`,
-                {
-                    headers: { Authorization: `Bearer ${token}` }
-                }
+                `/api/social/profile/${username}/posts/`,
+                { headers }
             );
-            setPosts(response.data.results || []);
+            setPosts(response.data.results || response.data || []);
         } catch (err) {
             console.error('Error fetching posts:', err);
         } finally {
             setPostsLoading(false);
         }
-    };
+    }, [username, token]);
+
+    useEffect(() => {
+        fetchProfile();
+        fetchUserPosts();
+    }, [fetchProfile, fetchUserPosts]);
 
     const handleFollow = async () => {
         if (!profile) return;
@@ -225,7 +223,7 @@ const UserProfile = () => {
                     className={`tab-btn ${activeTab === 'posts' ? 'active' : ''}`}
                     onClick={() => setActiveTab('posts')}
                 >
-                    <FaDumbbell /> Posts
+                    <FaFire /> Posts
                 </button>
                 <button
                     className={`tab-btn ${activeTab === 'workouts' ? 'active' : ''}`}

@@ -44,6 +44,15 @@ const WaterIntake = () => {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setData(res.data);
+
+            // Dispatch event initially (optional, but good for sync)
+            window.dispatchEvent(new CustomEvent('waterUpdated', {
+                detail: {
+                    glasses: res.data.glasses,
+                    total_ml: res.data.total_ml
+                }
+            }));
+
         } catch (err) {
             console.error("Failed to fetch hydration data", err);
         }
@@ -57,12 +66,23 @@ const WaterIntake = () => {
                 { amount_ml: 250 },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
-            setData(prev => ({
-                ...prev,
+
+            const newData = {
                 glasses: res.data.glasses,
                 total_ml: res.data.total_ml,
-                last_drink_at: res.data.last_drink_at // Update local state for smart reminders
+                last_drink_at: res.data.last_drink_at
+            };
+
+            setData(prev => ({
+                ...prev,
+                ...newData
             }));
+
+            // Dispatch event for other components (e.g., Dashboard) to listen to
+            window.dispatchEvent(new CustomEvent('waterUpdated', {
+                detail: newData
+            }));
+
             const msg = `Great job completing another glass! Stay fit and stay hydrated.`;
             showPraise(res.data.glasses, msg);
             fittyVoice.speak(msg);

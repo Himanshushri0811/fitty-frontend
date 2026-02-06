@@ -47,5 +47,18 @@ export const chatbotService = {
             console.error('Session list fetch error:', error);
             return [];
         }
+    },
+
+    /**
+     * Delete a chat session
+     */
+    deleteSession: async (sessionId) => {
+        try {
+            await API.delete(`/api/ai/sessions/${sessionId}/`);
+            return true;
+        } catch (error) {
+            console.error('Delete session error:', error);
+            throw error;
+        }
     }
 };

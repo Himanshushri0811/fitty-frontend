@@ -295,8 +295,16 @@
 @media screen and (max-width: 768px) {
     .fitty-page-container {
         flex-direction: column;
-        height: calc(100vh - 60px);
-        /* Smaller header offset */
+        /* Subtract Top Nav (80px) AND Bottom Nav (70px) */
+        height: calc(100vh - 80px - 70px);
+        margin-bottom: 70px;
+        /* Push bottom nav space */
+    }
+
+    /* Message area scrolling fix */
+    .fitty-messages-area {
+        min-height: 0;
+        flex: 1 1 auto;
     }
 
     /* Mobile Sidebar - Offcanvas */
@@ -378,4 +386,22 @@
 
 .fitty-page-container.light-theme .message-bubble th {
     background: rgba(0, 0, 0, 0.05);
+}
+
+.delete-icon {
+    color: #ef4444;
+    opacity: 0;
+    transition: opacity 0.2s;
+    padding: 2px;
+}
+
+.session-list>div:hover .delete-icon {
+    opacity: 1;
+}
+
+/* Always show delete on mobile for better UX */
+@media (max-width: 768px) {
+    .delete-icon {
+        opacity: 0.8 !important;
+    }
 }

@@ -118,3 +118,35 @@ export const normalizeExerciseId = (name) => {
     if (lower.includes('curl')) return 'bicep_curl';
     return 'default';
 };
+
+export const parseBackendConfig = (config) => {
+    if (!config) return null;
+
+    try {
+        const keypoints = config.keypoints ? JSON.parse(config.keypoints) : [];
+        const rawRules = config.rules ? JSON.parse(config.rules) : [];
+
+        const rules = rawRules.map(r => ({
+            name: r.name,
+            check: (angles) => {
+                const val = angles[r.angle_name];
+                if (val === undefined) return "correct"; // safe fallback
+                if (val < r.min) return r.min_result || "unsafe";
+                if (val > r.max) return r.max_result || "improve";
+                return "correct";
+            },
+            message: r.messages || { correct: "Good form" }
+        }));
+
+        return {
+            id: 'custom',
+            displayName: 'Custom AI Coach',
+            keypoints,
+            instructions: config.instructions || "Follow the AI guidance.",
+            rules
+        };
+    } catch (e) {
+        console.error("Failed to parse backend pose config", e);
+        return null;
+    }
+};
