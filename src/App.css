@@ -7,7 +7,8 @@
   box-sizing: border-box;
 }
 
-html, body {
+html,
+body {
   width: 100%;
   height: 100%;
   overflow-x: hidden;
@@ -39,7 +40,8 @@ IMPORTANT:
 - NO margin-bottom on navbar
 */
 .navbar {
-  height: 80px;              /* adjust if needed */
+  height: 80px;
+  /* adjust if needed */
   flex-shrink: 0;
 }
 
@@ -53,7 +55,8 @@ NO margin-top anywhere else.
 */
 .main-content {
   flex: 1;
-  padding-top: 80px;         /* EXACT navbar height */
+  padding-top: 80px;
+  /* EXACT navbar height */
   width: 100%;
   position: relative;
 }
@@ -86,4 +89,24 @@ NO margin-top anywhere else.
 ================================ */
 footer {
   margin-top: auto;
+}
+
+/* ================================
+   ZOHO WIDGET FIX FOR MOBILE
+================================ */
+@media (max-width: 768px) {
+
+  /* Move Zoho Chat up to avoid covering BottomNav (70px height) */
+  #zsiq_float,
+  #zsiq_mfloat,
+  .zsiq_float,
+  .zsiq_mfloat,
+  div[data-id="zsiq_float"] {
+    bottom: 90px !important;
+  }
+
+  /* Also ensure the chat window itself respects this if expanded */
+  #zsiq_widget {
+    bottom: 90px !important;
+  }
 }

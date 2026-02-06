@@ -11,7 +11,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Camera, RefreshCw, CheckCircle2, AlertTriangle, XCircle, Play, ArrowLeft, ShieldAlert, Activity } from "lucide-react";
 import "./Posture.css";
 
-import { POSTURE_RULES, normalizeExerciseId } from "./utils/postureRules";
+import { POSTURE_RULES, normalizeExerciseId, parseBackendConfig } from "./utils/postureRules";
 
 const PostureDetector = () => {
   const navigate = useNavigate();
@@ -33,6 +33,9 @@ const PostureDetector = () => {
   const lastApiCall = useRef(0);
   const unsafeTimer = useRef(null);
   const safetyStartTime = useRef(0);
+
+  // State for dynamic rules
+  const [activeRules, setActiveRules] = useState(null);
 
   // --- Device & Auth Detection ---
   useEffect(() => {
@@ -58,8 +61,20 @@ const PostureDetector = () => {
       setExerciseId(currentId);
       setIsStarted(true);
 
+      // Check for dynamic backend config
+      if (location.state.poseConfig) {
+        const dynamicRules = parseBackendConfig(location.state.poseConfig);
+        if (dynamicRules) {
+          setActiveRules(dynamicRules);
+          fittyVoice.speak(`Ready for ${incomingName}. ${dynamicRules.instructions}`);
+          return;
+        }
+      }
+
+      // Fallback to local rules
       const instructions = POSTURE_RULES[currentId]?.instructions || "Get ready to workout.";
       fittyVoice.speak(`Ready for ${incomingName}. ${instructions}`);
+      setActiveRules(POSTURE_RULES[currentId] || POSTURE_RULES['default']);
     }
   }, [location]);
 
@@ -92,9 +107,8 @@ const PostureDetector = () => {
     const rightWrist = landmarks[16];
 
     // --- LOGIC PER EXERCISE ---
-    // --- LOGIC PER EXERCISE ---
     // Get rules for current exercise or default
-    const currentRules = POSTURE_RULES[exerciseId] || POSTURE_RULES['default'];
+    const currentRules = activeRules || POSTURE_RULES[exerciseId] || POSTURE_RULES['default'];
 
     // Calculate required angles first (optimization: can be done on demand inside rule but this is cleaner)
     const angles = {

@@ -4,7 +4,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { FaDumbbell, FaHeartbeat, FaChartLine } from 'react-icons/fa';
 
 import LoginForm from './LoginForm';
-import SignupForm from './SignupForm';
+import MultiStepSignup from './MultiStepSignup';
+import ForgotPassword from './ForgotPassword';
 import fittyMascot from '../../assets/fitty_mascot.png';
 import './Auth.css';
 
@@ -14,21 +15,19 @@ const Auth = () => {
 
     // Parse query params for initial tab state
     const queryParams = new URLSearchParams(location.search);
-    const initialTab = queryParams.get('tab') === 'signup' ? false : true;
-    const [isLogin, setIsLogin] = useState(initialTab);
+    const initialTab = queryParams.get('tab') || 'login';
+    const [authMode, setAuthMode] = useState(initialTab);
 
     // Sync state with URL changes
     useEffect(() => {
         const params = new URLSearchParams(location.search);
-        const tab = params.get('tab');
-        if (tab === 'signup') setIsLogin(false);
-        else if (tab === 'login') setIsLogin(true);
+        const tab = params.get('tab') || 'login';
+        setAuthMode(tab);
     }, [location.search]);
 
-    const handleSwitch = (state) => {
-        const tabName = state ? 'login' : 'signup';
-        setIsLogin(state);
-        navigate(`/auth?tab=${tabName}`, { replace: true });
+    const handleSwitch = (mode) => {
+        setAuthMode(mode);
+        navigate(`/auth?tab=${mode}`, { replace: true });
     };
 
     return (
@@ -71,26 +70,28 @@ const Auth = () => {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5 }}
                     >
-                        {/* Tab Switcher */}
-                        <div className="auth-tab-group">
-                            <button
-                                className={`tab-btn ${isLogin ? 'active' : ''}`}
-                                onClick={() => handleSwitch(true)}
-                            >
-                                Log In
-                            </button>
-                            <button
-                                className={`tab-btn ${!isLogin ? 'active' : ''}`}
-                                onClick={() => handleSwitch(false)}
-                            >
-                                Sign Up
-                            </button>
-                        </div>
+                        {/* Tab Switcher - Hide if Forgot Password */}
+                        {authMode !== 'forgot-password' && (
+                            <div className="auth-tab-group">
+                                <button
+                                    className={`tab-btn ${authMode === 'login' ? 'active' : ''}`}
+                                    onClick={() => handleSwitch('login')}
+                                >
+                                    Log In
+                                </button>
+                                <button
+                                    className={`tab-btn ${authMode === 'signup' ? 'active' : ''}`}
+                                    onClick={() => handleSwitch('signup')}
+                                >
+                                    Sign Up
+                                </button>
+                            </div>
+                        )}
 
                         {/* Form Content with Transitions */}
                         <div className="form-content">
                             <AnimatePresence mode="wait">
-                                {isLogin ? (
+                                {authMode === 'login' && (
                                     <motion.div
                                         key="login"
                                         initial={{ opacity: 0, x: 20 }}
@@ -100,7 +101,8 @@ const Auth = () => {
                                     >
                                         <LoginForm />
                                     </motion.div>
-                                ) : (
+                                )}
+                                {authMode === 'signup' && (
                                     <motion.div
                                         key="signup"
                                         initial={{ opacity: 0, x: 20 }}
@@ -108,7 +110,18 @@ const Auth = () => {
                                         exit={{ opacity: 0, x: -20 }}
                                         transition={{ duration: 0.3 }}
                                     >
-                                        <SignupForm />
+                                        <MultiStepSignup />
+                                    </motion.div>
+                                )}
+                                {authMode === 'forgot-password' && (
+                                    <motion.div
+                                        key="forgot-password"
+                                        initial={{ opacity: 0, x: 20 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        exit={{ opacity: 0, x: -20 }}
+                                        transition={{ duration: 0.3 }}
+                                    >
+                                        <ForgotPassword onBack={() => handleSwitch('login')} />
                                     </motion.div>
                                 )}
                             </AnimatePresence>

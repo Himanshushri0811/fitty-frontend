@@ -436,9 +436,8 @@ const Navbar = () => {
                       exit={{ opacity: 0, y: 10, scale: 0.95 }}
                     >
                       <div className="dropdown-header">
-                        <div className="dropdown-user-info">
-                          <p className="d-name">{userData?.name || 'User'}</p>
-                          <p className="d-email">{userData?.email}</p>
+                        <div className="dropdown-user-info" style={{ textAlign: 'center' }}>
+                          <p className="d-name" style={{ margin: 0, fontSize: '1.2rem', fontWeight: '800', background: 'linear-gradient(135deg, #6366f1 0%, #d946ef 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Welcome, Champ 🏆</p>
                         </div>
                       </div>
                       <div className="dropdown-items">
@@ -506,19 +505,17 @@ const Navbar = () => {
               </div>
 
               <div className="drawer-content">
-                <Link to="/" className="drawer-item" onClick={() => setMobileMenuOpen(false)}>
-                  <FaHome className="drawer-icon" /> Home
-                </Link>
-
-                <Link to="/contact" className="drawer-item" onClick={() => setMobileMenuOpen(false)}>
-                  <MdContactMail className="drawer-icon" /> Contact
-                </Link>
-
-                {isLoggedIn && (
-                  <Link to={userData?.role === 'GYM_OWNER' ? '/gym-dashboard' : '/dashboard'} className="drawer-item" onClick={() => setMobileMenuOpen(false)}>
-                    <RiDashboardFill className="drawer-icon" /> Dashboard
+                {/* Dynamic Nav Items */}
+                {navItems.map((item) => (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    className={`drawer-item ${location.pathname === item.path ? 'active' : ''}`}
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <span className="drawer-icon">{item.icon}</span> {item.label}
                   </Link>
-                )}
+                ))}
 
                 {!isLoggedIn ? (
                   <Link to="/auth?tab=login" className="drawer-btn login" onClick={() => setMobileMenuOpen(false)}>

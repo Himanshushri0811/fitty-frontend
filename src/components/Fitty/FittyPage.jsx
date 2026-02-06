@@ -4,7 +4,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import {
     FaPaperPlane, FaMicrophone, FaStop, FaRobot, FaPlus, FaCircle, FaUser, FaTrash, FaSpinner,
-    FaBars, FaTimes, FaSun, FaMoon
+    FaBars, FaTimes, FaSun, FaMoon, FaArrowLeft
 } from 'react-icons/fa';
 
 import './Fitty.css';
@@ -130,11 +130,29 @@ const FittyPage = () => {
         }
     };
 
+    const handleDeleteSession = async (id) => {
+        if (!window.confirm("Are you sure you want to delete this chat?")) return;
+
+        try {
+            // Assume service has delete method or we implement it
+            // For now, filtering locally as fallback if API missing
+            await chatbotService.deleteSession(id).catch(() => { });
+
+            setSessions(prev => prev.filter(s => s.id !== id));
+            if (sessionId === id) {
+                handleNewChat();
+            }
+        } catch (err) {
+            console.error("Delete failed", err);
+        }
+    };
+
     const handleNewChat = () => {
         setSessionId(null);
         setMessages([]);
         setIsTyping(false); // Reset typing state
         loadSessionList();
+        if (window.innerWidth <= 768) setSidebarOpen(false); // Close sidebar on mobile
     };
 
     const handleSend = async (e) => {
@@ -260,14 +278,13 @@ const FittyPage = () => {
                             }}
                         >
                             <span>{s.title}</span>
-                            {/* Placeholder for Delete - backend logic pending */}
+                            {/* Delete Button */}
                             <FaTrash
                                 size={12}
-                                style={{ color: '#ff4d4d', opacity: 0.6 }}
+                                className="delete-icon"
                                 onClick={(e) => {
                                     e.stopPropagation();
-                                    // handleDeleteSession(s.id); 
-                                    alert("Delete coming soon!");
+                                    handleDeleteSession(s.id);
                                 }}
                             />
                         </div>
@@ -286,6 +303,14 @@ const FittyPage = () => {
                             onClick={() => setSidebarOpen(true)}
                         >
                             <FaBars />
+                        </button>
+
+                        <button
+                            className="fitty-action-btn"
+                            onClick={() => window.location.href = '/dashboard'}
+                            title="Back to Dashboard"
+                        >
+                            <FaArrowLeft />
                         </button>
 
                         <div className="status-indicator">

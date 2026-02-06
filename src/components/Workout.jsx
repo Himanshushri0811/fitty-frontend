@@ -139,6 +139,25 @@ export default function Workout() {
     }
   };
 
+  const handleVideoClick = async (ex) => {
+    // Optimistically show what we have
+    setSelectedVideo(ex);
+
+    try {
+      // Fetch expert details (video, pose config)
+      const res = await API.get(`/api/fitness/exercises/${encodeURIComponent(ex.name)}/`);
+      if (res.data) {
+        setSelectedVideo(prev => ({
+          ...prev,
+          expert_video_url: res.data.demo_video_url, // Store expert video separately
+          pose_config: res.data.pose_config
+        }));
+      }
+    } catch (err) {
+      console.log("No expert data found for", ex.name);
+    }
+  };
+
   const handleSaveVideoUrl = async () => {
     if (!selectedVideo || !videoUrlInput.trim()) return;
     setIsSavingVideo(true);
@@ -280,7 +299,7 @@ export default function Workout() {
                     <h3>{ex.name}</h3>
                     <p>{ex.description}</p>
                     {/* Video Button */}
-                    <button className="video-trigger" onClick={(e) => { e.stopPropagation(); setSelectedVideo(ex); }}>
+                    <button className="video-trigger" onClick={(e) => { e.stopPropagation(); handleVideoClick(ex); }}>
                       <PlayCircle size={14} /> Watch Demo
                     </button>
                     {ex.adaptive_note && <span className="adaptive-badge">{ex.adaptive_note}</span>}
@@ -423,36 +442,66 @@ export default function Workout() {
                   </div>
                 ) : (
                   <div className="empty-video-state">
-                    <Dumbbell size={48} className="bounce" />
-                    <p>No video uploaded yet.</p>
+                    {(selectedVideo.expert_video_url) ? (
+                      <div className="video-contain-wrapper">
+                        <div className="video-wrapper">
+                          <video controls autoPlay src={selectedVideo.expert_video_url}>
+                            Your browser does not support the video tag.
+                          </video>
+                          <div className="video-overlay-controls">
+                            <button
+                              className="ai-coach-btn-top"
+                              onClick={() => {
+                                const normalizedId = normalizeExerciseId(selectedVideo.name);
+                                navigate("/posture", {
+                                  state: {
+                                    exercises: [selectedVideo.name],
+                                    exerciseId: normalizedId,
+                                    poseConfig: selectedVideo.pose_config // Pass dynamic config
+                                  }
+                                });
+                              }}
+                            >
+                              <Zap size={14} fill="currentColor" /> Start AI Coach
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        <Dumbbell size={48} className="bounce" />
+                        <p>No video uploaded yet.</p>
 
-                    <div className="video-input-group">
-                      <input
-                        type="text"
-                        placeholder="Paste your .mp4 or video link here..."
-                        value={videoUrlInput}
-                        onChange={(e) => setVideoUrlInput(e.target.value)}
-                        className="video-url-input"
-                      />
-                      <button onClick={handleSaveVideoUrl} disabled={isSavingVideo} className="save-video-btn">
-                        {isSavingVideo ? "Saving..." : "Save Video Link"}
-                      </button>
-                    </div>
-                    <button
-                      className="ai-form-check-btn"
-                      style={{ marginTop: '15px' }}
-                      onClick={() => {
-                        const normalizedId = normalizeExerciseId(selectedVideo.name);
-                        navigate("/posture", {
-                          state: {
-                            exercises: [selectedVideo.name],
-                            exerciseId: normalizedId
-                          }
-                        });
-                      }}
-                    >
-                      <Zap size={16} fill="white" /> Check Form in AI
-                    </button>
+                        <div className="video-input-group">
+                          <input
+                            type="text"
+                            placeholder="Paste your .mp4 or video link here..."
+                            value={videoUrlInput}
+                            onChange={(e) => setVideoUrlInput(e.target.value)}
+                            className="video-url-input"
+                          />
+                          <button onClick={handleSaveVideoUrl} disabled={isSavingVideo} className="save-video-btn">
+                            {isSavingVideo ? "Saving..." : "Save Video Link"}
+                          </button>
+                        </div>
+                        <button
+                          className="ai-form-check-btn"
+                          style={{ marginTop: '15px' }}
+                          onClick={() => {
+                            const normalizedId = normalizeExerciseId(selectedVideo.name);
+                            navigate("/posture", {
+                              state: {
+                                exercises: [selectedVideo.name],
+                                exerciseId: normalizedId,
+                                poseConfig: selectedVideo.pose_config
+                              }
+                            });
+                          }}
+                        >
+                          <Zap size={16} fill="white" /> Check Form in AI
+                        </button>
+                      </>
+                    )}
                   </div>
                 )}
               </div>
