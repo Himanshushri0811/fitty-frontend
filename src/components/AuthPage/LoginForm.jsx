@@ -32,6 +32,16 @@ const LoginForm = () => {
                 headers: { 'Content-Type': 'application/json' }
             });
             login(res.data.user, { access: res.data.access, refresh: res.data.refresh });
+
+            // Role Based Redirection
+            const role = res.data.user.role;
+            if (role === 'ADMIN') {
+                navigate('/admin');
+            } else if (role === 'GYM_OWNER') {
+                navigate('/gym-dashboard');
+            } else {
+                navigate('/dashboard');
+            }
         } catch (err) {
             console.error(err);
             setError(err.response?.data?.error || 'Invalid credentials');

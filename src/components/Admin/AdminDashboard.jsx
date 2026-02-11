@@ -1,114 +1,125 @@
-import React, { useState, useEffect } from 'react';
-import API from '../axiosConfig';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import {
+    Users,
+    Video,
+    LogOut,
+    LayoutDashboard,
+    Menu,
+    X,
+    Sun,
+    Moon,
+    Settings
+} from 'lucide-react';
+import { useTheme } from '../../context/ThemeContext';
+import { useAuth } from '../../context/AuthContext';
+import './Admin.css';
+import UserManagement from './UserManagement';
+import VideoManagement from './VideoManagement';
 
 const AdminDashboard = () => {
-    const [data, setData] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
+    const { isDarkMode, toggleTheme } = useTheme();
+    const { logout } = useAuth();
+    const [activeTab, setActiveTab] = useState('users');
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-    useEffect(() => {
-        const fetchStats = async () => {
-            try {
-                const response = await API.get('/api/admin-panel/stats/');
-                setData(response.data);
-            } catch (error) {
-                console.error("Error fetching admin stats:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchStats();
-    }, []);
+    const handleLogout = () => {
+        if (window.confirm("Are you sure you want to logout?")) {
+            logout();
+            // AuthContext handles redirect to '/'
+        }
+    };
 
-    if (loading) return <div>Loading dashboard...</div>;
-    if (!data) return <div>Failed to load data.</div>;
+    const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
-    const { stats, recent_logins, recent_actions } = data;
+    const renderContent = () => {
+        switch (activeTab) {
+            case 'users': return <UserManagement />;
+            case 'videos': return <VideoManagement />;
+            case 'dashboard': return <div className="empty-state"><h3>Dashboard Overview Coming Soon</h3></div>;
+            case 'settings': return <div className="empty-state"><h3>Settings Coming Soon</h3></div>;
+            default: return <UserManagement />;
+        }
+    };
 
     return (
-        <div>
-            <div className="admin-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div>
-                    <h1>Platform Overview</h1>
-                    <p>Real-time statistics and recent activity.</p>
-                </div>
-                <button
-                    className="admin-btn"
-                    style={{ background: '#ef4444', padding: '10px 20px' }}
-                    onClick={() => {
-                        if (window.confirm("Logout from Admin Panel?")) {
-                            localStorage.clear();
-                            window.location.href = '/';
-                        }
-                    }}
-                >
-                    Logout
-                </button>
-            </div>
+        <div className="admin-container">
+            {/* Mobile Overlay */}
+            {isSidebarOpen && (
+                <div className="admin-overlay" onClick={() => setIsSidebarOpen(false)} />
+            )}
 
-            <div className="stats-grid">
-                <div className="stat-card">
-                    <span className="label">Total Users</span>
-                    <span className="value">{stats.total_users}</span>
-                    <span className="trend">+12% from last month</span>
-                </div>
-                <div className="stat-card">
-                    <span className="label">Total Gyms</span>
-                    <span className="value">{stats.total_gyms}</span>
-                </div>
-                <div className="stat-card">
-                    <span className="label">New Users Today</span>
-                    <span className="value">{stats.new_users_today}</span>
-                    <span className="trend">Daily Growth</span>
-                </div>
-                <div className="stat-card">
-                    <span className="label">Active Users Today</span>
-                    <span className="value">{stats.active_users}</span>
-                </div>
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px' }}>
-                <div className="admin-card">
-                    <h3>Recent Admin Actions</h3>
-                    <table className="admin-table">
-                        <thead>
-                            <tr>
-                                <th>Admin</th>
-                                <th>Action</th>
-                                <th>Time</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {recent_actions.map(action => (
-                                <tr key={action.id}>
-                                    <td>{action.admin_username}</td>
-                                    <td>{action.action_type} - {action.target_model}</td>
-                                    <td>{new Date(action.timestamp).toLocaleTimeString()}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
+            {/* Sidebar */}
+            <aside className={`admin-sidebar ${isSidebarOpen ? 'open' : ''}`}>
+                <div className="admin-logo">
+                    <h2>Fit<span>Mitra</span></h2>
+                    {isSidebarOpen && <button className="menu-toggle" onClick={toggleSidebar}><X /></button>}
                 </div>
 
-                <div className="admin-card">
-                    <h3>Recent Logins</h3>
-                    <table className="admin-table">
-                        <thead>
-                            <tr>
-                                <th>User</th>
-                                <th>Time</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {recent_logins.map(log => (
-                                <tr key={log.id}>
-                                    <td>{log.username}</td>
-                                    <td>{new Date(log.timestamp).toLocaleString()}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                <nav className="admin-nav">
+                    <button
+                        className={`nav-item ${activeTab === 'users' ? 'active' : ''}`}
+                        onClick={() => { setActiveTab('users'); setIsSidebarOpen(false); }}
+                    >
+                        <Users size={20} /> User Management
+                    </button>
+                    <button
+                        className={`nav-item ${activeTab === 'videos' ? 'active' : ''}`}
+                        onClick={() => { setActiveTab('videos'); setIsSidebarOpen(false); }}
+                    >
+                        <Video size={20} /> Workout Videos
+                    </button>
+                    <button
+                        className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`}
+                        onClick={() => { setActiveTab('dashboard'); setIsSidebarOpen(false); }}
+                    >
+                        <LayoutDashboard size={20} /> Analytics
+                    </button>
+                    <button
+                        className={`nav-item ${activeTab === 'settings' ? 'active' : ''}`}
+                        onClick={() => { setActiveTab('settings'); setIsSidebarOpen(false); }}
+                    >
+                        <Settings size={20} /> Settings
+                    </button>
+                </nav>
+
+                <div className="admin-footer">
+                    <button className="logout-btn" onClick={handleLogout}>
+                        <LogOut size={18} /> Logout
+                    </button>
                 </div>
-            </div>
+            </aside>
+
+            {/* Main Content */}
+            <main className="admin-content">
+                <header className="admin-header">
+                    <div className="admin-header-left">
+                        <button className="menu-toggle" onClick={toggleSidebar}>
+                            <Menu size={24} />
+                        </button>
+                        <h3>
+                            {activeTab === 'users' && 'User Management'}
+                            {activeTab === 'videos' && 'Workout Video Library'}
+                            {activeTab === 'dashboard' && 'Admin Dashboard'}
+                            {activeTab === 'settings' && 'System Settings'}
+                        </h3>
+                    </div>
+
+                    <div className="admin-profile">
+                        <button className="theme-btn" onClick={toggleTheme} title="Toggle Theme">
+                            {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
+                        </button>
+                        <div className="avatar-circle" style={{ width: 40, height: 40, background: 'var(--primary)', color: 'white' }}>
+                            A
+                        </div>
+                    </div>
+                </header>
+
+                <div className="content-body">
+                    {renderContent()}
+                </div>
+            </main>
         </div>
     );
 };

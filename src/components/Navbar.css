@@ -445,8 +445,7 @@
    ============================ */
 /* MOBILE RESPONSIVE FIXES */
 .mobile-toggle {
-  display: none !important;
-  /* HIDE TOGGLE ALWAYS */
+  display: none;
 }
 
 @media (max-width: 900px) {
@@ -478,5 +477,12 @@
 
   .logo-text {
     font-size: 1.4rem;
+  }
+}
+
+/* Ensure mobile toggle is HIDDEN on small screens as we have BottomNav */
+@media (max-width: 900px) {
+  .mobile-toggle {
+    display: none !important;
   }
 }

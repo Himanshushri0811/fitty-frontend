@@ -29,7 +29,7 @@ export const POSTURE_RULES = {
                     return "correct";
                 },
                 message: {
-                    unsafe: "Keep your chest up! Don't fold suitable.",
+                    unsafe: "Keep your chest up!",
                     correct: "Good back alignment."
                 }
             }
@@ -46,9 +46,6 @@ export const POSTURE_RULES = {
             {
                 name: "Elbow Flare",
                 check: (angles) => {
-                    // Angle between arm and body (simplified)
-                    // If we had 3D, we'd check flare. Here checking extension.
-                    // This is a placeholder for 2D limitations.
                     return "correct";
                 },
                 message: {
@@ -64,7 +61,7 @@ export const POSTURE_RULES = {
                     return "correct";
                 },
                 message: {
-                    unsafe: "Don't compress elbows too much.",
+                    unsafe: "Don't compress elbows.",
                     improve: "Full extension at top.",
                     correct: "Good range."
                 }
@@ -77,7 +74,7 @@ export const POSTURE_RULES = {
         id: 'push_up',
         displayName: 'Push Up',
         keypoints: [11, 23, 25], // Shoulder, Hip, Knee
-        instructions: "Plank position. Straight line from head to heels.",
+        instructions: "Plank position. Straight line.",
         rules: [
             {
                 name: "Body Line",
@@ -89,7 +86,7 @@ export const POSTURE_RULES = {
                 },
                 message: {
                     improve: "Lower your hips!",
-                    unsafe: "Lift your hips! Core tight.",
+                    unsafe: "Lift your hips!",
                     correct: "Solid plank form."
                 }
             }
@@ -101,7 +98,7 @@ export const POSTURE_RULES = {
         id: 'default',
         displayName: 'General Exercise',
         keypoints: [],
-        instructions: "Maintain good form and steady tempo.",
+        instructions: "Maintain good form.",
         rules: []
     }
 };
@@ -123,6 +120,48 @@ export const parseBackendConfig = (config) => {
     if (!config) return null;
 
     try {
+        // New Array Format from Backend
+        if (Array.isArray(config)) {
+            // If empty array, fallback to null so it uses default/normalized ID
+            if (config.length === 0) return null;
+
+            const rules = config.map(r => ({
+                name: r.name,
+                check: (angles) => {
+                    // Try to guess angle type from name if not explicit
+                    let val = 0;
+                    const n = r.name.toLowerCase();
+
+                    if (n.includes('knee')) val = angles.knee;
+                    else if (n.includes('hip')) val = angles.hip; // could be hip or hip_body? Use hip (flexion) default
+                    else if (n.includes('elbow')) val = angles.elbow;
+                    else if (n.includes('shoulder')) val = angles.shoulder;
+                    else if (n.includes('body') || n.includes('plank')) val = angles.hip_body;
+                    else val = angles.elbow; // Default fallback to arm? risky.
+
+                    if (!val) return "correct";
+
+                    if (val < r.min) return "unsafe";
+                    if (val > r.max) return "improve";
+                    return "correct";
+                },
+                message: r.message || {
+                    correct: "Good form",
+                    unsafe: `Watch your ${r.name}`,
+                    improve: `Adjust range (${r.name})`
+                }
+            }));
+
+            return {
+                id: 'custom_ai',
+                displayName: 'AI Coach',
+                keypoints: config[0].keypoints || [],
+                instructions: "Follow AI guidance.",
+                rules: rules
+            };
+        }
+
+        // Legacy Object Format (if used)
         const keypoints = config.keypoints ? JSON.parse(config.keypoints) : [];
         const rawRules = config.rules ? JSON.parse(config.rules) : [];
 
@@ -130,7 +169,7 @@ export const parseBackendConfig = (config) => {
             name: r.name,
             check: (angles) => {
                 const val = angles[r.angle_name];
-                if (val === undefined) return "correct"; // safe fallback
+                if (val === undefined) return "correct";
                 if (val < r.min) return r.min_result || "unsafe";
                 if (val > r.max) return r.max_result || "improve";
                 return "correct";
