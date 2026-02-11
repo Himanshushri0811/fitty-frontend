@@ -1,15 +1,14 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { Home, Dumbbell, Utensils, User, LayoutGrid, Zap, Compass } from 'lucide-react';
+import { Home, Dumbbell, Utensils, User, LayoutGrid, Zap, Compass, LogIn, Mail } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import './BottomNav.css';
 
 const BottomNav = () => {
     const { isAuthenticated, user } = useAuth();
 
-    // Don't show if not logged in or on Admin
-    if (!isAuthenticated) return null;
-    if (user?.role === 'ADMIN') return null;
+    // Only hide on Admin role, show for Guest
+    if (isAuthenticated && user?.role === 'ADMIN') return null;
 
     const navItems = [
         { path: '/dashboard', label: 'Home', icon: Home },
@@ -19,14 +18,26 @@ const BottomNav = () => {
         { path: '/explore', label: 'Explore', icon: Compass },
     ];
 
-    // Gym Owner can have different items
+    // Gym Owner items
     const gymNavItems = [
         { path: '/gym-dashboard', label: 'Home', icon: Home },
         { path: '/gym-plans', label: 'Plans', icon: LayoutGrid },
         { path: '/gym-settings', label: 'Settings', icon: User },
     ];
 
-    const items = user?.role === 'GYM_OWNER' ? gymNavItems : navItems;
+    // Guest items (Landing Page)
+    const guestNavItems = [
+        { path: '/', label: 'Home', icon: Home },
+        { path: '/explore', label: 'Explore', icon: Compass },
+        { path: '/contact', label: 'Contact', icon: Mail },
+        { path: '/auth', label: 'Login', icon: LogIn },
+    ];
+
+    // Determine which items to show
+    let items = guestNavItems;
+    if (isAuthenticated) {
+        items = user?.role === 'GYM_OWNER' ? gymNavItems : navItems;
+    }
 
     return (
         <nav className="bottom-nav glass-panel">

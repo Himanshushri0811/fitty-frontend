@@ -9,7 +9,7 @@ export const PublicRoute = () => {
     if (loading) return <div className="loading-screen">Loading...</div>;
 
     if (isAuthenticated) {
-        if (user?.is_staff || user?.is_superuser) return <Navigate to="/admin/dashboard" replace />;
+        if (user?.role === 'ADMIN') return <Navigate to="/admin" replace />;
         if (user?.role === 'GYM_OWNER') return <Navigate to="/gym-dashboard" replace />;
         return <Navigate to="/dashboard" replace />;
     }
@@ -32,7 +32,7 @@ export const AdminRoute = () => {
 
     if (!isAuthenticated) return <Navigate to="/auth?tab=login" replace />;
 
-    if (user?.is_staff || user?.is_superuser) return <Outlet />;
+    if (user?.role === 'ADMIN') return <Outlet />;
 
     return <Navigate to="/dashboard" replace />;
 };

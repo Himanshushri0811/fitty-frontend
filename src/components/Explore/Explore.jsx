@@ -127,6 +127,7 @@ const Explore = () => {
                     </Section>
                 )}
 
+                {/* Empty State */}
                 {activeTab === 'Overview' && (!events.length && !challenges.length) && (
                     <div style={{ textAlign: 'center', marginTop: '50px', color: '#94a3b8' }}>
                         <h3>No content available right now.</h3>

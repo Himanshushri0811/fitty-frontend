@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import API from '../axiosConfig';
-import { FaPlus, FaEdit, FaVideo, FaRobot } from 'react-icons/fa';
+import { FaPlus, FaEdit, FaVideo, FaRobot, FaTrash } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
 import './AdminPanel.css'; // Reusing existing admin styles
 
@@ -13,9 +13,10 @@ const ExerciseManagement = () => {
     // Form State
     const [formData, setFormData] = useState({
         name: '',
-        target_muscle: '',
-        demo_video_url: '',
-        pose_config_str: '' // We'll parse/stringify JSON here
+        target_muscle_group: '',
+        video_url: '',
+        equipment_type: 'None',
+        posture_config_str: '' // We'll parse/stringify JSON here
     });
 
     useEffect(() => {
@@ -24,7 +25,7 @@ const ExerciseManagement = () => {
 
     const fetchExercises = async () => {
         try {
-            const res = await API.get('/api/fitness/exercises/');
+            const res = await API.get('/api/workouts/exercises/');
             setExercises(res.data);
             setLoading(false);
         } catch (err) {
@@ -37,20 +38,32 @@ const ExerciseManagement = () => {
         setEditingExercise(ex);
         setFormData({
             name: ex.name,
-            target_muscle: ex.target_muscle || '',
-            demo_video_url: ex.demo_video_url || '',
-            pose_config_str: ex.pose_config ? JSON.stringify(ex.pose_config, null, 2) : ''
+            target_muscle_group: ex.muscle || '',
+            video_url: ex.video_url || '',
+            equipment_type: ex.equipment || 'None',
+            posture_config_str: ex.posture_config ? JSON.stringify(ex.posture_config, null, 2) : ''
         });
         setShowModal(true);
+    };
+
+    const handleDelete = async (id) => {
+        if (!window.confirm("Are you sure?")) return;
+        try {
+            await API.delete(`/api/workouts/exercises/${id}/`);
+            setExercises(exercises.filter(e => e.id !== id));
+        } catch (err) {
+            alert("Failed to delete.");
+        }
     };
 
     const handleAdd = () => {
         setEditingExercise(null);
         setFormData({
             name: '',
-            target_muscle: '',
-            demo_video_url: '',
-            pose_config_str: ''
+            target_muscle_group: '',
+            video_url: '',
+            equipment_type: 'None',
+            posture_config_str: ''
         });
         setShowModal(true);
     };
@@ -58,10 +71,10 @@ const ExerciseManagement = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        let pose_config = {};
+        let posture_config = [];
         try {
-            if (formData.pose_config_str.trim()) {
-                pose_config = JSON.parse(formData.pose_config_str);
+            if (formData.posture_config_str.trim()) {
+                posture_config = JSON.parse(formData.posture_config_str);
             }
         } catch (err) {
             alert("Invalid JSON for AI Rules.");
@@ -70,20 +83,21 @@ const ExerciseManagement = () => {
 
         const payload = {
             name: formData.name,
-            target_muscle: formData.target_muscle,
-            demo_video_url: formData.demo_video_url,
-            pose_config: pose_config
+            target_muscle_group: formData.target_muscle_group,
+            video_url: formData.video_url,
+            equipment_type: formData.equipment_type,
+            posture_config: posture_config
         };
 
         try {
             if (editingExercise) {
                 // Update
-                const res = await API.put(`/api/fitness/exercises/${editingExercise.name}/`, payload);
-                setExercises(exercises.map(ex => ex.id === editingExercise.id ? res.data : ex));
+                await API.put(`/api/workouts/exercises/${editingExercise.id}/`, payload);
+                fetchExercises(); // Refresh list to get updated structure
             } else {
                 // Create
-                const res = await API.post('/api/fitness/exercises/', payload);
-                setExercises([...exercises, res.data]);
+                await API.post('/api/workouts/exercises/', payload);
+                fetchExercises();
             }
             setShowModal(false);
         } catch (err) {
@@ -109,6 +123,7 @@ const ExerciseManagement = () => {
                         <tr>
                             <th>Name</th>
                             <th>Muscle</th>
+                            <th>Equipment</th>
                             <th>AI Ready?</th>
                             <th>Video?</th>
                             <th>Actions</th>
@@ -118,16 +133,17 @@ const ExerciseManagement = () => {
                         {exercises.map(ex => (
                             <tr key={ex.id}>
                                 <td>{ex.name}</td>
-                                <td>{ex.target_muscle}</td>
+                                <td>{ex.muscle}</td>
+                                <td>{ex.equipment}</td>
                                 <td>
-                                    {ex.pose_config && Object.keys(ex.pose_config).length > 0 ? (
+                                    {ex.posture_config && ex.posture_config.length > 0 ? (
                                         <span className="status-badge active"><FaRobot /> Yes</span>
                                     ) : (
                                         <span className="status-badge inactive">No</span>
                                     )}
                                 </td>
                                 <td>
-                                    {ex.demo_video_url ? (
+                                    {ex.video_url ? (
                                         <span className="status-badge success"><FaVideo /> Yes</span>
                                     ) : (
                                         <span className="status-badge warning">No</span>
@@ -135,6 +151,7 @@ const ExerciseManagement = () => {
                                 </td>
                                 <td>
                                     <button className="icon-btn" onClick={() => handleEdit(ex)}><FaEdit /></button>
+                                    <button className="icon-btn danger" onClick={() => handleDelete(ex.id)}><FaTrash /></button>
                                 </td>
                             </tr>
                         ))}
@@ -155,21 +172,43 @@ const ExerciseManagement = () => {
                                         value={formData.name}
                                         onChange={e => setFormData({ ...formData, name: e.target.value })}
                                         required
-                                        disabled={!!editingExercise} // Name is ID for now in backend logic updates
+                                        disabled={!!editingExercise} // Name shouldn't change easily? Or allow it.
                                     />
                                 </div>
                                 <div className="form-group">
                                     <label>Target Muscle</label>
-                                    <input
-                                        value={formData.target_muscle}
-                                        onChange={e => setFormData({ ...formData, target_muscle: e.target.value })}
-                                    />
+                                    <select
+                                        value={formData.target_muscle_group}
+                                        onChange={e => setFormData({ ...formData, target_muscle_group: e.target.value })}
+                                    >
+                                        <option value="">Select...</option>
+                                        <option value="Chest">Chest</option>
+                                        <option value="Back">Back</option>
+                                        <option value="Legs">Legs</option>
+                                        <option value="Shoulders">Shoulders</option>
+                                        <option value="Arms">Arms</option>
+                                        <option value="Core">Core</option>
+                                        <option value="Cardio">Cardio</option>
+                                    </select>
+                                </div>
+                                <div className="form-group">
+                                    <label>Equipment</label>
+                                    <select
+                                        value={formData.equipment_type}
+                                        onChange={e => setFormData({ ...formData, equipment_type: e.target.value })}
+                                    >
+                                        <option value="None">None (Bodyweight)</option>
+                                        <option value="Dumbbell">Dumbbell</option>
+                                        <option value="Barbell">Barbell</option>
+                                        <option value="Machine">Machine</option>
+                                        <option value="Cable">Cable</option>
+                                    </select>
                                 </div>
                                 <div className="form-group">
                                     <label>Demo Video URL</label>
                                     <input
-                                        value={formData.demo_video_url}
-                                        onChange={e => setFormData({ ...formData, demo_video_url: e.target.value })}
+                                        value={formData.video_url}
+                                        onChange={e => setFormData({ ...formData, video_url: e.target.value })}
                                         placeholder="https://..."
                                     />
                                 </div>
@@ -177,10 +216,10 @@ const ExerciseManagement = () => {
                                     <label>AI Rules (JSON Config)</label>
                                     <textarea
                                         rows={10}
-                                        value={formData.pose_config_str}
-                                        onChange={e => setFormData({ ...formData, pose_config_str: e.target.value })}
-                                        placeholder='{"keypoints": "[...]", "rules": "[...]"}'
-                                        style={{ fontFamily: 'monospace', fontSize: '12px' }}
+                                        value={formData.posture_config_str}
+                                        onChange={e => setFormData({ ...formData, posture_config_str: e.target.value })}
+                                        placeholder={'[\n  {\n    "name": "Knee Angle",\n    "keypoints": [23, 25, 27],\n    "min": 70,\n    "max": 110,\n    "message": {"unsafe": "Too low!"}\n  }\n]'}
+                                        style={{ fontFamily: 'monospace', fontSize: '12px', background: '#222', color: '#0f0' }}
                                     />
                                     <small>Paste JSON configuration for Posture Detector here.</small>
                                 </div>

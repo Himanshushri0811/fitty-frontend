@@ -25,7 +25,10 @@ import Contact from './components/Contact';
 import Auth from './components/AuthPage/Auth';
 import ResetPassword from './components/AuthPage/ResetPassword';
 
-import Workout from './components/Workout';
+// Updated Workout Components
+import WorkoutDashboard from './components/SmartWorkout/WorkoutDashboard';
+import WorkoutWizard from './components/SmartWorkout/WorkoutWizard';
+
 import Posture from './components/Posture';
 import Motivation from './components/Motivation';
 // import SuccessStories from './components/SuccessStories';
@@ -102,7 +105,11 @@ function AppLayout() {
             {/* ---------- Protected Routes ---------- */}
             <Route element={<ProtectedRoute />}>
               <Route path="/dashboard" element={<UserDashboard />} />
-              <Route path="/workout" element={<Workout />} />
+
+              {/* Updated Workout Routes */}
+              <Route path="/workout" element={<WorkoutDashboard />} />
+              <Route path="/workout/generate" element={<WorkoutWizard />} />
+
               <Route path="/posture" element={<Posture />} />
               <Route path="/diet" element={<Diet />} />
               <Route path="/diet/food/:id" element={<FoodDetail />} />
@@ -122,13 +129,7 @@ function AppLayout() {
 
             {/* ---------- Admin Panel ---------- */}
             <Route path="/admin" element={<AdminRoute />}>
-              <Route path="" element={<AdminLayout />}>
-                <Route path="dashboard" element={<AdminDashboard />} />
-                <Route path="users" element={<UserManagement />} />
-                <Route path="gyms" element={<GymManagement />} />
-                <Route path="logs" element={<ActivityLogs />} />
-                <Route path="exercises" element={<ExerciseManagement />} />
-              </Route>
+              <Route path="" element={<AdminDashboard />} />
             </Route>
 
             {/* ---------- Publicly Accessible Pages (Always) ---------- */}
