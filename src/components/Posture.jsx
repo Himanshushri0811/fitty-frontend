@@ -122,7 +122,7 @@ const PostureDetector = () => {
     // Run all rules
     if (currentRules.rules) {
       for (const rule of currentRules.rules) {
-        const result = rule.check(angles);
+        const result = rule.check(angles, landmarks);
         if (result !== "correct") {
           status = result; // 'unsafe' overrides 'improve' usually, but simple overwrite here
           issue = rule.message[result];

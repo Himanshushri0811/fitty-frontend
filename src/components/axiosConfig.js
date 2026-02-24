@@ -6,6 +6,7 @@ const baseURL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:8000';
 const API = axios.create({
   baseURL: baseURL,
   withCredentials: false, // JWT header based auth, avoids CORS issues
+  timeout: 60000, // 60 seconds to accommodate Render Free Tier cold starts
 });
 
 let isRefreshing = false;
