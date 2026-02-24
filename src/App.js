@@ -81,6 +81,13 @@ function AppLayout() {
   const location = useLocation(); // Hook usage requires being inside Router
   const hideFooter = location.pathname === '/fitty';
 
+  // Wake up Render Free Tier Backend
+  React.useEffect(() => {
+    fetch('https://fitmitra-backend.onrender.com/api/health/')
+      .then(() => console.log('Backend warmup initiated (Render Cold Start mitigated)'))
+      .catch(() => console.log('Backend warmup log ignored'));
+  }, []);
+
   return (
     <div className="app">
       {/* ===== Global Navbar ===== */}
