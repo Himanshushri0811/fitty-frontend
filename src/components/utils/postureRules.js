@@ -474,6 +474,485 @@ export const POSTURE_RULES = {
         ]
     },
 
+    // --- BACK EXERCISES ---
+
+    bent_over_barbell_row: {
+        id: 'bent_over_barbell_row',
+        displayName: 'Bent Over Barbell Row',
+        keypoints: [11, 13, 15, 23, 25],
+        instructions: "Hinge at the hips. Pull bar to stomach.",
+        rules: [
+            {
+                name: "Visibility",
+                check: (angles, landmarks) => checkVisibility(landmarks, [11, 13, 15, 23, 25]) ? "correct" : "improve",
+                message: { improve: "Make sure your full torso and arms are visible." }
+            },
+            {
+                name: "Spine Hinge",
+                check: (angles) => {
+                    const hip = stateTracker.getSmoothedAngle('bent_over_row', 'hip_body', angles.hip_body);
+                    if (hip > 150) return "improve"; // Torso rising
+                    if (hip < 100) return "unsafe"; // Rounded/too low
+                    // Check for momentum
+                    const hipHist = stateTracker.history['bent_over_row_hip_body'];
+                    if (hipHist && hipHist.length === 10) {
+                        const variance = Math.max(...hipHist) - Math.min(...hipHist);
+                        if (variance > 15) return "unsafe"; // Body swing detected
+                    }
+                    return "correct";
+                },
+                message: {
+                    improve: "Hinge forward more (30-45 degrees).",
+                    unsafe: "Keep your spine neutral. Reduce body swing.",
+                    correct: "Good torso angle."
+                }
+            },
+            {
+                name: "Elbow Path",
+                check: (angles) => {
+                    const elbow = stateTracker.getSmoothedAngle('bent_over_row', 'elbow', angles.elbow);
+                    if (elbow < 40) return "improve"; // Over pulling
+                    return "correct";
+                },
+                message: {
+                    improve: "Control the eccentric. Don't jerk the bar.",
+                    correct: "Good strict pull."
+                }
+            }
+        ]
+    },
+
+    pendlay_row: {
+        id: 'pendlay_row',
+        displayName: 'Pendlay Row',
+        keypoints: [11, 13, 15, 23, 25],
+        instructions: "Back parallel to floor. Reset on floor each rep.",
+        rules: [
+            {
+                name: "Visibility",
+                check: (angles, landmarks) => checkVisibility(landmarks, [11, 13, 15, 23, 25]) ? "correct" : "improve",
+                message: { improve: "Align camera to see your full back." }
+            },
+            {
+                name: "Torso Angle",
+                check: (angles) => {
+                    const hip = stateTracker.getSmoothedAngle('pendlay_row', 'hip_body', angles.hip_body);
+                    if (hip > 110) return "unsafe"; // Rising up
+                    if (hip < 70) return "improve"; // Dropping too low
+                    return "correct";
+                },
+                message: {
+                    improve: "Adjust your stance, back should be parallel to ground.",
+                    unsafe: "Keep your spine neutral, don't use hip drive!",
+                    correct: "Excellent strict posture."
+                }
+            },
+            {
+                name: "ROM and Pause",
+                check: (angles) => {
+                    const elbow = stateTracker.getSmoothedAngle('pendlay_row', 'elbow', angles.elbow);
+                    // Check touch-and-go (no pause at bottom where elbow is straight > 160)
+                    if (elbow > 150) {
+                        const elbowHist = stateTracker.history['pendlay_row_elbow'];
+                        if (elbowHist && elbowHist.length === 10) {
+                            const variance = Math.max(...elbowHist) - Math.min(...elbowHist);
+                            if (variance > 15) return "improve"; // Touch and go, not pausing
+                        }
+                    } else if (elbow > 120 && elbow < 140) {
+                        const elbowHist = stateTracker.history['pendlay_row_elbow'];
+                        // Reverse direction without reaching full compression (partial ROM)
+                        if (elbowHist && elbowHist[0] < elbowHist[9]) return "improve";
+                    }
+                    return "correct";
+                },
+                message: {
+                    improve: "Rest the bar on the floor. No touch-and-go or partial reps!",
+                    correct: "Good explosive pull."
+                }
+            }
+        ]
+    },
+
+    gorilla_rows: {
+        id: 'gorilla_rows',
+        displayName: 'Gorilla Rows',
+        keypoints: [11, 12, 13, 15, 23],
+        instructions: "Wide stance, alternate rows while stabilizing.",
+        rules: [
+            {
+                name: "Visibility",
+                check: (angles, landmarks) => checkVisibility(landmarks, [11, 12, 23]) ? "correct" : "improve",
+                message: { improve: "Camera must show both shoulders to detect twisting." }
+            },
+            {
+                name: "Torso Rotation",
+                check: (angles, landmarks) => {
+                    if (!landmarks || !landmarks[11] || !landmarks[12]) return "correct";
+                    // Simplistic check for shoulder twist vertically
+                    const twistDiff = Math.abs(landmarks[11].y - landmarks[12].y);
+                    if (twistDiff > 0.15) return "improve"; // Excessive twisting
+                    return "correct";
+                },
+                message: {
+                    improve: "Reduce body swing. Keep shoulders squared.",
+                    correct: "Solid stabilization."
+                }
+            }
+        ]
+    },
+
+    pull_ups: {
+        id: 'pull_ups',
+        displayName: 'Pull Ups',
+        keypoints: [11, 13, 15, 23, 25],
+        instructions: "Dead hang start. Pull chin over bar.",
+        rules: [
+            {
+                name: "Visibility",
+                check: (angles, landmarks) => checkVisibility(landmarks, [11, 13, 15, 23]) ? "correct" : "improve",
+                message: { improve: "Ensure full body and bar are visible." }
+            },
+            {
+                name: "Kipping",
+                check: (angles) => {
+                    const hip = stateTracker.getSmoothedAngle('pull_ups_hip', 'hip_body', angles.hip_body);
+                    const hipHist = stateTracker.history['pull_ups_hip_hip_body'];
+                    if (hipHist && hipHist.length === 10) {
+                        const variance = Math.max(...hipHist) - Math.min(...hipHist);
+                        if (variance > 20) return "unsafe"; // Swinging or kipping
+                    }
+                    if (hip < 130) return "improve"; // Crunching knees to chest
+                    return "correct";
+                },
+                message: {
+                    unsafe: "Reduce body swing! No kipping allowed.",
+                    improve: "Keep your legs straight.",
+                    correct: "Perfect strict pull."
+                }
+            },
+            {
+                name: "Range of Motion",
+                check: (angles) => {
+                    const elbow = stateTracker.getSmoothedAngle('pull_ups_elbow', 'elbow', angles.elbow);
+                    const elbowHist = stateTracker.history['pull_ups_elbow_elbow'];
+                    // If reversing before 150 on the way down
+                    if (elbow < 140 && elbowHist && elbowHist[0] > elbowHist[9]) return "improve";
+                    return "correct";
+                },
+                message: {
+                    improve: "Start from a dead hang. No half reps!",
+                    correct: "Great range of motion."
+                }
+            }
+        ]
+    },
+
+    deadlifts: {
+        id: 'deadlifts',
+        displayName: 'Deadlifts',
+        keypoints: [11, 13, 15, 23, 25, 27],
+        instructions: "Keep bar close. Neutral spine!",
+        rules: [
+            {
+                name: "Visibility",
+                check: (angles, landmarks) => checkVisibility(landmarks, [11, 13, 15, 23, 25, 27]) ? "correct" : "improve",
+                message: { improve: "Side profile required for deadlift." }
+            },
+            {
+                name: "Spine & Hips",
+                check: (angles) => {
+                    const hip = stateTracker.getSmoothedAngle('deadlifts', 'hip_body', angles.hip_body);
+                    const knee = stateTracker.getSmoothedAngle('deadlifts', 'knee', angles.knee);
+                    // Hips shoot up early: knee extends but hip stays bent
+                    if (knee > 150 && hip < 110) return "unsafe";
+
+                    // Spine rounds (difficult without full spine landmarks, rely on hip angle and variance)
+                    const hipHist = stateTracker.history['deadlifts_hip_body'];
+                    if (hipHist && hipHist.length === 10) {
+                        const variance = Math.max(...hipHist) - Math.min(...hipHist);
+                        if (variance > 40) return "unsafe"; // Sudden jerk or change
+                    }
+                    if (hip < 50) return "unsafe"; // Extremely folded
+                    return "correct";
+                },
+                message: {
+                    unsafe: "Keep your spine neutral! Don't let hips shoot up early.",
+                    correct: "Solid pull."
+                }
+            }
+        ]
+    },
+
+    renegade_row: {
+        id: 'renegade_row',
+        displayName: 'Renegade Row',
+        keypoints: [11, 13, 15, 23, 25],
+        instructions: "Plank position. Alternate rows.",
+        rules: [
+            {
+                name: "Visibility",
+                check: (angles, landmarks) => checkVisibility(landmarks, [11, 13, 15, 23, 25]) ? "correct" : "improve",
+                message: { improve: "Adjust camera to see your full plank." }
+            },
+            {
+                name: "Plank Alignment",
+                check: (angles) => {
+                    const bodyAngle = stateTracker.getSmoothedAngle('renegade_row', 'hip_body', angles.hip_body);
+                    if (bodyAngle < 155) return "improve"; // Hips high
+                    if (bodyAngle > 195) return "unsafe"; // Hips sagging
+                    // Check for rocking
+                    const bodyHist = stateTracker.history['renegade_row_hip_body'];
+                    if (bodyHist && bodyHist.length === 10) {
+                        const variance = Math.max(...bodyHist) - Math.min(...bodyHist);
+                        if (variance > 10) return "improve"; // Hips rocking
+                    }
+                    return "correct";
+                },
+                message: {
+                    improve: "Reduce body swing. Keep hips square.",
+                    unsafe: "Keep your spine neutral. Hips are sagging!",
+                    correct: "Perfect plank alignment."
+                }
+            }
+        ]
+    },
+
+    dumbbell_shrugs: {
+        id: 'dumbbell_shrugs',
+        displayName: 'Dumbbell Shrugs',
+        keypoints: [11, 13, 15],
+        instructions: "Pure vertical shoulder elevation.",
+        rules: [
+            {
+                name: "Visibility",
+                check: (angles, landmarks) => checkVisibility(landmarks, [11, 13, 15]) ? "correct" : "improve",
+                message: { improve: "Camera needs to see shoulders and arms." }
+            },
+            {
+                name: "Arm Bending",
+                check: (angles) => {
+                    const elbow = stateTracker.getSmoothedAngle('shrugs', 'elbow', angles.elbow);
+                    if (elbow < 160) return "improve"; // Bending arms during shrug
+                    return "correct";
+                },
+                message: {
+                    improve: "Elbow should stay fixed. Use your traps, not arms.",
+                    correct: "Good trap isolation."
+                }
+            }
+        ]
+    },
+
+    t_bar_rows: {
+        id: 't_bar_rows',
+        displayName: 'T-Bar Rows',
+        keypoints: [11, 13, 15, 23],
+        instructions: "Hinge at hips. Pull to chest.",
+        rules: [
+            {
+                name: "Visibility",
+                check: (angles, landmarks) => checkVisibility(landmarks, [11, 13, 15, 23]) ? "correct" : "improve",
+                message: { improve: "Side profile required." }
+            },
+            {
+                name: "Lean Back",
+                check: (angles) => {
+                    const hip = stateTracker.getSmoothedAngle('tbar_row', 'hip_body', angles.hip_body);
+                    if (hip > 140) return "improve"; // Leaning back too much during pull
+                    return "correct";
+                },
+                message: {
+                    improve: "Keep your spine neutral, don't lean back to pull.",
+                    correct: "Good torso stability."
+                }
+            },
+            {
+                name: "Partial Reps",
+                check: (angles) => {
+                    const elbow = stateTracker.getSmoothedAngle('tbar_row', 'elbow', angles.elbow);
+                    if (elbow > 110 && elbow < 140) return "improve"; // Not pulling high enough
+                    return "correct";
+                },
+                message: {
+                    improve: "Pull higher for a full contraction.",
+                    correct: "Great ROM."
+                }
+            }
+        ]
+    },
+
+    // --- BICEPS EXERCISES ---
+
+    concentration_curls: {
+        id: 'concentration_curls',
+        displayName: 'Concentration Curls',
+        keypoints: [11, 13, 15],
+        instructions: "Arm pinned to leg, curl strict.",
+        rules: [
+            {
+                name: "Visibility",
+                check: (angles, landmarks) => checkVisibility(landmarks, [11, 13, 15]) ? "correct" : "improve",
+                message: { improve: "Ensure arm is visible." }
+            },
+            {
+                name: "Shoulder Movement",
+                check: (angles) => {
+                    const shoulder = stateTracker.getSmoothedAngle('conc_curl', 'shoulder', angles.shoulder);
+                    const shoulderHist = stateTracker.history['conc_curl_shoulder'];
+                    if (shoulderHist && shoulderHist.length === 10) {
+                        const variance = Math.max(...shoulderHist) - Math.min(...shoulderHist);
+                        if (variance > 10) return "unsafe"; // Swinging or lifting shoulder
+                    }
+                    return "correct";
+                },
+                message: {
+                    unsafe: "Elbow should stay fixed on your thigh! No swinging.",
+                    correct: "Perfect isolation."
+                }
+            }
+        ]
+    },
+
+    hammer_curls: {
+        id: 'hammer_curls',
+        displayName: 'Hammer Curls',
+        keypoints: [11, 13, 15, 23],
+        instructions: "Neutral grip. Keep elbows tucked.",
+        rules: [
+            {
+                name: "Visibility",
+                check: (angles, landmarks) => checkVisibility(landmarks, [11, 13, 15]) ? "correct" : "improve",
+                message: { improve: "Need clear view of arms." }
+            },
+            {
+                name: "Torso Swing",
+                check: (angles) => {
+                    const hip = stateTracker.getSmoothedAngle('hammer_curl', 'hip_body', angles.hip_body);
+                    const hipHist = stateTracker.history['hammer_curl_hip_body'];
+                    if (hipHist && hipHist.length === 10) {
+                        const variance = Math.max(...hipHist) - Math.min(...hipHist);
+                        if (variance > 10) return "improve"; // Leaning back
+                    }
+                    return "correct";
+                },
+                message: {
+                    improve: "Reduce body swing! Don't lean back to lift.",
+                    correct: "Strict core."
+                }
+            },
+            {
+                name: "Elbow Drift",
+                check: (angles) => {
+                    const shoulder = stateTracker.getSmoothedAngle('hammer_curl', 'shoulder', angles.shoulder);
+                    if (shoulder > 30) return "improve"; // Elbows drifting forward
+                    return "correct";
+                },
+                message: {
+                    improve: "Elbow should stay fixed. Keep elbows close to your body.",
+                    correct: "Elbows are secure."
+                }
+            }
+        ]
+    },
+
+    ez_bar_curls: {
+        id: 'ez_bar_curls',
+        displayName: 'EZ Bar Curls',
+        keypoints: [11, 13, 15, 23],
+        instructions: "Smooth tempo. Curl up and down.",
+        rules: [
+            {
+                name: "Visibility",
+                check: (angles, landmarks) => checkVisibility(landmarks, [11, 13, 15]) ? "correct" : "improve",
+                message: { improve: "Camera must see both arms." }
+            },
+            {
+                name: "Hip Thrust",
+                check: (angles) => {
+                    const hipHist = stateTracker.history['ez_curl_hip_body'];
+                    if (hipHist && hipHist.length === 10) {
+                        const variance = Math.max(...hipHist) - Math.min(...hipHist);
+                        if (variance > 15) return "unsafe"; // Cheating with hips
+                    }
+                    return "correct";
+                },
+                message: {
+                    unsafe: "Keep your spine neutral! No hip thrusts or momentum.",
+                    correct: "Solid strict curl."
+                }
+            }
+        ]
+    },
+
+    preacher_curl: {
+        id: 'preacher_curl',
+        displayName: 'Preacher Curl',
+        keypoints: [11, 13, 15],
+        instructions: "Arm resting on pad. Full extension.",
+        rules: [
+            {
+                name: "Visibility",
+                check: (angles, landmarks) => checkVisibility(landmarks, [11, 13, 15]) ? "correct" : "improve",
+                message: { improve: "Ensure arm on pad is clear." }
+            },
+            {
+                name: "Half Reps",
+                check: (angles) => {
+                    const elbow = stateTracker.getSmoothedAngle('preacher_curl', 'elbow', angles.elbow);
+                    const elbowHist = stateTracker.history['preacher_curl_elbow'];
+                    // If returning back before hitting > 150
+                    if (elbow < 130 && elbowHist && elbowHist[0] > elbowHist[9]) return "improve";
+                    return "correct";
+                },
+                message: {
+                    improve: "Control the eccentric. Go all the way down!",
+                    correct: "Good range of motion."
+                }
+            },
+            {
+                name: "Arm Lift",
+                check: (angles) => {
+                    const shoulderHist = stateTracker.history['preacher_curl_shoulder'];
+                    if (shoulderHist && shoulderHist.length === 10) {
+                        const variance = Math.max(...shoulderHist) - Math.min(...shoulderHist);
+                        if (variance > 10) return "improve"; // Upper arm lifting off
+                    }
+                    return "correct";
+                },
+                message: {
+                    improve: "Elbow should stay fixed on the pad.",
+                    correct: "Arm is firmly planted."
+                }
+            }
+        ]
+    },
+
+    single_arm_high_cable_curl: {
+        id: 'single_arm_high_cable_curl',
+        displayName: 'High Cable Curl',
+        keypoints: [11, 13, 15],
+        instructions: "Elbow high, curl to ear.",
+        rules: [
+            {
+                name: "Visibility",
+                check: (angles, landmarks) => checkVisibility(landmarks, [11, 13, 15]) ? "correct" : "improve",
+                message: { improve: "Keep your arm in frame." }
+            },
+            {
+                name: "Elbow Drop",
+                check: (angles) => {
+                    const shoulder = stateTracker.getSmoothedAngle('cable_curl', 'shoulder', angles.shoulder);
+                    if (shoulder < 70) return "improve"; // Dropping the elbow down
+                    return "correct";
+                },
+                message: {
+                    improve: "Elbow should stay fixed high up!",
+                    correct: "Perfect high elbow."
+                }
+            }
+        ]
+    },
+
     // --- GENERIC ---
     default: {
         id: 'default',
@@ -506,6 +985,23 @@ export const normalizeExerciseId = (name) => {
     if (lower.includes('skull crusher')) return 'skull_crushers';
     if (lower.includes('rope pushdown')) return 'tricep_rope_pushdown';
     if (lower.includes('tricep press')) return 'tricep_press_machine';
+
+    // Back Mapping
+    if (lower.includes('bent over') || lower.includes('barbell row')) return 'bent_over_barbell_row';
+    if (lower.includes('pendlay')) return 'pendlay_row';
+    if (lower.includes('gorilla')) return 'gorilla_rows';
+    if (lower.includes('pull') && lower.includes('up')) return 'pull_ups';
+    if (lower.includes('deadlift')) return 'deadlifts';
+    if (lower.includes('renegade')) return 'renegade_row';
+    if (lower.includes('shrug')) return 'dumbbell_shrugs';
+    if (lower.includes('t-bar') || lower.includes('t bar')) return 't_bar_rows';
+
+    // Biceps Mapping
+    if (lower.includes('concentration')) return 'concentration_curls';
+    if (lower.includes('hammer curl')) return 'hammer_curls';
+    if (lower.includes('ez bar')) return 'ez_bar_curls';
+    if (lower.includes('preacher')) return 'preacher_curl';
+    if (lower.includes('high cable') || lower.includes('single arm')) return 'single_arm_high_cable_curl';
 
     // Legacy mapping support
     if (lower.includes('bench') || lower.includes('chest press')) return 'dumbbell_bench_press';
