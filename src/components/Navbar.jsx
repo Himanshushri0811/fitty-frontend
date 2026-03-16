@@ -12,18 +12,16 @@ import {
   FaChevronDown,
   FaCrown,
   FaFire,
-  FaRunning,
   FaCog,
   FaBell,
   FaSun,
   FaMoon,
-  FaRobot,
   FaInfoCircle,
   FaSignInAlt,
-  FaUserPlus
 } from 'react-icons/fa';
+import FittyVoiceAssistant from './Fitty/FittyVoiceAssistant';
 import { MdContactMail } from 'react-icons/md';
-import { RiDashboardFill } from 'react-icons/ri';
+import { RiDashboardFill, RiRobot2Line } from 'react-icons/ri';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
 import API from './axiosConfig';
@@ -44,6 +42,8 @@ const Navbar = () => {
   const [notifications, setNotifications] = useState([]);
   const [showNotifDropdown, setShowNotifDropdown] = useState(false);
   const [showWelcome, setShowWelcome] = useState(true);
+  const [isBuddyOpen, setIsBuddyOpen] = useState(false);
+  const [showFittyPopup, setShowFittyPopup] = useState(false);
 
   // Auto-hide welcome message on scroll or timeout
   useEffect(() => {
@@ -94,48 +94,24 @@ const Navbar = () => {
     }
   }, [isLoggedIn, userData]);
 
-  // Voice Greeting Effect (Runs once after login)
+  // Fitty Welcome Popup Logic
   useEffect(() => {
     if (isLoggedIn) {
-      const shouldGreet = localStorage.getItem('fitty_greeting_needed');
-
-      if (shouldGreet === 'true') {
+      // Check if already shown in this session
+      const hasSeenPopup = sessionStorage.getItem('fitty_popup_shown');
+      if (!hasSeenPopup) {
         const timer = setTimeout(() => {
-          if ('speechSynthesis' in window) {
-            window.speechSynthesis.cancel(); // Stop any previous speech
-
-            const text = "Hi, I am Fitty. How can I help you today?";
-
-            const speak = () => {
-              const utterance = new SpeechSynthesisUtterance(text);
-              const voices = window.speechSynthesis.getVoices();
-              // Try to pick a pleasant voice
-              const preferredVoice = voices.find(v => v.name.includes('Google US English') || v.name.includes('Samantha'));
-              if (preferredVoice) utterance.voice = preferredVoice;
-
-              utterance.rate = 1.0;
-              utterance.pitch = 1.0;
-              window.speechSynthesis.speak(utterance);
-
-              // Remove flag so it doesn't replay on refresh
-              localStorage.removeItem('fitty_greeting_needed');
-            };
-
-            if (window.speechSynthesis.getVoices().length > 0) {
-              speak();
-            } else {
-              window.speechSynthesis.onvoiceschanged = () => {
-                speak();
-                window.speechSynthesis.onvoiceschanged = null;
-              };
-            }
-          }
-        }, 1500); // 1.5s delay to allow page transition
-
+          setShowFittyPopup(true);
+        }, 2000);
         return () => clearTimeout(timer);
       }
     }
   }, [isLoggedIn]);
+
+  const closeFittyPopup = () => {
+    setShowFittyPopup(false);
+    sessionStorage.setItem('fitty_popup_shown', 'true');
+  };
 
 
   // Close dropdown when clicking outside
@@ -170,7 +146,7 @@ const Navbar = () => {
       return [
         { path: '/gym-dashboard', label: 'Dashboard', icon: <RiDashboardFill /> },
         { path: '/gym-members', label: 'Members', icon: <FaUser /> },
-        { path: '/fitty', label: 'Fitty AI', icon: <FaRobot /> },
+        { path: '/fitty', label: 'Fitty AI', icon: <RiRobot2Line /> },
       ];
     }
 
@@ -179,8 +155,8 @@ const Navbar = () => {
       { path: '/dashboard', label: 'Dashboard', icon: <RiDashboardFill /> },
       { path: '/workout', label: 'Workout', icon: <FaDumbbell /> },
       { path: '/diet', label: 'Diet', icon: <FaUtensils /> },
-      { path: '/explore', label: 'Explore', icon: <FaFire /> },
-      { path: '/fitty', label: 'Fitty AI', icon: <FaRobot /> },
+      { path: '/mission-control', label: 'Missions', icon: <FaFire /> },
+      { path: '/fitty', label: 'Fitty AI', icon: <RiRobot2Line /> },
     ];
   };
 
@@ -304,8 +280,47 @@ const Navbar = () => {
               whileTap={{ scale: 0.9 }}
               title={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
             >
-              {isDarkMode ? <FaSun className="sun-icon" /> : <FaMoon className="moon-icon" />}
+            {isDarkMode ? <FaSun className="sun-icon" /> : <FaMoon className="moon-icon" />}
             </motion.button>
+
+            {/* Fitty AI Siri-style Trigger */}
+            {isLoggedIn && (
+              <div style={{ position: 'relative' }}>
+                <motion.button
+                  className="fitty-siri-trigger"
+                  onClick={() => setIsBuddyOpen(true)}
+                  whileHover={{ scale: 1.2 }}
+                  whileTap={{ scale: 0.9 }}
+                  title="Talk to Fitty AI"
+                >
+                  <div className="siri-sphere">
+                    <div className="siri-layer layer-1"></div>
+                    <div className="siri-layer layer-2"></div>
+                    <div className="siri-layer layer-3"></div>
+                  </div>
+                </motion.button>
+
+                {/* Fitty Contextual Welcome Popup */}
+                <AnimatePresence>
+                  {showFittyPopup && (
+                    <motion.div 
+                      className="fitty-context-popup"
+                      initial={{ opacity: 0, y: 10, scale: 0.9 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 10, scale: 0.9 }}
+                    >
+                      <div className="fitty-context-arrow"></div>
+                      <div className="fitty-context-content">
+                        <p>Namaste, I am Fitty! 🤖<br/>Workout, diet, ya motivation—main har chiz mein aapki madat kar sakta hu!</p>
+                        <button className="fitty-gotit-btn" onClick={closeFittyPopup}>
+                          Got it!
+                        </button>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            )}
 
             {/* Gym Owner Specific Actions */}
             {isLoggedIn && userData?.role === 'GYM_OWNER' && (
@@ -531,6 +546,7 @@ const Navbar = () => {
           </>
         )}
       </AnimatePresence>
+      <FittyVoiceAssistant isOpen={isBuddyOpen} onClose={() => setIsBuddyOpen(false)} />
     </>
   );
 };

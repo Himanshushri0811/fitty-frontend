@@ -155,18 +155,29 @@ const FittyPage = () => {
         if (window.innerWidth <= 768) setSidebarOpen(false); // Close sidebar on mobile
     };
 
+    const speakResponse = (text) => {
+        if (!('speechSynthesis' in window)) return;
+        
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        const voices = window.speechSynthesis.getVoices();
+        const preferredVoice = voices.find(v => v.name.includes('Google US English') || v.name.includes('Samantha') || v.lang.startsWith('en'));
+        if (preferredVoice) utterance.voice = preferredVoice;
+        utterance.rate = 1.0;
+        utterance.pitch = 1.0;
+        window.speechSynthesis.speak(utterance);
+    };
+
     const handleSend = async (e) => {
         if (e) e.preventDefault();
 
-        if (isLoading || isTyping) return; // Block validation if busy
+        if (isLoading || isTyping) return;
 
         const text = inputValue.trim();
         if (!text) return;
 
-        // Force scroll to bottom when user sends
         shouldAutoScrollRef.current = true;
 
-        // Optimistic UI Update
         const tempMsg = {
             role: 'user',
             content: text,
@@ -176,11 +187,8 @@ const FittyPage = () => {
         setInputValue('');
         resetTranscript();
 
-        // Reset textarea height and blur (hide keyboard on mobile)
         if (textareaRef.current) {
             textareaRef.current.style.height = '24px';
-
-            // Only blur on mobile devices to keep keyboard flow on desktop
             if (window.innerWidth <= 768) {
                 textareaRef.current.blur();
             }
@@ -190,28 +198,24 @@ const FittyPage = () => {
         setErrorMsg(null);
 
         try {
-            const data = await chatbotService.sendMessage(text, sessionId);
+            // Use NEW Advanced Agent Endpoint
+            const data = await chatbotService.sendAgentMessage(text);
 
-            // Allow backend to set session ID if it was new
-            if (data.session_id && !sessionId) {
-                setSessionId(data.session_id);
-                loadSessionList(); // Refresh sidebar to show new chat title
-            }
-
-            // Add Bot Response with Animation Flag
             const botMsg = {
                 role: 'model',
-                content: data.reply,
+                content: data.response, // Match backend key name
                 timestamp: new Date().toISOString(),
-                animate: true // Flag to trigger typing effect
+                animate: true
             };
-            setIsTyping(true); // Start blocking for animation
+            setIsTyping(true);
             setMessages(prev => [...prev, botMsg]);
+
+            // AUTO-SPEAK the response
+            speakResponse(data.response);
 
         } catch (err) {
             console.error(err);
             setErrorMsg("Failed to reach Fitty. Please try again.");
-            // Remove optimistic message? Or just show error.
             setIsTyping(false);
         } finally {
             setIsLoading(false);
