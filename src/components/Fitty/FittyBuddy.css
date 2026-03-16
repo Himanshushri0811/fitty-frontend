@@ -1,0 +1,179 @@
+/* FittyBuddy.css - Siri-like Voice Interface */
+
+.fitty-buddy-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+/* Navbar Toggle Button Shine & Glow */
+.fitty-nav-trigger {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #6366f1, #d946ef);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.3rem;
+    cursor: pointer;
+    box-shadow: 0 0 15px rgba(217, 70, 239, 0.5), 0 0 30px rgba(99, 102, 241, 0.3);
+    position: relative;
+    overflow: hidden;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    outline: none;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.fitty-nav-trigger:hover {
+    box-shadow: 0 0 25px rgba(217, 70, 239, 0.8), 0 0 50px rgba(99, 102, 241, 0.5);
+    transform: scale(1.1);
+}
+
+.fitty-nav-trigger.shining::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        45deg,
+        transparent,
+        rgba(255, 255, 255, 0.3),
+        transparent
+    );
+    transform: rotate(45deg);
+    animation: fitty-shine 3s infinite;
+}
+
+@keyframes fitty-shine {
+    0% { left: -150%; }
+    20% { left: 150%; }
+    100% { left: 150%; }
+}
+
+/* Main Buddy Overlay */
+.buddy-speech-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(10px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    color: white;
+    text-align: center;
+    padding: 20px;
+}
+
+.buddy-status-text {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 30px;
+    background: linear-gradient(90deg, #fff, #a855f7, #fff);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shine-text 3s linear infinite;
+}
+
+.buddy-transcript {
+    font-size: 1.2rem;
+    max-width: 600px;
+    opacity: 0.8;
+    min-height: 1.5rem;
+    margin-bottom: 50px;
+    font-style: italic;
+}
+
+.buddy-response {
+    font-size: 1.5rem;
+    max-width: 800px;
+    margin-top: 30px;
+    color: #e2e8f0;
+    line-height: 1.6;
+}
+
+/* Siri Animation Waves */
+.siri-wave-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 150px;
+    width: 300px;
+    gap: 8px;
+}
+
+.siri-wave {
+    width: 5px;
+    height: 30px;
+    border-radius: 10px;
+    background: white;
+    animation: siri-stretch 1.2s infinite ease-in-out;
+}
+
+.siri-wave:nth-child(1) { background: #4285F4; animation-delay: -1.1s; }
+.siri-wave:nth-child(2) { background: #34A853; animation-delay: -1.0s; }
+.siri-wave:nth-child(3) { background: #FBBC05; animation-delay: -0.9s; }
+.siri-wave:nth-child(4) { background: #EA4335; animation-delay: -0.8s; }
+.siri-wave:nth-child(5) { background: #a855f7; animation-delay: -0.7s; }
+.siri-wave:nth-child(6) { background: #4285F4; animation-delay: -0.6s; }
+.siri-wave:nth-child(7) { background: #34A853; animation-delay: -0.5s; }
+
+@keyframes siri-stretch {
+    0%, 40%, 100% { transform: scaleY(0.4); }
+    20% { transform: scaleY(1.0); }
+}
+
+/* Close Button */
+.close-buddy-btn {
+    position: absolute;
+    top: 30px;
+    right: 30px;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: white;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.close-buddy-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: rotate(90deg);
+}
+
+@keyframes shine-text {
+    to { background-position: 200% center; }
+}
+
+/* Pulsing Sphere Animation for the Buddy Icon itself */
+.fitty-buddy-sphere {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #6366f1 0%, #d946ef 50%, #8b5cf6 100%);
+    box-shadow: 0 0 50px rgba(168, 85, 247, 0.6);
+    animation: buddy-pulse 4s infinite alternate;
+    margin-bottom: 20px;
+}
+
+@keyframes buddy-pulse {
+    0% { transform: scale(1); box-shadow: 0 0 30px rgba(168, 85, 247, 0.4); }
+    100% { transform: scale(1.1); box-shadow: 0 0 70px rgba(168, 85, 247, 0.8); }
+}

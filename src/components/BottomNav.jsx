@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { Home, Dumbbell, Utensils, User, LayoutGrid, Zap, Compass, LogIn, Mail } from 'lucide-react';
+import { Home, Dumbbell, Utensils, User, LayoutGrid, Zap, Target, LogIn, Mail } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import './BottomNav.css';
 
@@ -15,7 +15,7 @@ const BottomNav = () => {
         { path: '/workout', label: 'Workout', icon: Dumbbell },
         { path: '/fitty', label: 'Fitty', icon: Zap },
         { path: '/diet', label: 'Diet', icon: Utensils },
-        { path: '/explore', label: 'Explore', icon: Compass },
+        { path: '/mission-control', label: 'Missions', icon: Target },
     ];
 
     // Gym Owner items
@@ -28,7 +28,7 @@ const BottomNav = () => {
     // Guest items (Landing Page)
     const guestNavItems = [
         { path: '/', label: 'Home', icon: Home },
-        { path: '/explore', label: 'Explore', icon: Compass },
+        { path: '/mission-control', label: 'Missions', icon: Target },
         { path: '/contact', label: 'Contact', icon: Mail },
         { path: '/auth', label: 'Login', icon: LogIn },
     ];

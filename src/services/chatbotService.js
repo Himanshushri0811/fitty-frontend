@@ -21,6 +21,19 @@ export const chatbotService = {
     },
 
     /**
+     * Send a message to the Advanced Fitty AI Agent
+     */
+    sendAgentMessage: async (message) => {
+        try {
+            const response = await API.post('/api/fitty-ai/agent/', { message });
+            return response.data;
+        } catch (error) {
+            console.error('Fitty Agent API Error:', error);
+            throw error;
+        }
+    },
+
+    /**
      * Get chat history / specific session
      * @param {string|null} sessionId - Optional ID to fetch specific session
      * @returns {Promise<Object>} - { history: [], session_id: "..." }

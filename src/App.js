@@ -44,8 +44,7 @@ import FittyPage from './components/Fitty/FittyPage';
 import Faq from './components/Faq';
 import PrivacyPolicy from './components/PrivacyPolicy';
 import Terms from './components/Terms';
-import Explore from './components/Explore/Explore';
-import UserProfile from './components/Social/UserProfile';
+import MissionControl from './components/MissionControl/MissionControl';
 import FollowList from './components/Social/FollowList';
 import Messages from './components/Social/Messages';
 
@@ -141,8 +140,8 @@ function AppLayout() {
 
             {/* ---------- Publicly Accessible Pages (Always) ---------- */}
             <Route path="/contact" element={<Contact />} />
-            <Route path="/explore" element={<Explore />} />
-            <Route path="/profile/:username" element={<UserProfile />} />
+            <Route path="/mission-control" element={<MissionControl />} />
+            {/* <Route path="/profile/:username" element={<UserProfile />} /> */}
             <Route path="/motivation" element={<Motivation />} />
             {/* <Route path="/success-stories" element={<SuccessStories />} /> */}
             {/* <Route path="/nutrition" element={<Nutrition />} /> */}
