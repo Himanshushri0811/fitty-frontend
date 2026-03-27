@@ -144,7 +144,7 @@ const FittyVoiceAssistant = ({ isOpen, onClose }) => {
         throw new Error("QUOTA_EXCEEDED");
       }
 
-      const reply = result.response || result.output || "Sorry, I couldn't understand that.";
+      const reply = result.reply || result.response || result.output || "Sorry, I couldn't understand that.";
       
       console.log("📥 AI Response received:", reply);
       setResponse(reply);

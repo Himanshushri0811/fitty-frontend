@@ -152,7 +152,7 @@ const FittyPage = () => {
             const data = await chatbotService.sendAgentMessage(text, currentMode, activeSessionId);
             const botMsg = {
                 role: 'model',
-                content: data.response,
+                content: data.reply || data.response,
                 timestamp: new Date().toISOString()
             };
             setMessages(prev => [...prev, botMsg]);
