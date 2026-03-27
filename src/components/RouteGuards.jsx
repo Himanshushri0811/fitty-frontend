@@ -18,11 +18,7 @@ export const PublicRoute = () => {
 };
 
 export const ProtectedRoute = () => {
-    const { isAuthenticated, loading } = useAuth();
-
-    if (loading) return <div className="loading-screen">Loading...</div>;
-
-    return isAuthenticated ? <Outlet /> : <Navigate to="/auth?tab=login" replace />;
+    return <Outlet />;
 };
 
 export const AdminRoute = () => {

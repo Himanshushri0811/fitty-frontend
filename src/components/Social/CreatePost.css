@@ -1,6 +1,6 @@
 /* Create Post Card */
 .create-post-card {
-    background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.9) 100%);
+    background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-glass) 100%);
     border-radius: 20px;
     padding: 20px;
     border: 1px solid rgba(100, 116, 139, 0.2);
@@ -52,7 +52,7 @@
 .post-input {
     width: 100%;
     padding: 15px;
-    background: rgba(15, 23, 42, 0.6);
+    background: var(--bg-glass);
     border: 1px solid rgba(100, 116, 139, 0.3);
     border-radius: 12px;
     color: #e2e8f0;
@@ -66,7 +66,7 @@
 .post-input:focus {
     outline: none;
     border-color: rgba(102, 126, 234, 0.5);
-    background: rgba(15, 23, 42, 0.8);
+    background: var(--bg-glass);
     box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 

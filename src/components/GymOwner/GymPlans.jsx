@@ -32,12 +32,12 @@ const GymPlans = () => {
 
             // 2. Razorpay Options
             const options = {
-                key: process.env.REACT_APP_RAZORPAY_KEY_ID,
+                key: order.key_id || process.env.REACT_APP_RAZORPAY_KEY_ID,
                 amount: order.amount,
                 currency: order.currency,
                 name: "FitMitra Manager",
                 description: `Upgrade to ${plan} Plan`,
-                order_id: order.id,
+                order_id: order.order_id || order.id,
 
                 handler: async (response) => {
                     try {

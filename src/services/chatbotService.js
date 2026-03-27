@@ -23,9 +23,9 @@ export const chatbotService = {
     /**
      * Send a message to the Advanced Fitty AI Agent
      */
-    sendAgentMessage: async (message) => {
+    sendAgentMessage: async (message, mode = 'CHAT', session_id = null) => {
         try {
-            const response = await API.post('/api/fitty-ai/agent/', { message });
+            const response = await API.post('/api/fitty-ai/agent/', { message, mode, session_id });
             return response.data;
         } catch (error) {
             console.error('Fitty Agent API Error:', error);
@@ -40,7 +40,7 @@ export const chatbotService = {
      */
     getHistory: async (sessionId = null) => {
         try {
-            const url = sessionId ? `/api/ai/chat/?session_id=${sessionId}` : '/api/ai/chat/';
+            const url = sessionId ? `/api/fitty-ai/agent/?session_id=${sessionId}` : '/api/fitty-ai/agent/';
             const response = await API.get(url);
             return response.data;
         } catch (error) {
@@ -54,8 +54,8 @@ export const chatbotService = {
      */
     getSessionsList: async () => {
         try {
-            const response = await API.get('/api/ai/sessions/');
-            return response.data; // Array of { id, title, updated_at }
+            const response = await API.get('/api/fitty-ai/sessions/');
+            return response.data;
         } catch (error) {
             console.error('Session list fetch error:', error);
             return [];
@@ -67,7 +67,7 @@ export const chatbotService = {
      */
     deleteSession: async (sessionId) => {
         try {
-            await API.delete(`/api/ai/sessions/${sessionId}/`);
+            await API.delete(`/api/fitty-ai/sessions/${sessionId}/`);
             return true;
         } catch (error) {
             console.error('Delete session error:', error);

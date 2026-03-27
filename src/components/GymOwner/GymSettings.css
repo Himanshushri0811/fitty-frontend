@@ -45,7 +45,7 @@
 }
 
 .settings-card {
-    background: rgba(30, 41, 59, 0.4);
+    background: var(--bg-card);
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 20px;
     padding: 40px;
@@ -93,7 +93,7 @@ input[type="text"],
 input[type="email"],
 textarea {
     width: 100%;
-    background: rgba(15, 23, 42, 0.6);
+    background: var(--bg-glass);
     border: 1px solid rgba(255, 255, 255, 0.1);
     padding: 12px 16px;
     border-radius: 12px;
@@ -107,7 +107,7 @@ input:focus,
 textarea:focus {
     outline: none;
     border-color: #a855f7;
-    background: rgba(15, 23, 42, 0.8);
+    background: var(--bg-glass);
 }
 
 .disabled-input {

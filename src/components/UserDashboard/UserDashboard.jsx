@@ -11,12 +11,12 @@ import {
     TrendingUp,
     Calendar,
     ChevronRight,
-    CheckCircle2,
     Trophy,
     Zap,
-    Crown,
     Play,
-    Utensils
+    Utensils,
+    Activity,
+    Target
 } from 'lucide-react';
 import {
     AreaChart,
@@ -48,7 +48,6 @@ const UserDashboard = () => {
 
         fetchDashboardData();
 
-        // Listen for real-time water updates from global event
         const handleWaterUpdate = (event) => {
             if (event.detail) {
                 setWaterData(prev => ({
@@ -100,26 +99,21 @@ const UserDashboard = () => {
 
     const caloriesBurned = todayWorkout ? (todayWorkout.exercises.reduce((acc, curr) => acc + (curr.sets * curr.reps * 0.5), 0) * 5) : 0;
 
-    // Animation Variants
     const containerVariants = {
         hidden: { opacity: 0 },
-        visible: {
-            opacity: 1,
-            transition: { staggerChildren: 0.1 }
-        }
+        visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
     };
 
     const itemVariants = {
         hidden: { y: 20, opacity: 0 },
-        visible: { y: 0, opacity: 1 }
+        visible: { y: 0, opacity: 1, transition: { type: 'spring', stiffness: 300, damping: 24 } }
     };
 
     if (loading) {
         return (
-            <div className="flex-center" style={{ height: '80vh' }}>
-                <div className="spinner-border text-primary" role="status">
-                    <span className="visually-hidden">Loading...</span>
-                </div>
+            <div style={{ height: '80vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ width: '40px', height: '40px', border: '3px solid var(--border-color)', borderTopColor: 'var(--primary)', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+                <style>{`@keyframes spin { 100% { transform: rotate(360deg); } }`}</style>
             </div>
         );
     }
@@ -131,141 +125,139 @@ const UserDashboard = () => {
             initial="hidden"
             animate="visible"
         >
-            {/* HER0 SECTION */}
-            <motion.div className="dashboard-hero glass-panel" variants={itemVariants}>
+            {/* HERO SECTION */}
+            <motion.div className="dashboard-hero" variants={itemVariants}>
                 <div className="hero-text">
-                    <h1>{greeting}, <span className="text-gradient-gold">{user?.name || 'Champ'}</span> 🚀</h1>
-                    <p>Ready to dominate today? You're on a <strong>5 Day Streak!</strong> 🔥</p>
+                    <h1>{greeting}, {user?.name || 'Champ'}</h1>
+                    <p>You have a <strong>5 day streak</strong>. Keep up the momentum.</p>
                 </div>
                 <div className="hero-action">
                     <button className="btn-primary-glow" onClick={() => navigate('/workout')}>
-                        <Play size={20} fill="currentColor" /> Start Workout
+                        <Play size={16} fill="currentColor" /> Start workout
                     </button>
                 </div>
             </motion.div>
 
             {/* KEY STATS ROW */}
             <motion.div className="stats-grid" variants={itemVariants}>
-                <motion.div className="stat-card glass-card" whileHover={{ y: -5 }}>
-                    <div className="stat-icon-wrapper fire">
-                        <Flame size={24} />
+                <div className="stat-card">
+                    <div className="stat-icon-wrapper fire"><Flame size={20} /></div>
+                    <div className="stat-info">
+                        <span className="stat-label">Active Burn</span>
+                        <div className="stat-value">{Math.round(caloriesBurned)}<span className="unit">kcal</span></div>
                     </div>
-                    <div>
-                        <span className="stat-label">Calories Burned</span>
-                        <div className="stat-value">{Math.round(caloriesBurned)} <span className="unit">kcal</span></div>
-                    </div>
-                </motion.div>
+                </div>
 
-                <motion.div className="stat-card glass-card" whileHover={{ y: -5 }}>
-                    <div className="stat-icon-wrapper water">
-                        <Droplets size={24} />
-                    </div>
-                    <div>
+                <div className="stat-card">
+                    <div className="stat-icon-wrapper water"><Droplets size={20} /></div>
+                    <div className="stat-info">
                         <span className="stat-label">Hydration</span>
                         <div className="stat-value">{waterData.glasses}<span className="unit">/12</span></div>
                     </div>
-                </motion.div>
+                </div>
 
-                <motion.div className="stat-card glass-card" whileHover={{ y: -5 }}>
-                    <div className="stat-icon-wrapper fitness">
-                        <Dumbbell size={24} />
+                <div className="stat-card">
+                    <div className="stat-icon-wrapper fitness"><Activity size={20} /></div>
+                    <div className="stat-info">
+                        <span className="stat-label">Focus</span>
+                        <div className="stat-value text-truncate" style={{ maxWidth: '100px', fontSize: '1.25rem' }}>
+                            {todayWorkout?.focus || 'Rest'}
+                        </div>
                     </div>
-                    <div>
-                        <span className="stat-label">Current Focus</span>
-                        <div className="stat-value text-truncate" style={{ maxWidth: '120px' }}>{todayWorkout?.focus || 'Rest'}</div>
-                    </div>
-                </motion.div>
+                </div>
 
-                <motion.div className="stat-card glass-card" whileHover={{ y: -5 }}>
-                    <div className="stat-icon-wrapper gold">
-                        <Trophy size={24} />
+                <div className="stat-card">
+                    <div className="stat-icon-wrapper gold"><Target size={20} /></div>
+                    <div className="stat-info">
+                        <span className="stat-label">Goal Weight</span>
+                        <div className="stat-value">75<span className="unit">kg</span></div>
                     </div>
-                    <div>
-                        <span className="stat-label">Next Goal</span>
-                        <div className="stat-value">75 <span className="unit">kg</span></div>
-                    </div>
-                </motion.div>
+                </div>
             </motion.div>
 
             {/* BENTO GRID LAYOUT */}
             <div className="bento-grid">
-
+                
                 {/* 1. CHART SECTION (Wide) */}
-                <motion.div className="glass-card bento-item chart-section" variants={itemVariants}>
+                <motion.div className="bento-item chart-section" variants={itemVariants}>
                     <div className="section-header">
-                        <h3><TrendingUp size={20} className="icon-mr" /> Activity Trends</h3>
+                        <h3><TrendingUp size={18} className="icon-mr" /> Activity Trends</h3>
                     </div>
                     <div className="chart-wrapper">
                         <ResponsiveContainer width="100%" height="100%">
                             <AreaChart data={weeklyStats}>
                                 <defs>
                                     <linearGradient id="colorCal" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor="#6366f1" stopOpacity={0.4} />
+                                        <stop offset="5%" stopColor="#6366f1" stopOpacity={0.2} />
                                         <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
                                     </linearGradient>
                                 </defs>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
-                                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 12 }} />
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border-color)" opacity={0.5} />
+                                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: 'var(--text-muted)', fontSize: 12, dy: 10 }} />
+                                <YAxis hide domain={['dataMin - 100', 'dataMax + 100']} />
                                 <Tooltip
-                                    contentStyle={{ background: '#1e293b', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px' }}
+                                    contentStyle={{ background: 'var(--bg-card)', border: '1px solid var(--border-color)', borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+                                    itemStyle={{ color: 'var(--text-main)', fontSize: '14px', fontWeight: 500 }}
                                 />
-                                <Area type="monotone" dataKey="calories" stroke="#818cf8" strokeWidth={3} fillUrl="url(#colorCal)" />
+                                <Area type="monotone" dataKey="calories" stroke="#6366f1" strokeWidth={2} fillOpacity={1} fill="url(#colorCal)" />
                             </AreaChart>
                         </ResponsiveContainer>
                     </div>
                 </motion.div>
 
                 {/* 2. TODAY'S PLAN (Tall) */}
-                <motion.div className="glass-card bento-item plan-section" variants={itemVariants}>
+                <motion.div className="bento-item plan-section" variants={itemVariants}>
                     <div className="section-header">
-                        <h3><Calendar size={20} className="icon-mr" /> Today's Plan</h3>
-                        <span className="badge-highlight">{new Date().toLocaleDateString('en-US', { weekday: 'long', day: 'numeric', month: 'short' })}</span>
+                        <h3><Calendar size={18} className="icon-mr" /> Today's Plan</h3>
+                        <span className="badge-highlight">{new Date().toLocaleDateString('en-US', { weekday: 'short', day: 'numeric' })}</span>
                     </div>
 
                     <div className="plan-scroll-list">
                         {todayWorkout?.exercises?.length > 0 ? (
                             todayWorkout.exercises.map((ex, idx) => (
-                                <motion.div
-                                    key={idx}
-                                    className="plan-item-compact"
-                                    whileHover={{ x: 5, backgroundColor: 'rgba(255,255,255,0.05)' }}
-                                >
-                                    <img src={`https://ui-avatars.com/api/?name=${ex.name}&background=random`} className="ex-thumb" alt="ex" />
+                                <div key={idx} className="plan-item-compact">
+                                    <div className="list-icon-box">
+                                        <Dumbbell size={18} />
+                                    </div>
                                     <div className="plan-info">
                                         <h4>{ex.name}</h4>
                                         <p>{ex.sets} sets • {ex.reps} reps</p>
                                     </div>
-                                    <CheckCircle2 size={18} className="text-muted" />
-                                </motion.div>
+                                    <ChevronRight size={16} color="var(--text-muted)" />
+                                </div>
                             ))
                         ) : (
                             <div className="empty-state">
-                                <p>No specific exercises today.</p>
+                                No specific exercises planned for today.
                             </div>
                         )}
-                        <div className="plan-item-compact dietary-tip">
-                            <div className="plan-icon-small"><Utensils size={14} /></div>
+                        
+                        <div className="plan-item-compact">
+                            <div className="list-icon-box" style={{ color: '#10b981', background: 'rgba(16, 185, 129, 0.1)' }}>
+                                <Utensils size={18} />
+                            </div>
                             <div className="plan-info">
-                                <h4>Post-Workout</h4>
-                                <p>Try a protein shake!</p>
+                                <h4>Nutrition Goal</h4>
+                                <p>Consume 150g Protein</p>
                             </div>
                         </div>
                     </div>
-                    <button className="btn-full-width mt-3" onClick={() => navigate('/workout')}>Start Session</button>
+                    
+                    <button className="btn-full-width" onClick={() => navigate('/workout')}>View Full Routine</button>
                 </motion.div>
 
                 {/* 3. LEADERBOARD (Small) */}
-                <motion.div className="glass-card bento-item leaderboard-section" variants={itemVariants}>
+                <motion.div className="bento-item leaderboard-section" variants={itemVariants}>
                     <div className="section-header">
-                        <h3><Crown size={20} className="icon-mr text-warning" /> Top Performers</h3>
+                        <h3><Trophy size={18} className="icon-mr text-warning" /> Top Performers</h3>
                     </div>
                     <div className="leaderboard-list">
                         {[1, 2, 3].map((i) => (
                             <div className="lb-item" key={i}>
                                 <span className="lb-rank">#{i}</span>
                                 <div className="lb-user">
-                                    <div className="lb-avatar" />
-                                    <span>User {i}</span>
+                                    <div className="lb-avatar">{String.fromCharCode(64 + i)}</div>
+                                    <span>Athlete {i}</span>
                                 </div>
                                 <span className="lb-score">{2000 - (i * 150)} xp</span>
                             </div>
@@ -274,15 +266,17 @@ const UserDashboard = () => {
                 </motion.div>
 
                 {/* 4. ACHIEVEMENTS (Horizontal Scroll) */}
-                <motion.div className="glass-card bento-item achievement-section" variants={itemVariants}>
+                <motion.div className="bento-item achievement-section" variants={itemVariants}>
                     <div className="section-header">
-                        <h3><Zap size={20} className="icon-mr text-warning" /> Recent Unlock</h3>
+                        <h3><Zap size={18} className="icon-mr text-warning" /> Latest Achievement</h3>
                     </div>
                     <div className="achievement-display">
-                        <div className="badge-icon-large">🏆</div>
+                        <div className="badge-icon-large">
+                            <Flame size={24} color="#f59e0b" fill="#f59e0b" />
+                        </div>
                         <div className="badge-info">
-                            <h4>Early Riser</h4>
-                            <p>5 morning workouts</p>
+                            <h4>Consistency King</h4>
+                            <p>Worked out 7 days straight</p>
                         </div>
                     </div>
                 </motion.div>

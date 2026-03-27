@@ -1,24 +1,14 @@
-/* DietSection.css - Premium Glassmorphism Theme */
+/* DietSection.css - Premium Glassmorphism Theme (Fixed Variables) */
 
-:root {
-  --glass-bg: rgba(255, 255, 255, 0.05); /* Very subtle for dark mode */
-  --glass-border: rgba(255, 255, 255, 0.1);
-  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
-  --accent-glow: 0 0 20px rgba(99, 102, 241, 0.15); /* Indigo glow */
-  --text-primary: #ffffff;
-  --text-secondary: #9ca3af;
-}
-
-/* Light Mode Override (if applicable) */
-/* Ideally we rely on global vars, but let's ensure text visibility */
 .diet-page-container {
   min-height: 100vh;
-  background: radial-gradient(circle at top right, #1f2937, #111827);
-  color: var(--text-primary);
-  padding: 2rem;
-  font-family: 'Outfit', sans-serif;
-  position: relative;
-  overflow-x: hidden;
+  margin: 0 auto;
+  padding: 40px 48px 120px 48px;
+  background-color: var(--bg-main) !important;
+  color: var(--text-main);
+  transition: background-color 0.3s ease, color 0.3s ease;
+  font-family: 'Inter', sans-serif;
+  width: 100%;
 }
 
 /* --- 1. PREMIUM FILTER BAR --- */
@@ -26,28 +16,28 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: var(--glass-bg);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--glass-border);
-  border-radius: 20px;
-  padding: 1rem 2rem;
-  margin-bottom: 2rem;
-  box-shadow: var(--glass-shadow);
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 16px 32px;
+  margin-bottom: 32px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.03);
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: 16px;
 }
+
+[data-theme='dark'] .premium-filter-bar { box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
 
 .filter-group {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 6px;
   flex: 1;
   min-width: 150px;
 }
 
 .filter-group label {
-  font-size: 0.85rem;
+  font-size: 0.8125rem;
   color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -57,120 +47,118 @@
 .premium-filter-bar select {
   background: transparent;
   border: none;
-  color: var(--text-primary);
-  font-size: 1.1rem;
+  color: var(--text-main);
+  font-size: 1.0625rem;
   font-weight: 600;
   cursor: pointer;
-  appearance: none; /* Hide default arrow */
-  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23FFFFFF%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%239ca3af%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
   background-repeat: no-repeat;
-  background-position: right 0.7em top 50%;
+  background-position: right 0 top 50%;
   background-size: 0.65em auto;
-  padding-right: 2rem;
+  padding-right: 24px;
   outline: none;
 }
 
 .premium-filter-bar select option {
-  background: #1f2937; /* Dark background for dropdown */
-  color: white;
+  background: var(--bg-card);
+  color: var(--text-main);
 }
 
 .divider {
   width: 1px;
   height: 40px;
-  background: var(--glass-border);
-  margin: 0 1rem;
+  background: var(--border-color);
+  margin: 0 16px;
 }
 
 /* --- 2. GRID LAYOUT --- */
 .diet-dashboard-grid {
   display: grid;
-  grid-template-columns: 2.5fr 1.5fr; /* Left (Main) vs Right (Side) */
-  gap: 2rem;
-}
-
-@media (max-width: 900px) {
-  .diet-dashboard-grid {
-    grid-template-columns: 1fr;
-  }
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
 }
 
 /* --- CARDS & PANELS --- */
 .glass-card {
-  background: var(--glass-bg);
-  backdrop-filter: blur(10px);
-  border: 1px solid var(--glass-border);
-  border-radius: 24px;
-  padding: 1.5rem;
-  box-shadow: var(--glass-shadow);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 32px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+  transition: transform 0.2s, box-shadow 0.2s;
 }
+
+[data-theme='dark'] .glass-card { box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
 
 .glass-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
-  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.06);
+  border-color: var(--text-muted);
 }
+[data-theme='dark'] .glass-card:hover { box-shadow: 0 12px 30px rgba(0,0,0,0.4); border-color: rgba(255,255,255,0.1); }
 
-.glow-border {
-  /* Subtle animated border or static glow */
-  box-shadow: var(--accent-glow);
-}
-
-/* --- STATS CARD (Wrapper around DailySummary) --- */
 .stats-card {
-  margin-bottom: 2rem;
-  /* Override internal styles of DailyDietSummary via deep selector if needed, 
-     or rely on it being transparent */
-  background: linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+  margin-bottom: 24px;
+  background: var(--bg-card);
 }
 
 /* --- TODAY'S PREVIEW --- */
 .todays-plan-preview h4 {
   margin-top: 0;
-  margin-bottom: 1.5rem;
-  font-size: 1.2rem;
-  border-bottom: 1px solid var(--glass-border);
-  padding-bottom: 1rem;
+  margin-bottom: 24px;
+  font-size: 1.1rem;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 16px;
+  color: var(--text-main);
 }
 
 .mini-meal-list {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 12px;
 }
 
 .mini-meal-row {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  background: rgba(255, 255, 255, 0.03);
-  padding: 0.8rem;
+  gap: 16px;
+  background: var(--bg-main);
+  padding: 12px 16px;
   border-radius: 12px;
+  border: 1px solid transparent;
+  transition: 0.2s;
+}
+
+.mini-meal-row:hover {
+  background: var(--bg-card);
+  border-color: var(--border-color);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
 }
 
 .mini-meal-row img {
-  width: 50px;
-  height: 50px;
-  border-radius: 10px;
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
   object-fit: cover;
 }
 
 .mini-meal-row span {
   display: block;
   font-weight: 600;
-  font-size: 1rem;
+  font-size: 0.9375rem;
+  color: var(--text-main);
 }
 
 .mini-meal-row small {
   color: var(--text-secondary);
+  font-size: 0.8125rem;
 }
 
 /* --- LOADING --- */
 .loading-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.2);
   backdrop-filter: blur(4px);
   display: flex;
   flex-direction: column;
@@ -179,61 +167,22 @@
   z-index: 50;
   border-radius: 20px;
 }
+[data-theme='dark'] .loading-overlay { background: rgba(0,0,0,0.6); }
 
 .spinner {
   width: 40px;
   height: 40px;
-  border: 4px solid rgba(255, 255, 255, 0.1);
-  border-left-color: #6366f1; /* Indigo */
+  border: 4px solid var(--border-color);
+  border-left-color: var(--primary);
   border-radius: 50%;
   animation: spin 1s linear infinite;
-  margin-bottom: 1rem;
+  margin-bottom: 16px;
 }
 
-@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+@keyframes spin { 100% { transform: rotate(360deg); } }
 
-/* --- LOGIN BLUR --- */
-.blur-mode > *:not(.login-overlay-glass) {
-    filter: blur(8px);
-    pointer-events: none;
-    user-select: none;
-}
-
-.login-overlay-glass {
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-}
-
-.login-modal-glass {
-    background: rgba(20, 20, 20, 0.8);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255,255,255,0.1);
-    padding: 3rem;
-    border-radius: 24px;
-    text-align: center;
-    color: white;
-}
-
-.login-modal-glass button {
-    background: #6366f1;
-    color: white;
-    border: none;
-    padding: 1rem 2rem;
-    font-size: 1rem;
-    border-radius: 12px;
-    cursor: pointer;
-    margin-top: 1rem;
-    font-weight: bold;
-}
-/* Override nested summary card */
-.stats-card .daily-summary-card {
-    background: transparent;
-    border: none;
-    box-shadow: none;
-    padding: 0;
-    margin: 0;
+/* --- RESPONSIVE --- */
+@media (max-width: 900px) {
+  .diet-dashboard-grid { grid-template-columns: 1fr; }
+  .diet-page-container { padding: 24px; margin-top: 20px;}
 }
