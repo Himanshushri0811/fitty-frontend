@@ -1,13 +1,33 @@
 import axios from 'axios';
 
 // Base URL: ENV > fallback to local
-const baseURL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:8000';
+let baseURL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:8000';
+
+// ALWAYS ensure HTTPS protocol on production
+if (baseURL && !baseURL.startsWith('http')) {
+    baseURL = 'https://' + baseURL;
+}
+// Strip trailing slash to prevent double-slashes in endpoints
+if (baseURL.endsWith('/')) {
+    baseURL = baseURL.slice(0, -1);
+}
+
+console.log("🚀 [API CONFIG] Booting up with Base URL:", baseURL);
 
 const API = axios.create({
   baseURL: baseURL,
-  withCredentials: false, // JWT header based auth, avoids CORS issues
-  timeout: 60000, // 60 seconds to accommodate Render Free Tier cold starts
+  withCredentials: false, 
+  headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+  },
+  timeout: 60000, // 60s for Render cold start
 });
+
+// WARM-UP PING (Wakes up Render instance while user types)
+try {
+    API.get('/api/accounts/health/').catch(err => console.log("⏳ Waiting for backend to wake up..."));
+} catch (e) {}
 
 let isRefreshing = false;
 let failedQueue = [];
