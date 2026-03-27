@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import API from './axiosConfig';
 
 const Recommendation = () => {
   const [data, setData] = useState({ workouts: [], diet: [] });
 
   useEffect(() => {
     const fetchData = async () => {
-      const res = await axios.get('http://localhost:8000/api/recommendations/');
+      const res = await API.get('/api/recommendations/');
       setData(res.data);
     };
 
