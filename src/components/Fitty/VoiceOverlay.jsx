@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaTimes, FaMicrophone } from 'react-icons/fa';
+import { X, Mic } from 'lucide-react';
 import VoiceOrb from './VoiceOrb';
 import './VoiceAssistant.css';
 
@@ -18,54 +18,49 @@ const VoiceOverlay = ({
     <AnimatePresence>
       <motion.div 
         className="fitty-overlay"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
+        initial={{ opacity: 0, backdropFilter: 'blur(0px)' }}
+        animate={{ opacity: 1, backdropFilter: 'blur(40px)' }}
+        exit={{ opacity: 0, backdropFilter: 'blur(0px)' }}
+        transition={{ duration: 0.5, ease: "easeInOut" }}
       >
         <button className="close-assist-btn" onClick={onClose} title="Close Assistant">
-          <FaTimes />
+          <X size={24} />
         </button>
 
-        <div className="state-text">
-          {state === 'listening' ? 'Listening...' : 
-           state === 'thinking' ? 'Thinking...' : 
-           state === 'speaking' ? 'Speaking...' : 'Ready'}
+        <div className="voice-visualizer-section">
+            <VoiceOrb state={state} />
         </div>
 
-        <VoiceOrb state={state} />
-
         <div className="assistant-info">
-          {/* Text areas hidden as per user request for voice-only experience */}
-          {/* 
-          <div className="transcript-area">
-            {transcript || (state === 'listening' ? 'How can I help?' : '')}
+          <div className="state-text">
+            {state === 'listening' ? 'Listening...' : 
+             state === 'thinking' ? 'Thinking...' : 
+             state === 'speaking' ? 'Speaking...' : 'Ready'}
           </div>
-          */}
+
+          <AnimatePresence mode="wait">
+            <motion.div 
+              key={transcript || state}
+              className="transcript-area"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.3 }}
+            >
+              {transcript || (state === 'listening' ? 'I am listening...' : 'Tap mic to start')}
+            </motion.div>
+          </AnimatePresence>
 
           {state === 'idle' && (
             <motion.button 
               className="manual-mic-btn"
               onClick={onMicClick}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
             >
-              <FaMicrophone />
+              <Mic size={28} />
             </motion.button>
           )}
-
-          {/* 
-          <AnimatePresence>
-            {response && (
-              <motion.div 
-                className="response-area"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-              >
-                <ReactMarkdown>{response}</ReactMarkdown>
-              </motion.div>
-            )}
-          </AnimatePresence>
-          */}
         </div>
       </motion.div>
     </AnimatePresence>

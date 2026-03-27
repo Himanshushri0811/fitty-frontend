@@ -46,8 +46,8 @@
   /* Slate 950 - Deepest Dark */
   --bg-secondary: #0f172a;
   /* Slate 900 */
-  --bg-card: rgba(30, 41, 59, 0.4);
-  --bg-glass: rgba(15, 23, 42, 0.65);
+  --bg-card: var(--bg-card);
+  --bg-glass: var(--bg-glass);
 
   --text-main: #f8fafc;
   --text-secondary: #94a3b8;
@@ -65,7 +65,7 @@
   /* Cyan 400 */
 
   --accent-gradient: linear-gradient(135deg, #818cf8 0%, #c084fc 50%, #f472b6 100%);
-  --glass-gradient: linear-gradient(145deg, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.6));
+  --glass-gradient: linear-gradient(145deg, var(--bg-card), var(--bg-glass));
 
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.6);

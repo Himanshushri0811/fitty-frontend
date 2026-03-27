@@ -526,7 +526,7 @@
   /* Shrink to wrap video */
   max-width: 95vw;
   /* Don't overflow screen */
-  background: #1a1a1a;
+  background: var(--bg-card);
   padding: 0;
   overflow: hidden;
   border: 1px solid #333;

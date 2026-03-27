@@ -336,7 +336,7 @@
 /* SAFETY MODAL STYLING */
 .safety-modal-container {
   min-height: 100vh;
-  background: rgba(15, 23, 42, 0.95);
+  background: var(--bg-glass);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -345,7 +345,7 @@
 }
 
 .safety-card {
-  background: #1e293b;
+  background: var(--bg-card);
   border: 1px solid #ef4444;
   padding: 40px;
   border-radius: 24px;

@@ -17,7 +17,7 @@
 }
 
 .meal-modal-container {
-    background: #1a1a1a;
+    background: var(--bg-card);
     width: 85%;
     max-width: 1000px;
     height: 80vh;

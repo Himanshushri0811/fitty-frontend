@@ -74,7 +74,7 @@
 }
 
 .stat-card {
-    background: linear-gradient(145deg, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.8));
+    background: linear-gradient(145deg, var(--bg-card), var(--bg-glass));
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border: 1px solid var(--gym-border);
@@ -345,7 +345,7 @@
 }
 
 .gym-modal {
-    background: #1e293b;
+    background: var(--bg-card);
     border: 1px solid rgba(255, 255, 255, 0.1);
     padding: 40px;
     border-radius: 24px;
@@ -381,7 +381,7 @@
 
 .gym-input {
     width: 100%;
-    background: #0f172a;
+    background: var(--bg-card);
     border: 1px solid #334155;
     padding: 14px 16px;
     border-radius: 12px;
@@ -395,7 +395,7 @@
     outline: none;
     border-color: var(--gym-accent-purple);
     box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.2);
-    background: #1e293b;
+    background: var(--bg-card);
 }
 
 select.gym-input {
@@ -489,7 +489,7 @@ select.gym-input {
 }
 
 .stat-card {
-    background: rgba(30, 41, 59, 0.4);
+    background: var(--bg-card);
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 16px;
@@ -629,7 +629,7 @@ select.gym-input {
 
 /* Common Card Style for Sections */
 .dashboard-section-card {
-    background: rgba(30, 41, 59, 0.4);
+    background: var(--bg-card);
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 20px;
     padding: 24px;
@@ -764,7 +764,7 @@ select.gym-input {
 }
 
 .gym-modal {
-    background: #1e293b;
+    background: var(--bg-card);
     border: 1px solid rgba(255, 255, 255, 0.1);
     padding: 30px;
     border-radius: 20px;

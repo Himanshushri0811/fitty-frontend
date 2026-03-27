@@ -58,7 +58,7 @@
 .comment-input {
     flex: 1;
     padding: 12px 15px;
-    background: rgba(15, 23, 42, 0.6);
+    background: var(--bg-glass);
     border: 1px solid rgba(100, 116, 139, 0.3);
     border-radius: 25px;
     color: #e2e8f0;
@@ -69,7 +69,7 @@
 .comment-input:focus {
     outline: none;
     border-color: rgba(102, 126, 234, 0.5);
-    background: rgba(15, 23, 42, 0.8);
+    background: var(--bg-glass);
 }
 
 .comment-input::placeholder {

@@ -1,17 +1,16 @@
 .fitty-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: radial-gradient(circle at center, rgba(15, 15, 20, 0.95) 0%, rgba(5, 5, 10, 0.98) 100%);
+  inset: 0;
+  background: rgba(10, 10, 15, 0.7);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   z-index: 9999;
   color: white;
-  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(40px);
+  backdrop-filter: blur(40px);
+  padding: 40px 20px;
 }
 
 .close-assist-btn {
@@ -21,181 +20,189 @@
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
   color: white;
-  width: 60px;
-  height: 60px;
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  font-size: 1.2rem;
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
 .close-assist-btn:hover {
   background: rgba(255, 255, 255, 0.15);
-  transform: rotate(90deg) scale(1.1);
+  transform: scale(1.05);
+  border-color: rgba(255, 255, 255, 0.3);
 }
 
-.voice-orb-container {
-  position: relative;
-  width: 300px;
-  height: 300px;
+/* --- SIRI ORB CORE --- */
+.voice-visualizer-section {
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.voice-orb {
-  width: 150px;
-  height: 150px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 50%, #8e44ad 100%);
-  background-size: 300% 300%;
-  animation: gradientShift 4s ease infinite;
-  box-shadow: 0 0 70px rgba(58, 123, 213, 0.4), inset 0 0 20px rgba(255, 255, 255, 0.3);
-  position: relative;
-  z-index: 2;
-  border: 2px solid rgba(255, 255, 255, 0.1);
-}
-
-@keyframes gradientShift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-.voice-orb.listening {
-  animation: pulse 1s ease-in-out infinite, gradientShift 3s ease infinite;
-  background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
-  box-shadow: 0 0 100px rgba(79, 172, 254, 0.6);
-}
-
-.voice-orb.thinking {
-  animation: float 2s ease-in-out infinite, gradientShift 1s ease infinite;
-  filter: hue-rotate(180deg);
-  box-shadow: 0 0 80px rgba(246, 79, 89, 0.5);
-}
-
-.voice-orb.speaking {
-  animation: vibrate 0.1s linear infinite alternate, gradientShift 0.5s ease infinite;
-  transform-origin: center;
-}
-
-@keyframes pulse {
-  0% { transform: scale(1); opacity: 0.9; }
-  50% { transform: scale(1.15); opacity: 1; filter: brightness(1.2); }
-  100% { transform: scale(1); opacity: 0.9; }
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  50% { transform: translateY(-20px) rotate(5deg); }
-}
-
-@keyframes vibrate {
-  from { transform: scale(1.05) translateX(-2px); }
-  to { transform: scale(1.08) translateX(2px); }
-}
-
-.voice-waves {
-  position: absolute;
   width: 100%;
-  height: 100%;
 }
 
-.wave {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  border: 2px solid rgba(0, 210, 255, 0.3);
+.siri-orb-wrapper {
+  position: relative;
+  width: 280px;
+  height: 280px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.4s ease;
+}
+
+.siri-core {
+  position: relative;
+  width: 180px;
+  height: 180px;
   border-radius: 50%;
-  width: 150px;
-  height: 150px;
-  animation: ripple 3s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+  filter: blur(18px) contrast(2);
+  mix-blend-mode: screen;
+  background: black;
+  overflow: hidden;
+  z-index: 10;
+  transform: translateZ(0); /* Hardware accelerate */
+  box-shadow: 0 0 120px rgba(255,255,255,0.05);
+  transition: all 0.5s ease;
 }
 
-.wave:nth-child(2) { animation-delay: -0.6s; border-color: rgba(58, 123, 213, 0.3); }
-.wave:nth-child(3) { animation-delay: -1.2s; border-color: rgba(142, 68, 173, 0.3); }
-.wave:nth-child(4) { animation-delay: -1.8s; border-color: rgba(0, 210, 255, 0.2); }
-.wave:nth-child(5) { animation-delay: -2.4s; border-color: rgba(255, 255, 255, 0.1); }
-
-@keyframes ripple {
-  0% { width: 150px; height: 150px; opacity: 1; }
-  100% { width: 500px; height: 500px; opacity: 0; }
+/* The actual morphing blobs */
+.siri-blob {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  border-radius: 50%;
+  mix-blend-mode: screen;
+  opacity: 0.8;
+  animation: siri-spin 6s linear infinite;
 }
 
+.blob-1 { background: radial-gradient(circle at center, #ff2a85 0%, transparent 60%); }
+.blob-2 { background: radial-gradient(circle at center, #1cd7ff 0%, transparent 60%); animation-duration: 4s; animation-direction: reverse; }
+.blob-3 { background: radial-gradient(circle at center, #8a2be2 0%, transparent 60%); animation-duration: 8s; transform-origin: 40% 60%; }
+.blob-4 { background: radial-gradient(circle at center, #ffd700 0%, transparent 50%); animation-duration: 5s; transform-origin: 60% 40%; }
+
+@keyframes siri-spin {
+  0% { transform: scale(1) translate(0, 0) rotate(0deg); border-radius: 40% 60% 60% 40% / 50% 50% 40% 60%; }
+  33% { transform: scale(1.1) translate(10px, -10px) rotate(120deg); border-radius: 60% 40% 40% 60% / 40% 60% 50% 50%; }
+  66% { transform: scale(0.9) translate(-10px, 10px) rotate(240deg); border-radius: 50% 50% 60% 40% / 60% 40% 60% 40%; }
+  100% { transform: scale(1) translate(0, 0) rotate(360deg); border-radius: 40% 60% 60% 40% / 50% 50% 40% 60%; }
+}
+
+/* Ambient Glow Behind Core */
+.siri-glow {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 200px; height: 200px;
+  background: radial-gradient(circle at center, rgba(28, 215, 255, 0.4) 0%, transparent 70%);
+  filter: blur(30px);
+  z-index: 1;
+  transition: all 0.5s ease;
+}
+
+/* --- ORB STATES --- */
+.siri-orb-wrapper.idle .siri-core {
+  transform: scale(0.85);
+  filter: blur(24px) contrast(1.5) grayscale(0.5);
+  opacity: 0.5;
+}
+.siri-orb-wrapper.idle .siri-glow {
+  opacity: 0.2; transform: translate(-50%, -50%) scale(0.8);
+}
+
+.siri-orb-wrapper.listening .siri-core {
+  transform: scale(1.1);
+  filter: blur(12px) contrast(2.5);
+}
+.siri-orb-wrapper.listening .siri-blob { animation-duration: 2s; } /* Faster movement when listening */
+.siri-orb-wrapper.listening .siri-glow { width: 300px; height: 300px; background: radial-gradient(circle at center, rgba(138, 43, 226, 0.6) 0%, transparent 70%); }
+
+.siri-orb-wrapper.thinking .siri-core {
+  transform: scale(0.9);
+  filter: blur(16px) contrast(3);
+}
+.siri-orb-wrapper.thinking .siri-blob { animation-duration: 3s; opacity: 0.6; }
+.siri-orb-wrapper.thinking .siri-glow { background: radial-gradient(circle at center, rgba(255, 42, 133, 0.5) 0%, transparent 70%); animation: breath 2s infinite alternate; }
+
+.siri-orb-wrapper.speaking .siri-core {
+  transform: scale(1);
+  filter: blur(10px) contrast(2);
+  animation: speak-pulse 0.15s infinite alternate;
+}
+.siri-orb-wrapper.speaking .siri-glow { background: radial-gradient(circle at center, rgba(28, 215, 255, 0.6) 0%, transparent 70%); animation: breath 0.15s infinite alternate; }
+
+@keyframes speak-pulse {
+  0% { transform: scale(1); filter: blur(10px) contrast(2); }
+  100% { transform: scale(1.05); filter: blur(8px) contrast(2.2); }
+}
+
+@keyframes breath {
+  from { opacity: 0.6; transform: translate(-50%, -50%) scale(0.9); }
+  to { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+}
+
+/* --- BOTTOM INFO SECTION --- */
 .assistant-info {
-  margin-top: 60px;
-  text-align: center;
-  max-width: 600px;
-  width: 90%;
+  height: 200px;
+  width: 100%;
+  max-width: 800px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  align-items: center;
+  justify-content: center;
 }
 
 .state-text {
-  font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.5);
-  letter-spacing: 4px;
+  font-size: 0.8125rem;
+  color: rgba(255, 255, 255, 0.4);
+  letter-spacing: 0.2em;
   text-transform: uppercase;
-  margin-bottom: 10px;
-  font-weight: 700;
-  text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+  margin-bottom: 24px;
+  font-weight: 600;
 }
 
 .transcript-area {
-  font-size: 1.8rem;
+  font-size: 2rem;
   color: white;
   min-height: 2.5rem;
   font-weight: 600;
-  line-height: 1.4;
-  text-shadow: 0 4px 20px rgba(0,0,0,0.3);
-}
-
-.response-area {
-  font-size: 1.1rem;
-  color: #fff;
-  background: rgba(255, 255, 255, 0.08);
-  padding: 30px;
-  border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-  line-height: 1.6;
-  text-align: left;
-  animation: slideUp 0.6s cubic-bezier(0.23, 1, 0.32, 1);
-}
-
-@keyframes slideUp {
-  from { opacity: 0; transform: translateY(30px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.response-area strong {
-  color: #4facfe;
+  line-height: 1.3;
+  text-align: center;
+  letter-spacing: -0.02em;
+  max-width: 90%;
+  text-wrap: balance;
 }
 
 .manual-mic-btn {
-  background: linear-gradient(135deg, #6366f1 0%, #d946ef 100%);
-  border: none;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   color: white;
-  width: 70px;
-  height: 70px;
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
-  margin: 20px auto;
+  margin-top: 16px;
   cursor: pointer;
-  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.5);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
   transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
 }
 
 .manual-mic-btn:hover {
-  transform: scale(1.1);
-  box-shadow: 0 6px 25px rgba(217, 70, 239, 0.6);
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+@media (max-width: 768px) {
+  .close-assist-btn { top: 24px; right: 24px; width: 44px; height: 44px; }
+  .transcript-area { font-size: 1.5rem; }
+  .siri-core { width: 140px; height: 140px; }
+  .manual-mic-btn { width: 64px; height: 64px; }
 }
