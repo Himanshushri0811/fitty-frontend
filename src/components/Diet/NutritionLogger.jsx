@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import API from '../axiosConfig';
 import { logFood } from '../../services/dietService';
 import './NutritionLogger.css';
 
@@ -14,11 +14,9 @@ const NutritionLogger = ({ onLogSuccess }) => {
 
         setIsCalculating(true);
         try {
-            const token = localStorage.getItem('access_token');
-            const res = await axios.post(
-                'http://localhost:8000/api/diet/calculate-macros/',
-                { text: logText },
-                { headers: { Authorization: `Bearer ${token}` } }
+            const res = await API.post(
+                '/api/diet/calculate-macros/',
+                { text: logText }
             );
             setResult(res.data);
         } catch (error) {

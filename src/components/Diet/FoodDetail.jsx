@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import API from '../axiosConfig';
 import './FoodDetail.css';
 
 const FoodDetail = () => {
@@ -12,10 +12,7 @@ const FoodDetail = () => {
     useEffect(() => {
         const fetchDetail = async () => {
             try {
-                const token = localStorage.getItem('access_token');
-                const res = await axios.get(`http://localhost:8000/api/diet/foods/${id}/`, {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
+                const res = await API.get(`/api/diet/foods/${id}/`);
                 setFood(res.data);
             } catch (err) {
                 console.error(err);

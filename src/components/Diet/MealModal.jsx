@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import API from '../axiosConfig';
 import './MealModal.css';
 
 const MealModal = ({ meal, onClose, onReplaceClick }) => {
@@ -11,10 +11,7 @@ const MealModal = ({ meal, onClose, onReplaceClick }) => {
         if (!meal.food_id) return;
         setLoading(true);
         try {
-            const token = localStorage.getItem('access_token');
-            const res = await axios.get(`http://localhost:8000/api/diet/foods/${meal.food_id}/`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const res = await API.get(`/api/diet/foods/${meal.food_id}/`);
             setDeepDive(res.data.deep_dive);
         } catch (err) {
             console.error("Failed to load deep dive", err);
