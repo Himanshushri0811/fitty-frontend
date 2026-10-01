@@ -93,7 +93,7 @@ const LiveSupportWidget = () => {
                                 <div className="agent-avatar"><FaHeadset /></div>
                                 <div>
                                     <div style={{ fontWeight: 'bold' }}>Live Support</div>
-                                    <div style={{ fontSize: '12px', opacity: 0.9 }}>Chat with Team FitMitra</div>
+                                    <div style={{ fontSize: '12px', opacity: 0.9 }}>Chat with Team Fitty</div>
                                 </div>
                             </div>
                             <button onClick={() => setIsOpen(false)} style={{ background: 'transparent', border: 'none', color: 'white', fontSize: '16px', cursor: 'pointer' }}>

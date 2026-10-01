@@ -53,7 +53,7 @@ const Signup = ({ onSwitch }) => {
   return (
     <form className="auth-form" onSubmit={handleSubmit}>
       <div className="form-header">
-        <h2 className="form-title">Join FitMitra</h2>
+        <h2 className="form-title">Join Fitty</h2>
         <p className="form-subtitle">Choose your path to begin</p>
       </div>
 

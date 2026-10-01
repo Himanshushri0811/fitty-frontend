@@ -35,7 +35,7 @@ const GymPlans = () => {
                 key: order.key_id || process.env.REACT_APP_RAZORPAY_KEY_ID,
                 amount: order.amount,
                 currency: order.currency,
-                name: "FitMitra Manager",
+                name: "Fitty Manager",
                 description: `Upgrade to ${plan} Plan`,
                 order_id: order.order_id || order.id,
 
@@ -76,7 +76,7 @@ const GymPlans = () => {
                 </button>
                 <motion.div initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }}>
                     <h1 className="text-gradient">Upgrade Your Gym</h1>
-                    <p>Unlock the full power of FitMitra for just ₹299/month</p>
+                    <p>Unlock the full power of Fitty for just ₹299/month</p>
                 </motion.div>
             </header>
 

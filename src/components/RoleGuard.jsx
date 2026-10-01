@@ -35,7 +35,7 @@ const RoleGuard = ({ children }) => {
                 key: process.env.REACT_APP_RAZORPAY_KEY_ID || 'rzp_test_S1nr3QbOsO5BDg',
                 amount: order.amount,
                 currency: order.currency,
-                name: user?.gym_profile?.gym_name || 'FitMitra Gym',
+                name: user?.gym_profile?.gym_name || 'Fitty Gym',
                 description: 'Upgrade to Premium',
                 order_id: order.id,
 

@@ -66,8 +66,8 @@ const PrivacyPolicy = () => {
             transition={{ delay: 0.5 }}
           >
             <h3>Contact Us</h3>
-            <p>If you have any questions about this Privacy Policy, please reach out to us at <a href="mailto:privacy@fitmitra.com">privacy@fitmitra.com</a></p>
-            <p className="copyright">&copy; 2024 FitMitra. All Rights Reserved.</p>
+            <p>If you have any questions about this Privacy Policy, please reach out to us at <a href="mailto:privacy@fitty.com">privacy@fitty.com</a></p>
+            <p className="copyright">&copy; 2024 Fitty. All Rights Reserved.</p>
           </motion.div>
         </div>
       </div>

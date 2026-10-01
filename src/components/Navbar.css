@@ -77,7 +77,7 @@
 .logo-icon-circle {
   width: 32px;
   height: 32px;
-  background: linear-gradient(135deg, #6366f1 0%, #ec4899 100%);
+  background: linear-gradient(135deg, var(--fitty-primary) 0%, var(--fitty-accent) 100%);
   border-radius: 8px; /* Softer radius */
   display: flex;
   align-items: center;
@@ -89,16 +89,17 @@
 
 .logo-text {
   font-family: 'Outfit', sans-serif;
-  font-size: 1.25rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
+  font-size: 1.5rem;
+  font-weight: 800;
+  font-style: italic;
+  letter-spacing: -0.04em;
   color: var(--text-main);
   line-height: 1;
 }
 
 /* Fix text color visibility in un-scrolled transparent mode if needed */
 [data-theme='light'] .navbar:not(.scrolled) .logo-text {
-  color: #111827;
+  color: var(--fitty-surface);
 }
 
 /* ============================
@@ -243,7 +244,7 @@
 .avatar-placeholder-compact {
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, #6366f1, #ec4899);
+  background: linear-gradient(135deg, var(--fitty-primary), var(--fitty-accent));
   color: white;
   display: flex;
   align-items: center;

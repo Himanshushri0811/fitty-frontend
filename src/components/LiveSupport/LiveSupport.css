@@ -140,14 +140,14 @@
 
 .chat-msg.agent {
   background: #e9ecef;
-  color: #333;
+  color: var(--fitty-border);
   align-self: flex-start;
   border-bottom-left-radius: 2px;
 }
 
 .input-area {
   padding: 10px;
-  border-top: 1px solid #eee;
+  border-top: 1px solid var(--fitty-text-secondary);
   background: white;
   display: flex;
   gap: 10px;

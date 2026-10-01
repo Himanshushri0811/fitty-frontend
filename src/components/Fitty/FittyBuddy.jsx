@@ -18,7 +18,7 @@ const FittyBuddy = ({ isOpen, onClose }) => {
             // Give a friendly Hinglish greeting on open
             const greetings = [
                 "Namaste Champ! Main Fitty hoon. Aaj kya workout plan hai?",
-                "Hello Buddy! FitMitra AI is ready. Kaise madad karun aapki?",
+                "Hello Buddy! Fitty AI is ready. Kaise madad karun aapki?",
                 "Hey! Fitty here. Let's get moving! Kya sawal hai aapka today?"
             ];
             const randomGreeting = greetings[Math.floor(Math.random() * greetings.length)];

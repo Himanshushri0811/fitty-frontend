@@ -16,7 +16,7 @@ const AdminSidebar = () => {
     return (
         <aside className="admin-sidebar">
             <div className="admin-logo">
-                <h2>FitMitra Admin</h2>
+                <h2>Fitty Admin</h2>
             </div>
 
             <nav className="admin-nav">

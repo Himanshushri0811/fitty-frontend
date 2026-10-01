@@ -89,7 +89,7 @@ const GymOwnerDashboard = () => {
                 key: process.env.REACT_APP_RAZORPAY_KEY_ID || "rzp_test_YourKeyShouldBeHere", // Make sure this is in your Frontend .env
                 amount: orderData.amount,
                 currency: orderData.currency,
-                name: "FitMitra Pro Upgrade",
+                name: "Fitty Pro Upgrade",
                 description: "Unlimited Access for 30 Days",
                 order_id: orderData.id,
                 handler: async function (response) {
@@ -117,7 +117,7 @@ const GymOwnerDashboard = () => {
                     contact: ""
                 },
                 theme: {
-                    color: "#E2F009", // FitMitra Brand Color
+                    color: "#E2F009", // Fitty Brand Color
                 }
             };
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence, LayoutGroup } from 'framer-motion';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
@@ -11,6 +11,7 @@ import './App.css';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import BottomNav from './components/BottomNav';
+import SplashScreen from './components/SplashScreen';
 // import Chatbot from './components/common/Chatbot/Chatbot';
 import WaterIntake from './components/WaterIntake/WaterIntake';
 import { AuthProvider } from './context/AuthContext';
@@ -70,6 +71,8 @@ import GymSettings from './components/GymOwner/GymSettings';
 // Import UserDashboard
 import UserDashboard from './components/UserDashboard/UserDashboard';
 
+import CallFab from "./components/CallFab";
+
 /* =======================
    App Component
 ======================= */
@@ -80,6 +83,26 @@ function AppLayout() {
   const location = useLocation(); // Hook usage requires being inside Router
   const hideFooter = location.pathname === '/fitty';
 
+  const [showSplash, setShowSplash] = React.useState(() => {
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!reduced) {
+      sessionStorage.setItem('fittySplashIsPlaying', 'true');
+      return true;
+    }
+    return false;
+  });
+
+  React.useEffect(() => {
+    if (showSplash) {
+      const t = setTimeout(() => {
+        sessionStorage.removeItem('fittySplashIsPlaying');
+        setShowSplash(false);
+        window.dispatchEvent(new Event('splashFinished'));
+      }, 1400);
+      return () => clearTimeout(t);
+    }
+  }, [showSplash]);
+
   // Wake up Render Free Tier Backend
   React.useEffect(() => {
     fetch('https://fitmitra-backend.onrender.com/api/health/')
@@ -88,9 +111,14 @@ function AppLayout() {
   }, []);
 
   return (
-    <div className="app">
-      {/* ===== Global Navbar ===== */}
-      <Navbar />
+    <LayoutGroup>
+      <div className="app">
+        <AnimatePresence>
+          {showSplash && <SplashScreen />}
+        </AnimatePresence>
+
+        {/* ===== Global Navbar ===== */}
+        <Navbar showSplash={showSplash} />
 
       {/* ===== Main Content Area ===== */}
       <div className="main-content">
@@ -166,6 +194,11 @@ function AppLayout() {
       {!hideFooter && <Footer />}
       {!hideFooter && <BottomNav />}
 
+      {/* Floating call button: posture aur fitty page par mic/camera conflict se bachne ke liye hide */}
+      {location.pathname !== '/fitty' &&
+       location.pathname !== '/posture' &&
+       location.pathname !== '/voice-assistant' && <CallFab />}
+
       {/* Hide Zoho on Fitty Page (Smart Toggle) */}
       {React.useEffect(() => {
         const updateZoho = (action) => {
@@ -196,7 +229,8 @@ function AppLayout() {
         }
         // No else block needed - let Zoho maintain its state on other pages
       }, [location.pathname])}
-    </div>
+      </div>
+    </LayoutGroup>
   );
 }
 

@@ -139,6 +139,18 @@ const BackgroundSlider = () => {
 const Home = () => {
     const navigate = useNavigate();
 
+    const [isReady, setIsReady] = useState(() => {
+        return !sessionStorage.getItem('fittySplashIsPlaying');
+    });
+
+    useEffect(() => {
+        if (!isReady) {
+            const handleReady = () => setIsReady(true);
+            window.addEventListener('splashFinished', handleReady);
+            return () => window.removeEventListener('splashFinished', handleReady);
+        }
+    }, [isReady]);
+
     const containerVariants = {
         hidden: { opacity: 0 },
         visible: { opacity: 1, transition: { staggerChildren: 0.15, delayChildren: 0.2 } }
@@ -163,7 +175,7 @@ const Home = () => {
                     className="hero-content"
                     variants={containerVariants}
                     initial="hidden"
-                    animate="visible"
+                    animate={isReady ? "visible" : "hidden"}
                 >
                     <motion.div variants={itemVariants} className="hero-badge-premium">
                         <span className="ai-core-dot"></span> Next-Generation Neural Engine Active
@@ -178,7 +190,7 @@ const Home = () => {
                     </motion.h1>
 
                     <motion.p variants={itemVariants} className="hero-subtext">
-                        FitMitra merges generative AI with kinetic tracking. Stop guessing your macros. Stop recording reps manually. Let the system build the ultimate version of you.
+                        Fitty merges generative AI with kinetic tracking. Stop guessing your macros. Stop recording reps manually. Let the system build the ultimate version of you.
                     </motion.p>
 
                     <motion.div variants={itemVariants} className="hero-cta-row">
@@ -195,8 +207,8 @@ const Home = () => {
                 <motion.div 
                     className="hero-stats-strip"
                     initial={{ opacity: 0, y: 40 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 1, duration: 0.8 }}
+                    animate={isReady ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
+                    transition={{ delay: 0.5, duration: 0.8 }}
                 >
                     <CountUpStat target={5000} duration={2} text="Active Neural Links" icon={<FaFire />} />
                     <CountUpStat target={20000} duration={2.5} text="Protocols Completed" icon={<FaTrophy />} />

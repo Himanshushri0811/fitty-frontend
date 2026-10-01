@@ -1,14 +1,14 @@
 :root {
-    --admin-bg: #0f172a;
-    --admin-sidebar: #1e293b;
-    --admin-primary: #6366f1;
-    --admin-secondary: #a855f7;
+    --admin-bg: var(--fitty-bg-secondary);
+    --admin-sidebar: var(--fitty-border);
+    --admin-primary: var(--fitty-primary);
+    --admin-secondary: var(--fitty-secondary);
     --admin-card-bg: rgba(255, 255, 255, 0.05);
-    --admin-text: #f8fafc;
-    --admin-text-dim: #94a3b8;
+    --admin-text: var(--fitty-text);
+    --admin-text-dim: var(--fitty-text-muted);
     --admin-border: rgba(255, 255, 255, 0.1);
-    --success: #10b981;
-    --danger: #ef4444;
+    --success: var(--fitty-success);
+    --danger: var(--fitty-error);
 }
 
 .admin-layout {
@@ -240,10 +240,10 @@
 .form-input {
     width: 100%;
     background: var(--bg-card) !important;
-    border: 2px solid #6366f1 !important;
+    border: 2px solid var(--fitty-primary) !important;
     padding: 12px 16px;
     border-radius: 12px;
-    color: #ffffff !important;
+    color: var(--fitty-text) !important;
     font-size: 1.1rem !important;
     font-weight: 600 !important;
     opacity: 1 !important;

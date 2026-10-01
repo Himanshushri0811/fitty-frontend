@@ -9,7 +9,7 @@
 .summary-title {
     margin: 0 0 16px 0;
     font-size: 1.1rem;
-    color: #fff;
+    color: var(--fitty-text);
 }
 
 .summary-grid {
@@ -32,7 +32,7 @@
 }
 
 .summary-val {
-    color: #fff;
+    color: var(--fitty-text);
     font-weight: 600;
 }
 

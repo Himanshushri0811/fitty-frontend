@@ -8,7 +8,7 @@ const Terms = () => {
     {
       icon: <FaUserCheck />,
       title: "1. Acceptance of Terms",
-      content: "By accessing and using FitMitra, you acknowledge that you have read, understood, and agree to be bound by these terms. If you do not agree to these terms, please do not use our services."
+      content: "By accessing and using Fitty, you acknowledge that you have read, understood, and agree to be bound by these terms. If you do not agree to these terms, please do not use our services."
     },
     {
       icon: <FaSyncAlt />,
@@ -18,12 +18,12 @@ const Terms = () => {
     {
       icon: <FaBan />,
       title: "3. Prohibited Conduct",
-      content: "Users are prohibited from using FitMitra for any illegal purposes, attempting to reverse engineer the AI models, or distributing harmful content through our social features."
+      content: "Users are prohibited from using Fitty for any illegal purposes, attempting to reverse engineer the AI models, or distributing harmful content through our social features."
     },
     {
       icon: <FaGavel />,
       title: "4. Modifications to Service",
-      content: "FitMitra reserves the right to modify, suspend, or discontinue any part of the service at any time. We will notify users of significant changes to these terms via email or site announcements."
+      content: "Fitty reserves the right to modify, suspend, or discontinue any part of the service at any time. We will notify users of significant changes to these terms via email or site announcements."
     }
   ];
 
@@ -67,7 +67,7 @@ const Terms = () => {
           >
             <h3>Agreement</h3>
             <p>By clicking 'Accept' or continuing to use our platform, you agree to these Terms and Conditions in their entirety.</p>
-            <p className="copyright">&copy; 2024 FitMitra. All Rights Reserved.</p>
+            <p className="copyright">&copy; 2024 Fitty. All Rights Reserved.</p>
           </motion.div>
         </div>
       </div>

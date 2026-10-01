@@ -82,7 +82,7 @@
   position: relative;
   width: 100vw;
   height: 100vh;
-  background: #000;
+  background: var(--fitty-bg);
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -131,7 +131,7 @@
 
 .live-badge {
   font-size: 0.7rem;
-  background: #ef4444;
+  background: var(--fitty-error);
   color: white;
   padding: 2px 8px;
   border-radius: 4px;
@@ -159,7 +159,7 @@
   position: relative;
   width: 100%;
   height: 100%;
-  background: #000;
+  background: var(--fitty-bg);
 }
 
 .skeleton-canvas {
@@ -206,9 +206,9 @@
   white-space: nowrap;
 }
 
-.status-overlay.correct { background: rgba(34, 197, 94, 0.9); border: 2px solid #22c55e; }
+.status-overlay.correct { background: rgba(34, 197, 94, 0.9); border: 2px solid var(--fitty-success); }
 .status-overlay.improve { background: rgba(234, 179, 8, 0.9); border: 2px solid #eab308; }
-.status-overlay.unsafe { background: rgba(239, 68, 68, 0.9); border: 2px solid #ef4444; animation: pulse 1.5s infinite; }
+.status-overlay.unsafe { background: rgba(239, 68, 68, 0.9); border: 2px solid var(--fitty-error); animation: pulse 1.5s infinite; }
 .status-overlay.waiting { background: rgba(0, 0, 0, 0.7); }
 
 @keyframes pulse {
@@ -259,11 +259,11 @@
   border-radius: 32px;
   text-align: center;
   max-width: 400px;
-  border: 2px solid #ef4444;
+  border: 2px solid var(--fitty-error);
   margin: 20px;
 }
 
-.safety-card h1 { color: #ef4444; margin: 20px 0; font-size: 2rem; }
+.safety-card h1 { color: var(--fitty-error); margin: 20px 0; font-size: 2rem; }
 .safety-card button {
   width: 100%;
   padding: 15px;
@@ -272,7 +272,7 @@
   font-weight: 700;
   margin-top: 15px;
   cursor: pointer;
-  background: #ef4444;
+  background: var(--fitty-error);
   color: white;
 }
 .safety-card button.secondary {

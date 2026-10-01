@@ -42,7 +42,7 @@ const Login = ({ onSwitch }) => {
     <form className="auth-form" onSubmit={handleSubmit}>
       <div className="form-header">
         <h2 className="form-title">Welcome Back</h2>
-        <p className="form-subtitle">Continuing your fitness journey with FitMitra</p>
+        <p className="form-subtitle">Continuing your fitness journey with Fitty</p>
       </div>
 
       {error && <div className="error-message">{error}</div>}

@@ -23,7 +23,7 @@ const Footer = () => {
         {/* Top Section */}
         <div className="footer-top">
           <div className="footer-about">
-            <h3>FitMitra 🤖</h3>
+            <h3>Fitty 🤖</h3>
             <p>
               Your AI-powered fitness coach guiding you towards a healthier and stronger lifestyle.
             </p>
@@ -65,7 +65,7 @@ const Footer = () => {
 
         {/* Bottom Section */}
         <div className="footer-bottom">
-          <p>© 2025 FitMitra. All rights reserved.</p>
+          <p>© 2025 Fitty. All rights reserved.</p>
         </div>
       </div>
     </footer>

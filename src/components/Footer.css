@@ -98,7 +98,7 @@
 
 .social-icons a:hover {
   background: #00e5ff;
-  color: #000;
+  color: var(--fitty-bg);
   transform: scale(1.2);
   box-shadow: 0 0 25px #00e5ff;
 }

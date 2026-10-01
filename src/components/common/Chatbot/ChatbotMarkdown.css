@@ -34,7 +34,7 @@
 
 /* Specific overrides for User bubbles to ensure readability */
 .msg-user .markdown-content strong {
-    color: #000;
+    color: var(--fitty-bg);
     font-weight: 800;
 }
 

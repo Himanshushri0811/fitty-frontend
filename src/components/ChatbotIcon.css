@@ -37,7 +37,7 @@
   .face {
     width: 75%;
     height: 75%;
-    background: #fff;
+    background: var(--fitty-text);
     border-radius: 50%;
     display: flex;
     flex-direction: column;
@@ -58,7 +58,7 @@
   .eye {
     width: 18px;
     height: 18px;
-    background: #000;
+    background: var(--fitty-bg);
     border-radius: 50%;
     animation: blink 4s infinite alternate;
     transition: transform 0.4s;
@@ -76,7 +76,7 @@
   .mouth {
     width: 30px;
     height: 6px;
-    background: #000;
+    background: var(--fitty-bg);
     border-radius: 10px;
     margin-top: 10px;
     transition: all 0.4s ease;
@@ -87,7 +87,7 @@
     width: 50px;
     height: 15px;
     border-radius: 50%;
-    background: #000;
+    background: var(--fitty-bg);
   }
   
   /* 👁️ Eye blink animation */

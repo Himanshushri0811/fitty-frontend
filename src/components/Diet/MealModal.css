@@ -48,7 +48,7 @@
 
 .modal-header-row h2 {
     font-size: 2.5rem;
-    background: linear-gradient(45deg, #fff, #aaa);
+    background: linear-gradient(45deg, var(--fitty-text), #aaa);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -112,7 +112,7 @@
 
 .dd-block h3 {
     font-size: 1.1rem;
-    color: #fff;
+    color: var(--fitty-text);
     margin-bottom: 10px;
     display: flex;
     align-items: center;
@@ -138,7 +138,7 @@
 
 .benefit-pill {
     background: rgba(255, 255, 255, 0.1);
-    color: #fff;
+    color: var(--fitty-text);
     padding: 5px 12px;
     border-radius: 20px;
     font-size: 0.85rem;
@@ -220,7 +220,7 @@
     backdrop-filter: blur(10px);
     padding: 15px;
     border-radius: 12px;
-    color: #fff;
+    color: var(--fitty-text);
     font-weight: 500;
     border: 1px solid rgba(255, 255, 255, 0.1);
 }

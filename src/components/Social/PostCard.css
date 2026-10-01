@@ -98,17 +98,17 @@
 .post-follow-btn.following {
     background: rgba(100, 116, 139, 0.1);
     border-color: rgba(100, 116, 139, 0.2);
-    color: #94a3b8;
+    color: var(--fitty-text-muted);
 }
 
 .post-follow-btn.following:hover:not(:disabled) {
     background: rgba(239, 68, 68, 0.1);
     border-color: rgba(239, 68, 68, 0.3);
-    color: #ef4444;
+    color: var(--fitty-error);
 }
 
 .post-time {
-    color: #94a3b8;
+    color: var(--fitty-text-muted);
     font-size: 0.85rem;
 }
 
@@ -120,7 +120,7 @@
 .menu-btn {
     background: none;
     border: none;
-    color: #94a3b8;
+    color: var(--fitty-text-muted);
     cursor: pointer;
     padding: 8px;
     border-radius: 8px;
@@ -151,7 +151,7 @@
     padding: 10px 15px;
     background: none;
     border: none;
-    color: #ef4444;
+    color: var(--fitty-error);
     text-align: left;
     cursor: pointer;
     border-radius: 8px;
@@ -219,7 +219,7 @@
     gap: 8px;
     background: none;
     border: none;
-    color: #94a3b8;
+    color: var(--fitty-text-muted);
     cursor: pointer;
     padding: 8px 12px;
     border-radius: 10px;
@@ -233,7 +233,7 @@
 }
 
 .action-btn.liked {
-    color: #ef4444;
+    color: var(--fitty-error);
 }
 
 .action-btn.liked:hover {
@@ -273,13 +273,13 @@
 }
 
 .comment-preview span {
-    color: #cbd5e1;
+    color: var(--fitty-text-secondary);
 }
 
 .view-all-comments {
     background: none;
     border: none;
-    color: #94a3b8;
+    color: var(--fitty-text-muted);
     cursor: pointer;
     font-size: 0.9rem;
     padding: 5px 0;

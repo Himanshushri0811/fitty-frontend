@@ -12,7 +12,7 @@
 .fitty-trigger {
   width: 65px;
   height: 65px;
-  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  background: linear-gradient(135deg, #4f46e5 0%, var(--fitty-primary-hover) 100%);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -74,7 +74,7 @@
   position: absolute;
   top: -5px;
   right: -5px;
-  background: #ef4444;
+  background: var(--fitty-error);
   color: white;
   width: 22px;
   height: 22px;
@@ -94,20 +94,20 @@
   right: 0;
   width: 400px;
   height: 600px;
-  background: #ffffff;
+  background: var(--fitty-text);
   border-radius: 24px;
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--fitty-border);
   /* Prevent clipping from top */
   max-height: calc(100vh - 120px);
 }
 
 /* Header - Bold & Clear */
 .fitty-header {
-  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  background: linear-gradient(135deg, #4f46e5 0%, var(--fitty-primary-hover) 100%);
   color: white;
   padding: 16px 20px;
   display: flex;
@@ -194,7 +194,7 @@
 /* User Message - Bold Gradient */
 .msg-user {
   align-self: flex-end;
-  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  background: linear-gradient(135deg, #4f46e5 0%, var(--fitty-primary-hover) 100%);
   color: white;
   padding: 12px 16px;
   border-radius: 18px 18px 4px 18px;
@@ -214,7 +214,7 @@
   max-width: 85%;
   font-size: 14px;
   line-height: 1.6;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--fitty-border);
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
 }
 
@@ -225,7 +225,7 @@
 
 .msg-time {
   font-size: 10px;
-  color: #9ca3af;
+  color: var(--fitty-text-muted);
   margin-top: 6px;
 }
 
@@ -234,7 +234,7 @@
   background: white;
   border-radius: 20px;
   padding: 20px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--fitty-border);
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
   margin: 8px 0;
 }
@@ -246,7 +246,7 @@
 }
 
 .plan-title {
-  color: #111827;
+  color: var(--fitty-surface);
   font-weight: 800;
   font-size: 18px;
   display: flex;
@@ -296,7 +296,7 @@
 
 .quick-action-btn {
   background: #f3f4f6;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--fitty-border);
   padding: 12px;
   border-radius: 12px;
   text-align: center;
@@ -319,7 +319,7 @@
 .fitty-input-area {
   padding: 16px;
   background: white;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--fitty-border);
 }
 
 .fitty-form {
@@ -330,11 +330,11 @@
 .fitty-input {
   flex: 1;
   background: #f3f4f6;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--fitty-border);
   padding: 12px 16px;
   border-radius: 12px;
   font-size: 14px;
-  color: #111827;
+  color: var(--fitty-surface);
   transition: all 0.2s;
 }
 
@@ -369,14 +369,14 @@
 
 .typing-text {
   font-size: 12px;
-  color: #6366f1;
+  color: var(--fitty-primary);
   font-weight: 600;
 }
 
 .dot {
   width: 6px;
   height: 6px;
-  background: #6366f1;
+  background: var(--fitty-primary);
   border-radius: 50%;
   animation: bounce 1.4s infinite ease-in-out;
 }

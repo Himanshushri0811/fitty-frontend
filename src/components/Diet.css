@@ -16,7 +16,7 @@
 }
 
 .setup-section h2 {
-  color: #2d3748;
+  color: var(--fitty-surface-elevated);
   margin-bottom: 25px;
   font-size: 24px;
 }
@@ -34,7 +34,7 @@
   border: none;
   border-radius: 30px;
   background-color: #e2e8f0;
-  color: #2d3748;
+  color: var(--fitty-surface-elevated);
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -86,7 +86,7 @@
 }
 
 .user-header h2 {
-  color: #2d3748;
+  color: var(--fitty-surface-elevated);
   margin-bottom: 5px;
 }
 
@@ -109,7 +109,7 @@
   border: none;
   border-radius: 20px;
   background-color: #e2e8f0;
-  color: #2d3748;
+  color: var(--fitty-surface-elevated);
   cursor: pointer;
   white-space: nowrap;
   font-size: 14px;
@@ -172,7 +172,7 @@
 
 /* Notifications */
 .notifications {
-  background-color: #fff5f5;
+  background-color: var(--fitty-text)5f5;
   padding: 20px;
   border-radius: 10px;
   margin-top: 25px;

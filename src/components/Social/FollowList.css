@@ -27,7 +27,7 @@
 .back-btn {
     background: rgba(100, 116, 139, 0.1);
     border: none;
-    color: #94a3b8;
+    color: var(--fitty-text-muted);
     padding: 10px;
     border-radius: 50%;
     cursor: pointer;
@@ -104,7 +104,7 @@
 }
 
 .user-item-details p {
-    color: #94a3b8;
+    color: var(--fitty-text-muted);
     margin: 2px 0 0;
     font-size: 0.85rem;
 }
@@ -120,7 +120,7 @@
     border-radius: 12px;
     border: 1px solid rgba(100, 116, 139, 0.2);
     background: rgba(100, 116, 139, 0.1);
-    color: #94a3b8;
+    color: var(--fitty-text-muted);
     cursor: pointer;
     transition: all 0.2s ease;
     display: flex;
@@ -136,7 +136,7 @@
 
 .chat-btn:hover {
     background: rgba(16, 185, 129, 0.1);
-    color: #10b981;
+    color: var(--fitty-success);
     border-color: rgba(16, 185, 129, 0.3);
 }
 

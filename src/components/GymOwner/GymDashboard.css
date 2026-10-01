@@ -1,16 +1,16 @@
 /* Gym Dashboard - Full Width Layout */
 :root {
     /* Define gym specific variables here to ensure independence from global theme if needed */
-    --gym-bg-dark: #020617;
+    --gym-bg-dark: var(--fitty-bg);
     /* Slate 950 */
-    --gym-bg-card: #1e293b;
+    --gym-bg-card: var(--fitty-border);
     /* Slate 800 */
-    --gym-text-main: #f8fafc;
+    --gym-text-main: var(--fitty-text);
     /* Slate 50 */
-    --gym-text-muted: #94a3b8;
+    --gym-text-muted: var(--fitty-text-muted);
     /* Slate 400 */
     --gym-border: rgba(255, 255, 255, 0.1);
-    --gym-accent-purple: #a855f7;
+    --gym-accent-purple: var(--fitty-secondary);
     --gym-accent-blue: #3b82f6;
 }
 
@@ -54,7 +54,7 @@
 .dashboard-header h1 {
     font-size: 2.5rem;
     font-weight: 800;
-    color: #fff;
+    color: var(--fitty-text);
     margin: 0;
     letter-spacing: -0.5px;
 }
@@ -115,7 +115,7 @@
 
 .stat-card.purple .stat-icon-wrapper {
     background: rgba(168, 85, 247, 0.15);
-    color: #c084fc;
+    color: var(--fitty-primary);
 }
 
 .stat-card.blue .stat-icon-wrapper {
@@ -150,7 +150,7 @@
 .stat-value {
     font-size: 2.25rem;
     font-weight: 800;
-    color: #fff;
+    color: var(--fitty-text);
     line-height: 1;
     margin-bottom: 4px;
 }
@@ -168,7 +168,7 @@
 
 .quick-actions-title {
     font-size: 1.25rem;
-    color: #fff;
+    color: var(--fitty-text);
     margin-bottom: 20px;
     font-weight: 700;
 }
@@ -203,7 +203,7 @@
 }
 
 .action-btn.primary {
-    background: linear-gradient(135deg, #9333ea, #7c3aed);
+    background: linear-gradient(135deg, #9333ea, var(--fitty-primary-hover));
     border: none;
     color: white;
     box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3);
@@ -241,7 +241,7 @@
 .section-title h3 {
     margin: 0;
     font-size: 1.35rem;
-    color: #fff;
+    color: var(--fitty-text);
     font-weight: 700;
 }
 
@@ -292,7 +292,7 @@
     width: 40px;
     height: 40px;
     border-radius: 12px;
-    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    background: linear-gradient(135deg, var(--fitty-primary), var(--fitty-primary));
     display: flex;
     align-items: center;
     justify-content: center;
@@ -374,7 +374,7 @@
 .gym-form-group label {
     display: block;
     margin-bottom: 10px;
-    color: #cbd5e1;
+    color: var(--fitty-text-secondary);
     font-size: 0.95rem;
     font-weight: 500;
 }
@@ -385,7 +385,7 @@
     border: 1px solid #334155;
     padding: 14px 16px;
     border-radius: 12px;
-    color: #fff;
+    color: var(--fitty-text);
     font-family: inherit;
     font-size: 1rem;
     transition: all 0.2s;
@@ -468,7 +468,7 @@ select.gym-input {
 .dashboard-header h1 {
     font-size: 2.2rem;
     font-weight: 700;
-    background: linear-gradient(to right, #fff, #94a3b8);
+    background: linear-gradient(to right, var(--fitty-text), var(--fitty-text-muted));
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -528,7 +528,7 @@ select.gym-input {
 
 .stat-card.purple .stat-icon-wrapper {
     background: rgba(168, 85, 247, 0.2);
-    color: #a855f7;
+    color: var(--fitty-secondary);
 }
 
 .stat-card.blue .stat-icon-wrapper {
@@ -543,7 +543,7 @@ select.gym-input {
 
 .stat-card.green .stat-icon-wrapper {
     background: rgba(16, 185, 129, 0.2);
-    color: #10b981;
+    color: var(--fitty-success);
 }
 
 .stat-trend {
@@ -551,18 +551,18 @@ select.gym-input {
     padding: 4px 8px;
     border-radius: 20px;
     background: rgba(255, 255, 255, 0.05);
-    color: #94a3b8;
+    color: var(--fitty-text-muted);
 }
 
 .stat-trend.positive {
-    color: #10b981;
+    color: var(--fitty-success);
     background: rgba(16, 185, 129, 0.1);
 }
 
 .stat-value {
     font-size: 2rem;
     font-weight: 700;
-    color: #fff;
+    color: var(--fitty-text);
     line-height: 1;
 }
 
@@ -579,7 +579,7 @@ select.gym-input {
 
 .quick-actions-title {
     font-size: 1.1rem;
-    color: #fff;
+    color: var(--fitty-text);
     margin-bottom: 15px;
     font-weight: 600;
 }
@@ -595,7 +595,7 @@ select.gym-input {
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 12px;
     padding: 12px 24px;
-    color: #fff;
+    color: var(--fitty-text);
     font-size: 0.95rem;
     font-weight: 500;
     display: flex;
@@ -646,7 +646,7 @@ select.gym-input {
 .section-title h3 {
     margin: 0;
     font-size: 1.2rem;
-    color: #fff;
+    color: var(--fitty-text);
 }
 
 /* Members Table */
@@ -737,7 +737,7 @@ select.gym-input {
 
 .capacity-fill {
     height: 100%;
-    background: linear-gradient(90deg, #3b82f6, #a855f7);
+    background: linear-gradient(90deg, #3b82f6, var(--fitty-secondary));
     border-radius: 4px;
 }
 
@@ -803,7 +803,7 @@ select.gym-input {
     border: 1px solid rgba(255, 255, 255, 0.1);
     padding: 12px;
     border-radius: 10px;
-    color: #fff;
+    color: var(--fitty-text);
     font-family: inherit;
 }
 

@@ -1,21 +1,11 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Fitty",
+  "name": "Fitty",
   "icons": [
     {
-      "src": "fittyIcon.png",
-      "sizes": "64x64 32x32 24x24 16x16",
-      "type": "image/png"
-    },
-    {
-      "src": "fittyIcon.png",
-      "type": "image/png",
-      "sizes": "192x192"
-    },
-    {
-      "src": "fittyIcon.png",
-      "type": "image/png",
-      "sizes": "512x512"
+      "src": "fitty-icon.svg",
+      "sizes": "64x64 32x32 24x24 16x16 192x192 512x512",
+      "type": "image/svg+xml"
     }
   ],
   "start_url": ".",

@@ -15,7 +15,7 @@ const FitnessTab = () => {
     ];
 
     let status = "Normal";
-    let color = "#10b981";
+    let color = "#22c55e";
     if (bmi < 18.5) { status = "Underweight"; color = "#f59e0b"; }
     else if (bmi >= 25 && bmi < 30) { status = "Overweight"; color = "#f59e0b"; }
     else if (bmi >= 30) { status = "Obese"; color = "#ef4444"; }

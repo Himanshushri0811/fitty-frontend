@@ -8,8 +8,8 @@ const FAQ = () => {
 
   const faqs = [
     {
-      question: "What is FitMitra?",
-      answer: "FitMitra is your personal AI-powered fitness companion designed to help you achieve your health and wellness goals with customised workouts, diet plans, and real-time posture detection."
+      question: "What is Fitty?",
+      answer: "Fitty is your personal AI-powered fitness companion designed to help you achieve your health and wellness goals with customised workouts, diet plans, and real-time posture detection."
     },
     {
       question: "How can I track my progress?",
@@ -24,8 +24,8 @@ const FAQ = () => {
       answer: "Absolutely. Our posture detector uses real-time computer vision to ensure you're performing exercises correctly, helping you avoid injuries and maximize efficiency."
     },
     {
-      question: "Is FitMitra accessible on mobile?",
-      answer: "Currently, FitMitra is a fully responsive web application, which means you can use it seamlessly on any smartphone or tablet browser."
+      question: "Is Fitty accessible on mobile?",
+      answer: "Currently, Fitty is a fully responsive web application, which means you can use it seamlessly on any smartphone or tablet browser."
     }
   ];
 
@@ -57,7 +57,7 @@ const FAQ = () => {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
         >
-          Everything you need to know about FitMitra. Can't find an answer?
+          Everything you need to know about Fitty. Can't find an answer?
           <a href="/contact"> Contact our support team.</a>
         </motion.p>
       </div>

@@ -133,7 +133,7 @@
 
 .header-subtitle {
     font-size: 0.75rem;
-    color: #94a3b8;
+    color: var(--fitty-text-muted);
     margin: 0;
 }
 
@@ -292,7 +292,7 @@
     border: 1px solid rgba(255, 255, 255, 0.05);
     padding: 15px 10px;
     border-radius: 16px;
-    color: #cbd5e1;
+    color: var(--fitty-text-secondary);
     cursor: pointer;
     transition: all 0.3s;
     display: flex;
@@ -361,7 +361,7 @@
     border-radius: 18px;
     background: rgba(255, 255, 255, 0.05);
     border: none;
-    color: #94a3b8;
+    color: var(--fitty-text-muted);
     cursor: pointer;
     display: flex;
     align-items: center;

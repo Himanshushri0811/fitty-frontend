@@ -106,7 +106,7 @@ const Contact = () => {
             </div>
             <div>
               <h3>Email Us</h3>
-              <p>fitmitra11@gmail.com</p>
+              <p>hello@fitty.com</p>
             </div>
           </motion.div>
 

@@ -23,7 +23,7 @@
 }
 
 .feed-header p {
-    color: #94a3b8;
+    color: var(--fitty-text-muted);
     font-size: 1.1rem;
 }
 
@@ -44,7 +44,7 @@
 
 .feed-loading p,
 .loading-more p {
-    color: #94a3b8;
+    color: var(--fitty-text-muted);
     font-size: 1rem;
 }
 
@@ -75,12 +75,12 @@
 
 .feed-error svg {
     font-size: 3rem;
-    color: #ef4444;
+    color: var(--fitty-error);
     margin-bottom: 20px;
 }
 
 .feed-error p {
-    color: #ef4444;
+    color: var(--fitty-error);
     font-size: 1.1rem;
     margin-bottom: 20px;
 }
@@ -120,12 +120,12 @@
 
 .empty-feed h3 {
     font-size: 1.5rem;
-    color: #cbd5e1;
+    color: var(--fitty-text-secondary);
     margin-bottom: 10px;
 }
 
 .empty-feed p {
-    color: #94a3b8;
+    color: var(--fitty-text-muted);
     font-size: 1rem;
 }
 
@@ -137,7 +137,7 @@
 }
 
 .end-of-feed p {
-    color: #94a3b8;
+    color: var(--fitty-text-muted);
     font-size: 1.1rem;
     font-weight: 500;
 }

@@ -37,7 +37,7 @@
 .cancel-reply {
     background: none;
     border: none;
-    color: #ef4444;
+    color: var(--fitty-error);
     cursor: pointer;
     font-size: 0.85rem;
     padding: 4px 8px;
@@ -73,7 +73,7 @@
 }
 
 .comment-input::placeholder {
-    color: #64748b;
+    color: var(--fitty-text-muted);
 }
 
 .comment-submit-btn {
@@ -109,7 +109,7 @@
 
 .no-comments {
     text-align: center;
-    color: #64748b;
+    color: var(--fitty-text-muted);
     padding: 20px;
     font-size: 0.9rem;
 }
@@ -175,12 +175,12 @@
 }
 
 .comment-time {
-    color: #64748b;
+    color: var(--fitty-text-muted);
     font-size: 0.8rem;
 }
 
 .comment-text {
-    color: #cbd5e1;
+    color: var(--fitty-text-secondary);
     font-size: 0.95rem;
     line-height: 1.5;
     margin: 5px 0;
@@ -194,7 +194,7 @@
 .reply-btn {
     background: none;
     border: none;
-    color: #64748b;
+    color: var(--fitty-text-muted);
     cursor: pointer;
     font-size: 0.85rem;
     padding: 4px 8px;

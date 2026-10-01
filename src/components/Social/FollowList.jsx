@@ -86,7 +86,7 @@ const FollowList = ({ type }) => { // type can be 'followers' or 'following'
                                 </div>
                                 <div className="user-item-details">
                                     <h4>@{user.username}</h4>
-                                    <p>{user.full_name || 'FitMitra User'}</p>
+                                    <p>{user.full_name || 'Fitty User'}</p>
                                 </div>
                             </div>
                             <div className="user-item-actions">

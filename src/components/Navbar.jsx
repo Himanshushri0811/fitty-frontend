@@ -25,7 +25,7 @@ import { useAuth } from '../context/AuthContext';
 import API from './axiosConfig';
 import './Navbar.css';
 
-const Navbar = () => {
+const Navbar = ({ showSplash }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const dropdownRef = useRef(null);
@@ -119,17 +119,33 @@ const Navbar = () => {
         >
           {isLoggedIn && userData?.role === 'GYM_OWNER' && userData?.gym_name ? (
             <div className="logo-brand-composed">
-              <div className="logo-icon-circle" style={{ background: 'linear-gradient(135deg, #a855f7, #6366f1)' }}>
-                <FaDumbbell size={14} />
-              </div>
+              {!showSplash ? (
+                <motion.img 
+                  layoutId="fitty-brand-icon" 
+                  src="/fitty-icon.svg" 
+                  alt="Fitty Icon" 
+                  style={{ width: '32px', height: '32px', zIndex: 10000, position: 'relative' }} 
+                  transition={{ layout: { duration: 0.7, ease: [0.22, 1, 0.36, 1] } }}
+                />
+              ) : (
+                <div style={{ width: '32px', height: '32px' }} />
+              )}
               <span className="logo-text">{userData.gym_name}</span>
             </div>
           ) : (
             <div className="logo-brand-composed">
-              <div className="logo-icon-circle">
-                <FaFire size={14} />
-              </div>
-              <span className="logo-text">FitMitra</span>
+              {!showSplash ? (
+                <motion.img 
+                  layoutId="fitty-brand-icon" 
+                  src="/fitty-icon.svg" 
+                  alt="Fitty Icon" 
+                  style={{ width: '32px', height: '32px', zIndex: 10000, position: 'relative' }}
+                  transition={{ layout: { duration: 0.7, ease: [0.22, 1, 0.36, 1] } }}
+                />
+              ) : (
+                <div style={{ width: '32px', height: '32px' }} />
+              )}
+              <span className="logo-text">Fitty</span>
             </div>
           )}
         </Link>

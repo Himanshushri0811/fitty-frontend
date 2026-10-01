@@ -140,7 +140,7 @@ const Explore = () => {
     return (
         <div className="explore-container">
             <header className="explore-header">
-                <h1>Explore FitMitra</h1>
+                <h1>Explore Fitty</h1>
                 <p>Discover personalized events, challenges, and fitness hubs.</p>
             </header>
 

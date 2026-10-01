@@ -83,7 +83,7 @@ const Auth = ({ initialTab = 'login' }) => {
                 <MdFitnessCenter style={{ color: 'white' }} />
               </span>
               <div className="logo-text">
-                <h1>FitMitra</h1>
+                <h1>Fitty</h1>
                 <p>Advanced AI Trainer</p>
               </div>
             </div>

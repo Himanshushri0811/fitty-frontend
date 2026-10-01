@@ -69,7 +69,7 @@ const GymOwnerSignup = () => {
                                 <MdFitnessCenter style={{ color: 'white', fontSize: '24px' }} />
                             </div>
                             <h2 className="form-title">Gym Owner Registration</h2>
-                            <p className="form-subtitle">Scale your fitness business with FitMitra</p>
+                            <p className="form-subtitle">Scale your fitness business with Fitty</p>
                         </div>
 
                         {error && <div className="error-message">{error}</div>}

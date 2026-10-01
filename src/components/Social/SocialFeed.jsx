@@ -118,7 +118,7 @@ const SocialFeed = () => {
         <div className="social-feed-container">
             <div className="feed-header">
                 <h1>Your Feed</h1>
-                <p>Stay connected with the FitMitra community</p>
+                <p>Stay connected with the Fitty community</p>
             </div>
 
             {/* Create Post Section */}
