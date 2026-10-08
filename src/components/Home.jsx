@@ -1,305 +1,299 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence, useAnimation } from 'framer-motion';
-import { FaPlay, FaArrowRight, FaCheckCircle, FaFire, FaTrophy, FaBrain } from 'react-icons/fa';
-import { MdOutlineFastfood, MdOutlineDirectionsRun, MdOutlineInsights } from 'react-icons/md';
-import { Sparkles } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { FaArrowRight, FaPlus, FaMinus, FaQuoteLeft, FaCheckCircle } from 'react-icons/fa';
+import {
+    MdOutlineFastfood, MdOutlineDirectionsRun, MdOutlineInsights,
+    MdOutlineEmojiEvents, MdOutlineWaterDrop, MdOutlineSmartToy
+} from 'react-icons/md';
 import './Home.css';
 
-/* --- SUBCOMPONENTS --- */
+/* ---------- DATA ---------- */
+/* ---------- 4K IMAGE HELPERS ---------- */
+// Swap these Unsplash ids with your own photos anytime. Phones load the small size, 4K screens load 3840w.
+const HERO_IDS = [
+    'photo-1517836357463-d25dfeac3438',
+    'photo-1534438327276-14e5300c3a48',
+    'photo-1571019614242-c5c5dee9f50b',
+];
+const unsplash = (id, w) => `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=80`;
+const srcSet = (id) => [1280, 1920, 2560, 3840].map((w) => `${unsplash(id, w)} ${w}w`).join(', ');
+const IMG = { gym: unsplash(HERO_IDS[0], 2400), train: unsplash(HERO_IDS[2], 2400) };
 
-// Rotating Text Component
+const PHRASES = ['Smart Daily Challenges', 'Real-time Posture Correction', 'AI Powered Fitness'];
+
+const FEATURES = [
+    { icon: <MdOutlineSmartToy />, title: 'AI Workout Coach', desc: 'Routines built for your goal, level and equipment. They adjust as you improve.', tone: 'cream', wide: true },
+    { icon: <MdOutlineDirectionsRun />, title: 'Posture Tracking', desc: 'Your camera spots a dropped shoulder or rising hips and tells you right away.', tone: 'orange' },
+    { icon: <MdOutlineFastfood />, title: 'Smart Nutrition', desc: 'Macros calculated from the workouts you finish. Unlimited dish ideas.', tone: 'orange' },
+    { icon: <MdOutlineInsights />, title: 'Progress Dashboard', desc: 'Workouts, streaks and XP in one place, so you can see what is working.', tone: 'cream', wide: true },
+    { icon: <MdOutlineEmojiEvents />, title: 'Daily Challenges', desc: 'A new challenge every day. Earn XP and keep your streak alive.', tone: 'dark' },
+    { icon: <MdOutlineWaterDrop />, title: 'Hydration Log', desc: 'Log water in one tap and hit your daily target.', tone: 'cream' },
+];
+
+const STEPS = [
+    { t: 'Create your profile', d: 'Tell Fitty your goal, level and schedule.' },
+    { t: 'Get your plan', d: 'The AI builds your workouts and meals in seconds.' },
+    { t: 'Train with live feedback', d: 'Your camera checks your form on every rep.' },
+    { t: 'Track and level up', d: 'Watch your streaks, XP and results grow.' },
+];
+
+const REVIEWS = [
+    { q: 'The form alerts fixed my squat in two weeks. I had been doing it wrong for years.', n: 'Rohan Mehta', r: 'Software engineer' },
+    { q: 'Macros that follow my workouts means I never have to guess what to eat.', n: 'Priya Sharma', r: 'Student' },
+    { q: 'The daily challenges got me to the gym on days I would normally skip.', n: 'Aman Verma', r: 'Freelance designer' },
+];
+
+const FAQS = [
+    { q: 'What does Fitty do?', a: 'Fitty combines AI workout plans, live posture tracking, nutrition and progress tracking in one app.' },
+    { q: 'Do I need gym experience?', a: 'No. Fitty sets your starting level from your answers and adjusts as you improve.' },
+    { q: 'Is my camera video stored?', a: 'No. Posture analysis runs locally on your device, and video is not uploaded.' },
+    { q: 'Can I use it for fat loss?', a: 'Yes. Pick fat loss as your goal and Fitty sets your workouts and calories for it.' },
+    { q: 'How do I get started?', a: 'Create a free account, answer a few questions and your first plan is ready.' },
+];
+
+/* ---------- SUBCOMPONENTS ---------- */
 const RotatingText = () => {
-    const textArray = ["AI Powered Fitness", "Real-time Posture Correction", "Smart Daily Challenges"];
-    const [index, setIndex] = useState(0);
-
+    const [i, setI] = useState(0);
     useEffect(() => {
-        const interval = setInterval(() => {
-            setIndex((prev) => (prev + 1) % textArray.length);
-        }, 3000);
-        return () => clearInterval(interval);
+        const id = setInterval(() => setI((p) => (p + 1) % PHRASES.length), 3000);
+        return () => clearInterval(id);
     }, []);
-
     return (
-        <span style={{ display: 'inline-block', position: 'relative', minWidth: '320px', textAlign: 'left' }}>
+        <span className="h-rotate" aria-live="polite">
             <AnimatePresence mode="wait">
                 <motion.span
-                    key={index}
-                    initial={{ opacity: 0, y: 20, filter: "blur(4px)" }}
-                    animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                    exit={{ opacity: 0, y: -20, filter: "blur(4px)" }}
-                    transition={{ duration: 0.5, ease: "easeInOut" }}
-                    style={{ position: 'absolute', top: 0, left: 0, whiteSpace: 'nowrap', overflow: 'visible' }}
-                    className="text-gradient"
+                    key={i}
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -16 }}
+                    transition={{ duration: 0.4 }}
                 >
-                    {textArray[index]}
+                    {PHRASES[i]}
                 </motion.span>
             </AnimatePresence>
-            <span style={{ visibility: 'hidden' }}>Real-time Posture Correction</span>
         </span>
     );
 };
 
-// CountUp Component
-const CountUpStat = ({ target, duration, text, icon }) => {
-    const [count, setCount] = useState(0);
+const FaqItem = ({ item, open, onToggle }) => (
+    <div className={`h-faq-item ${open ? 'open' : ''}`}>
+        <button className="h-faq-q" onClick={onToggle} aria-expanded={open}>
+            <span>{item.q}</span>
+            <span className="h-faq-icon">{open ? <FaMinus size={11} /> : <FaPlus size={11} />}</span>
+        </button>
+        <AnimatePresence initial={false}>
+            {open && (
+                <motion.p
+                    className="h-faq-a"
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.25 }}
+                >
+                    {item.a}
+                </motion.p>
+            )}
+        </AnimatePresence>
+    </div>
+);
 
+const HeroBackground = () => {
+    const [i, setI] = useState(0);
     useEffect(() => {
-        let startTime;
-        const animate = (time) => {
-            if (!startTime) startTime = time;
-            const progress = (time - startTime) / (duration * 1000);
-            if (progress < 1) {
-                setCount(Math.floor(target * progress));
-                requestAnimationFrame(animate);
-            } else {
-                setCount(target);
-            }
-        };
-        requestAnimationFrame(animate);
-    }, [target, duration]);
-
-    const displayCount = count >= 1000 ? `${(count / 1000).toFixed(count % 1000 === 0 ? 0 : 1)}K+` : `${count}%`;
-
-    return (
-        <motion.div 
-            className="stat-strip-item"
-            whileHover={{ scale: 1.05 }}
-        >
-            <div className="stat-icon-glow">{icon}</div>
-            <div className="stat-info">
-                <h4>{displayCount}</h4>
-                <p>{text}</p>
-            </div>
-        </motion.div>
-    );
-};
-
-// Animated Background Slider Component
-const BackgroundSlider = () => {
-    const images = [
-        "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=2070&auto=format&fit=crop",
-        "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=2070&auto=format&fit=crop",
-        "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?q=80&w=2070&auto=format&fit=crop"
-    ];
-    const [index, setIndex] = useState(0);
-
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setIndex((prev) => (prev + 1) % images.length);
-        }, 5000);
-        return () => clearInterval(interval);
+        const id = setInterval(() => setI((p) => (p + 1) % HERO_IDS.length), 6000);
+        return () => clearInterval(id);
     }, []);
-
     return (
-        <div className="hero-bg-wrapper">
+        <div className="h-hero-bg" aria-hidden="true">
             <AnimatePresence mode="popLayout">
                 <motion.img
-                    key={index}
-                    src={images[index]}
-                    initial={{ opacity: 0, scale: 1.1 }}
-                    animate={{ opacity: 0.5, scale: 1 }}
-                    exit={{ opacity: 0, scale: 1.05 }}
-                    transition={{ duration: 2, ease: "easeInOut" }}
-                    className="hero-bg-image-slider"
-                    alt="Fitness Background"
+                    key={i}
+                    src={unsplash(HERO_IDS[i], 2560)}
+                    srcSet={srcSet(HERO_IDS[i])}
+                    sizes="100vw"
+                    alt=""
+                    initial={{ opacity: 0, scale: 1.08 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 1.6, ease: 'easeOut' }}
                 />
             </AnimatePresence>
-            <div className="mesh-gradient-bg"></div>
-            <div className="hero-grid-overlay"></div>
-            
-            {/* Floating Particles */}
-            {[...Array(15)].map((_, i) => (
-                <motion.div
-                    key={i}
-                    className="floating-particle"
-                    initial={{
-                        x: Math.random() * window.innerWidth,
-                        y: Math.random() * window.innerHeight,
-                        scale: Math.random() * 0.5 + 0.5,
-                        opacity: Math.random() * 0.5 + 0.1
-                    }}
-                    animate={{
-                        y: [null, Math.random() * -200 - 100],
-                        opacity: [null, 0]
-                    }}
-                    transition={{
-                        duration: Math.random() * 10 + 5,
-                        repeat: Infinity,
-                        ease: "linear"
-                    }}
-                />
-            ))}
         </div>
     );
 };
 
-/* --- MAIN PAGE --- */
-
+/* ---------- PAGE ---------- */
 const Home = () => {
     const navigate = useNavigate();
-
-    const [isReady, setIsReady] = useState(() => {
-        return !sessionStorage.getItem('fittySplashIsPlaying');
-    });
+    const [openFaq, setOpenFaq] = useState(0);
+    const [isReady, setIsReady] = useState(() => !sessionStorage.getItem('fittySplashIsPlaying'));
 
     useEffect(() => {
         if (!isReady) {
-            const handleReady = () => setIsReady(true);
-            window.addEventListener('splashFinished', handleReady);
-            return () => window.removeEventListener('splashFinished', handleReady);
+            const ready = () => setIsReady(true);
+            window.addEventListener('splashFinished', ready);
+            return () => window.removeEventListener('splashFinished', ready);
         }
     }, [isReady]);
 
-    const containerVariants = {
-        hidden: { opacity: 0 },
-        visible: { opacity: 1, transition: { staggerChildren: 0.15, delayChildren: 0.2 } }
-    };
-
-    const itemVariants = {
-        hidden: { opacity: 0, y: 30 },
-        visible: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 200, damping: 20 } }
-    };
+    const signup = () => navigate('/auth?tab=signup');
 
     return (
-        <div className="home-page">
+        <div className="h-page">
+            {/* ============ HERO ============ */}
+            <section className="h-hero">
+                <HeroBackground />
 
-            {/* ========================
-                HERO SECTION
-            ======================== */}
-            <section className="hero-section">
-                {/* Advanced Animated Background with Image Slider */}
-                <BackgroundSlider />
-
-                <motion.div 
-                    className="hero-content"
-                    variants={containerVariants}
-                    initial="hidden"
-                    animate={isReady ? "visible" : "hidden"}
-                >
-                    <motion.div variants={itemVariants} className="hero-badge-premium">
-                        <span className="ai-core-dot"></span> Next-Generation Neural Engine Active
-                    </motion.div>
-
-                    <motion.h1 variants={itemVariants} className="hero-headline">
-                        Intelligent Training.<br />
-                        <span style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '10px'}}>
-                            <span>Engineered for</span>
-                            <RotatingText />
-                        </span>
-                    </motion.h1>
-
-                    <motion.p variants={itemVariants} className="hero-subtext">
-                        Fitty merges generative AI with kinetic tracking. Stop guessing your macros. Stop recording reps manually. Let the system build the ultimate version of you.
-                    </motion.p>
-
-                    <motion.div variants={itemVariants} className="hero-cta-row">
-                        <button className="btn-premium-launch" onClick={() => navigate('/auth?tab=signup')}>
-                            Initialize System <FaArrowRight size={14} style={{marginLeft: '8px'}} />
-                        </button>
-                        <button className="btn-hero-secondary" onClick={() => navigate('/mission-control')}>
-                            <FaPlay size={12} /> Enter Mission Control
-                        </button>
-                    </motion.div>
-                </motion.div>
-
-                {/* Animated Stats Strip */}
-                <motion.div 
-                    className="hero-stats-strip"
-                    initial={{ opacity: 0, y: 40 }}
-                    animate={isReady ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
-                    transition={{ delay: 0.5, duration: 0.8 }}
-                >
-                    <CountUpStat target={5000} duration={2} text="Active Neural Links" icon={<FaFire />} />
-                    <CountUpStat target={20000} duration={2.5} text="Protocols Completed" icon={<FaTrophy />} />
-                    <CountUpStat target={90} duration={3} text="Kinetic Accuracy" icon={<FaBrain />} />
-                </motion.div>
-
-                {/* Bottom fade overlap */}
-                <div className="hero-bottom-fade"></div>
-            </section>
-
-            {/* ========================
-                FEATURES SECTION
-            ======================== */}
-            <section className="features-section">
-                <div className="features-header">
-                    <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-                        A closed-loop fitness ecosystem
-                    </motion.h2>
-                    <motion.p initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }}>
-                        Every system communicates. Faster recovery. Better tracking. Zero friction.
-                    </motion.p>
-                </div>
-
-                <div className="features-grid">
-                    <FeatureCard
-                        icon={<MdOutlineFastfood />} title="Smarter Nutrition" delay={0.1}
-                        desc="Auto-calculated macros fed directly from your completed workouts. Infinite dish generation."
-                    />
-                    <FeatureCard
-                        icon={<MdOutlineDirectionsRun />} title="Kinetic Tracking" delay={0.2}
-                        desc="Real-time skeletal analysis. We alert you when your shoulder drops or your hips rise."
-                    />
-                    <FeatureCard
-                        icon={<MdOutlineInsights />} title="Deep Analytics" delay={0.3}
-                        desc="Your central dashboard monitors hydration, XP progress, and streaks to gamify your biology."
-                    />
-                </div>
-            </section>
-
-            {/* ========================
-                DETAILS ZIGZAG
-            ======================== */}
-            <section className="details-section">
-                <div className="detail-block">
-                    <motion.div className="detail-image" initial={{ opacity: 0, x: -50 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
-                        <div className="image-overlay-glow"></div>
-                        <img src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=2070&auto=format&fit=crop" alt="Workout" />
-                    </motion.div>
-                    <div className="detail-content">
-                        <h2>Your personal AI coach</h2>
-                        <p>Our computer vision model tracks your form during workouts in real-time, providing immediate haptic or voice feedback.</p>
-                        <ul className="detail-list">
-                            <li><FaCheckCircle className="list-icon" /> Sub-millisecond joint tracking</li>
-                            <li><FaCheckCircle className="list-icon" /> AI-generated routine adjustments</li>
-                            <li><FaCheckCircle className="list-icon" /> Absolute privacy. Processes locally.</li>
+                <div className="h-hero-inner">
+                    <motion.div
+                        className="h-hero-content"
+                        initial={{ opacity: 0, y: 30 }}
+                        animate={isReady ? { opacity: 1, y: 0 } : {}}
+                        transition={{ duration: 0.8 }}
+                    >
+                        <span className="h-badge"><i className="h-badge-dot" /> AI coach with live form tracking</span>
+                        <h1>Train smarter.<br />Reach every goal.</h1>
+                        <div className="h-hero-built">Built for <RotatingText /></div>
+                        <p>
+                            Fitty builds your workouts, counts your reps, checks your form and plans your meals,
+                            so every session moves you closer to your goal.
+                        </p>
+                        <div className="h-hero-cta">
+                            <button className="h-btn h-btn-grad" onClick={signup}>
+                                Get started <span className="h-btn-dot"><FaArrowRight size={11} /></span>
+                            </button>
+                            <button className="h-btn h-btn-ghost" onClick={() => navigate('/mission-control')}>
+                                Open Mission Control
+                            </button>
+                        </div>
+                        <ul className="h-hero-trust">
+                            <li><FaCheckCircle /> Posture analysis runs on your device</li>
+                            <li><FaCheckCircle /> Plans adjust as you improve</li>
+                            <li><FaCheckCircle /> Workouts, meals and streaks in one app</li>
                         </ul>
-                        <button className="text-link" onClick={() => navigate('/workout')}>Explore AI Workouts <FaArrowRight size={14} /></button>
+                    </motion.div>
+                </div>
+
+                <motion.div
+                    className="h-hero-stats"
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={isReady ? { opacity: 1, y: 0 } : {}}
+                    transition={{ duration: 0.8, delay: 0.3 }}
+                >
+                    <div><strong>5K+</strong><span>Active members</span></div>
+                    <div><strong>20K+</strong><span>Workouts completed</span></div>
+                    <div><strong>90%</strong><span>Posture detection accuracy</span></div>
+                </motion.div>
+            </section>
+
+            {/* ============ ABOUT ============ */}
+            <section className="h-section h-about">
+                <div className="h-about-head">
+                    <h2 className="h-title">We build habits<br /><em>that last.</em></h2>
+                    <p className="h-lead">
+                        Fitty brings together smart programming, live form checks and nutrition tracking. Every
+                        session is built around your real progress, not guesswork.
+                    </p>
+                </div>
+                <div className="h-about-grid">
+                    <div className="h-about-photo">
+                        <img src={IMG.gym} alt="Gym training" />
+                    </div>
+                    <div className="h-about-cards">
+                        <div className="h-card h-card-cream">
+                            <strong className="h-big">90%</strong>
+                            <span>Posture detection accuracy</span>
+                            <button className="h-btn h-btn-grad" onClick={signup}>
+                                Try it free <span className="h-btn-dot"><FaArrowRight size={11} /></span>
+                            </button>
+                        </div>
+                        <div className="h-card h-card-photo">
+                            <img src={IMG.train} alt="" />
+                            <div className="h-card-photo-label">
+                                <strong>100%</strong>
+                                <span>On-device processing</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
 
-            {/* ========================
-                FOOTER CTA
-            ======================== */}
-            <section className="footer-cta">
-                <motion.div className="footer-cta-box" initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }}>
-                    <h2>The protocol is ready. Are you?</h2>
-                    <p>Initialize your first session today and unlock your biological potential.</p>
-                    <button className="btn-premium-launch" style={{ margin: '0 auto' }} onClick={() => navigate('/auth?tab=signup')}>
-                        Boot Up Now
-                    </button>
-                </motion.div>
+            {/* ============ FEATURES ============ */}
+            <section className="h-section h-features">
+                <h2 className="h-title h-title-right">Everything you need<br /><em>to train better.</em></h2>
+                <div className="h-bento">
+                    {FEATURES.map((f, i) => (
+                        <motion.article
+                            key={f.title}
+                            className={`h-tile h-tile-${f.tone} ${f.wide ? 'wide' : ''}`}
+                            initial={{ opacity: 0, y: 24 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true, margin: '-40px' }}
+                            transition={{ delay: (i % 3) * 0.08, duration: 0.4 }}
+                        >
+                            <div className="h-tile-icon">{f.icon}</div>
+                            <div>
+                                <h3>{f.title}</h3>
+                                <p>{f.desc}</p>
+                            </div>
+                        </motion.article>
+                    ))}
+                </div>
             </section>
 
+            {/* ============ HOW IT WORKS (orange block) ============ */}
+            <section className="h-steps">
+                <div className="h-steps-inner">
+                    <h2 className="h-title h-title-light">Train with purpose.<br />Progress with confidence.</h2>
+                    <ol className="h-steps-grid">
+                        {STEPS.map((s, i) => (
+                            <li key={s.t} className={i === 1 ? 'featured' : ''}>
+                                <span className="h-step-num">{String(i + 1).padStart(2, '0')}</span>
+                                <h3>{s.t}</h3>
+                                <p>{s.d}</p>
+                            </li>
+                        ))}
+                    </ol>
+                </div>
+            </section>
+
+            {/* ============ TESTIMONIALS ============ */}
+            <section className="h-section h-reviews">
+                <h2 className="h-title">What our members<br /><em>have to say.</em></h2>
+                <div className="h-reviews-row">
+                    {REVIEWS.map((r) => (
+                        <figure key={r.n} className="h-review">
+                            <FaQuoteLeft className="h-review-q" />
+                            <blockquote>{r.q}</blockquote>
+                            <figcaption><strong>{r.n}</strong><span>{r.r}</span></figcaption>
+                        </figure>
+                    ))}
+                </div>
+            </section>
+
+            {/* ============ FAQ ============ */}
+            <section className="h-section h-faq">
+                <h2 className="h-title">Questions?<br /><em>Answers below.</em></h2>
+                <div className="h-faq-list">
+                    {FAQS.map((f, i) => (
+                        <FaqItem key={f.q} item={f} open={openFaq === i} onToggle={() => setOpenFaq(openFaq === i ? -1 : i)} />
+                    ))}
+                </div>
+            </section>
+
+            {/* ============ FINAL CTA ============ */}
+            <section className="h-final">
+                <div className="h-final-inner">
+                    <h2>Your first workout<br />is one tap away.</h2>
+                    <p>Create a free account and get your personal plan in under a minute.</p>
+                    <button className="h-btn h-btn-dark h-btn-lg" onClick={signup}>
+                        Create free account <span className="h-btn-dot"><FaArrowRight size={12} /></span>
+                    </button>
+                </div>
+            </section>
         </div>
     );
 };
-
-const FeatureCard = ({ icon, title, desc, delay }) => (
-    <motion.div 
-        className="feature-card"
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-50px" }}
-        transition={{ delay, duration: 0.5 }}
-        whileHover={{ y: -8 }}
-    >
-        <div className="feature-icon-wrapper">{icon}</div>
-        <h3>{title}</h3>
-        <p>{desc}</p>
-    </motion.div>
-);
 
 export default Home;

@@ -111,20 +111,20 @@ const Navbar = ({ showSplash }) => {
   return (
     <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
       <div className="nav-container">
-        
+
         {/* Brand */}
-        <Link 
-          to={isLoggedIn ? (userData?.role === 'GYM_OWNER' ? '/gym-dashboard' : '/dashboard') : '/'} 
+        <Link
+          to={isLoggedIn ? (userData?.role === 'GYM_OWNER' ? '/gym-dashboard' : '/dashboard') : '/'}
           className="brand-link"
         >
           {isLoggedIn && userData?.role === 'GYM_OWNER' && userData?.gym_name ? (
             <div className="logo-brand-composed">
               {!showSplash ? (
-                <motion.img 
-                  layoutId="fitty-brand-icon" 
-                  src="/fitty-icon.svg" 
-                  alt="Fitty Icon" 
-                  style={{ width: '32px', height: '32px', zIndex: 10000, position: 'relative' }} 
+                <motion.img
+                  layoutId="fitty-brand-icon"
+                  src="/fitty-icon.svg"
+                  alt="Fitty Icon"
+                  style={{ width: '32px', height: '32px', zIndex: 10000, position: 'relative' }}
                   transition={{ layout: { duration: 0.7, ease: [0.22, 1, 0.36, 1] } }}
                 />
               ) : (
@@ -135,10 +135,10 @@ const Navbar = ({ showSplash }) => {
           ) : (
             <div className="logo-brand-composed">
               {!showSplash ? (
-                <motion.img 
-                  layoutId="fitty-brand-icon" 
-                  src="/fitty-icon.svg" 
-                  alt="Fitty Icon" 
+                <motion.img
+                  layoutId="fitty-brand-icon"
+                  src="/fitty-icon.svg"
+                  alt="Fitty Icon"
                   style={{ width: '32px', height: '32px', zIndex: 10000, position: 'relative' }}
                   transition={{ layout: { duration: 0.7, ease: [0.22, 1, 0.36, 1] } }}
                 />
@@ -154,8 +154,8 @@ const Navbar = ({ showSplash }) => {
         <div className="nav-links">
           {navItems.map((item) => (
             <div key={item.path} className="nav-item-wrapper">
-              <Link 
-                to={item.path} 
+              <Link
+                to={item.path}
                 className={`nav-link ${location.pathname === item.path ? 'active' : ''}`}
               >
                 {item.icon} {item.label}
@@ -171,8 +171,8 @@ const Navbar = ({ showSplash }) => {
 
         {/* Actions */}
         <div className="nav-actions">
-          <button 
-            className="theme-toggle-btn" 
+          <button
+            className="theme-toggle-btn"
             onClick={toggleTheme}
             aria-label="Toggle Theme"
           >
@@ -193,7 +193,7 @@ const Navbar = ({ showSplash }) => {
               </button>
 
               <div className="user-section" ref={dropdownRef} style={{ position: 'relative' }}>
-                <button 
+                <button
                   className="user-profile-trigger"
                   onClick={() => setDropdownOpen(!dropdownOpen)}
                 >
@@ -211,7 +211,7 @@ const Navbar = ({ showSplash }) => {
 
                 <AnimatePresence>
                   {dropdownOpen && (
-                    <motion.div 
+                    <motion.div
                       className="user-dropdown"
                       initial={{ opacity: 0, y: 8, scale: 0.98 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}

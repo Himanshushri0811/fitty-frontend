@@ -1,288 +1,393 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import API from '../axiosConfig';
-import axios from 'axios';
 import { motion } from 'framer-motion';
 import {
-    Flame,
-    Droplets,
-    Dumbbell,
-    TrendingUp,
-    Calendar,
-    ChevronRight,
-    Trophy,
-    Zap,
-    Play,
-    Utensils,
-    Activity,
-    Target
+    Flame, Droplets, Dumbbell, Trophy, Play, Utensils, Target,
+    RefreshCw, BedDouble, Plus, Check, Award, ArrowRight
 } from 'lucide-react';
-import {
-    AreaChart,
-    Area,
-    XAxis,
-    YAxis,
-    CartesianGrid,
-    Tooltip,
-    ResponsiveContainer
-} from 'recharts';
 import './UserDashboard.css';
+
+// ---- Constants ----
+const WATER_GOAL_GLASSES = 12;
+const KCAL_PER_SET_REP = 2.5; // rough estimate: sets * reps * 2.5
+const PROTEIN_GOAL_G = 150;
+const WORKOUTS_PER_LEVEL = 10;
+const SESSION_PREVIEW = 5;
+// Backend sets/reps strings bhejta hai ("3", "8-12"). parseInt("8-12") = 8, "AMRAP" = 0
+const toNum = (v) => parseInt(v, 10) || 0;
+
+const EMPTY_WEEK = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((name) => ({ name, calories: 0, consumed: 0 }));
+
+const getGreeting = () => {
+    const h = new Date().getHours();
+    return h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening';
+};
+
+// Backend profile_pic relative aata hai (/media/...). Use absolute banao.
+const mediaUrl = (src) => {
+    if (!src) return null;
+    if (/^(https?:|data:|blob:)/.test(src)) return src;
+    return `${API.defaults.baseURL}${src.startsWith('/') ? '' : '/'}${src}`;
+};
+
+/* ---------- Avatar with XP ring ---------- */
+const Avatar = ({ name, src, progress = 0, level = 1 }) => {
+    const [broken, setBroken] = useState(false);
+    const url = broken ? null : mediaUrl(src);
+    const initials = (name || 'C').trim().split(/\s+/).slice(0, 2).map((w) => w[0]?.toUpperCase()).join('');
+    const r = 52;
+    const c = 2 * Math.PI * r;
+    return (
+        <div className="db-avatar" role="img" aria-label={`${name}, level ${level}`}>
+            <svg className="db-avatar-ring" viewBox="0 0 112 112" aria-hidden="true">
+                <circle cx="56" cy="56" r={r} className="db-avatar-ring-track" />
+                <circle cx="56" cy="56" r={r} className="db-avatar-ring-fill"
+                    strokeDasharray={c} strokeDashoffset={c * (1 - progress)} />
+            </svg>
+            <div className="db-avatar-photo">
+                {url ? <img src={url} alt="" onError={() => setBroken(true)} /> : <span>{initials}</span>}
+            </div>
+        </div>
+    );
+};
+
+const Skeleton = () => (
+    <div className="dashboard-container" aria-busy="true">
+        <div className="dx-inner">
+            <div className="dx-skel" style={{ height: 40, width: 320, marginBottom: 24 }} />
+            <div className="dx-main">
+                <div className="dx-skel" style={{ height: 340 }} />
+                <div className="dx-skel" style={{ height: 340 }} />
+            </div>
+            <div className="dx-skel" style={{ height: 150, marginTop: 20 }} />
+        </div>
+    </div>
+);
 
 const UserDashboard = () => {
     const { user } = useAuth();
     const navigate = useNavigate();
-    const [greeting, setGreeting] = useState('');
-    const [loading, setLoading] = useState(true);
+    const greeting = useMemo(getGreeting, []);
 
-    // Data States
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const [todayWorkout, setTodayWorkout] = useState(null);
     const [waterData, setWaterData] = useState({ glasses: 0, total_ml: 0 });
-    const [weeklyStats, setWeeklyStats] = useState([]);
+    const [metric, setMetric] = useState('calories');
+    const [stats, setStats] = useState(null);
+    const [addingWater, setAddingWater] = useState(false);
+    const [waterFailed, setWaterFailed] = useState(false);
 
-    useEffect(() => {
-        const hour = new Date().getHours();
-        if (hour < 12) setGreeting('Good Morning');
-        else if (hour < 18) setGreeting('Good Afternoon');
-        else setGreeting('Good Evening');
+    const fetchDashboardData = useCallback(async () => {
+        setLoading(true);
+        setError(null);
 
-        fetchDashboardData();
+        // Parallel + independent: ek fail hone par dusra chalta rahega.
+        const localDate = new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD (local)
+        const [planRes, waterRes, statsRes] = await Promise.allSettled([
+            API.get('/api/accounts/workout/plan/'),
+            API.get('/api/fitness/water-intake/'),
+            API.get('/api/accounts/dashboard/stats/', { params: { date: localDate } }),
+        ]);
 
-        const handleWaterUpdate = (event) => {
-            if (event.detail) {
-                setWaterData(prev => ({
-                    ...prev,
-                    glasses: event.detail.glasses,
-                    total_ml: event.detail.total_ml
-                }));
+        if (planRes.status === 'fulfilled') {
+            const plan = planRes.value.data;
+            if (Array.isArray(plan)) {
+                const todayName = new Date().toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
+                const todayIndex = (new Date().getDay() + 6) % 7;
+                setTodayWorkout(plan.find((d) => d.day_name?.toLowerCase() === todayName) ?? plan[todayIndex] ?? null);
             }
-        };
-
-        window.addEventListener('waterUpdated', handleWaterUpdate);
-        return () => window.removeEventListener('waterUpdated', handleWaterUpdate);
+        }
+        if (waterRes.status === 'fulfilled') setWaterData(waterRes.value.data);
+        if (statsRes.status === 'fulfilled' && Array.isArray(statsRes.value.data?.weekly)) setStats(statsRes.value.data);
+        if (planRes.status === 'rejected' && waterRes.status === 'rejected') {
+            setError('We could not load your dashboard. Check your connection and try again.');
+        }
+        setLoading(false);
     }, []);
 
-    const fetchDashboardData = async () => {
-        setLoading(true);
+    useEffect(() => {
+        fetchDashboardData();
+        const onWater = (e) => {
+            if (e.detail) setWaterData((prev) => ({ ...prev, glasses: e.detail.glasses, total_ml: e.detail.total_ml }));
+        };
+        window.addEventListener('waterUpdated', onWater);
+        return () => window.removeEventListener('waterUpdated', onWater);
+    }, [fetchDashboardData]);
+
+    const exercises = todayWorkout?.exercises ?? [];
+    const isRestDay = exercises.length === 0;
+    const chartData = stats?.weekly ?? EMPTY_WEEK;
+    const displayName = user?.name || stats?.name || 'Champ';
+    const firstName = displayName.split(' ')[0];
+
+    const workouts = stats?.workouts_completed ?? 0;
+    const streak = stats?.streak ?? 0;
+    const level = Math.floor(workouts / WORKOUTS_PER_LEVEL) + 1;
+    const intoLevel = workouts % WORKOUTS_PER_LEVEL;
+    const toNext = WORKOUTS_PER_LEVEL - intoLevel;
+    const activeDays = stats ? stats.weekly.filter((d) => d.calories > 0).length : 0;
+
+    const plannedBurn = useMemo(
+        () => Math.round(exercises.reduce((acc, ex) => acc + toNum(ex.sets) * toNum(ex.reps) * KCAL_PER_SET_REP, 0)),
+        [exercises]
+    );
+
+    // POST /api/fitness/water-intake/ -> { glasses, total_ml, last_drink_at } (backend default 250 ml)
+    const addWater = async () => {
+        if (addingWater) return;
+        setAddingWater(true);
+        setWaterFailed(false);
         try {
-            const planRes = await API.get('/api/accounts/workout/plan/');
-            const plan = planRes.data;
-            const todayIndex = (new Date().getDay() + 6) % 7;
-            setTodayWorkout(plan[todayIndex]);
-
-            // Safe Token Fetch
-            const token = localStorage.getItem('access_token');
-            if (token) {
-                const waterRes = await axios.get('http://127.0.0.1:8000/api/fitness/water-intake/', {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
-                setWaterData(waterRes.data);
-            }
-
-            const mockChartData = [
-                { name: 'Mon', calories: 320, active: 45 },
-                { name: 'Tue', calories: 450, active: 60 },
-                { name: 'Wed', calories: 280, active: 30 },
-                { name: 'Thu', calories: 500, active: 75 },
-                { name: 'Fri', calories: 390, active: 50 },
-                { name: 'Sat', calories: 410, active: 65 },
-                { name: 'Sun', calories: 300, active: 40 },
-            ];
-            setWeeklyStats(mockChartData);
-
-        } catch (error) {
-            console.error("Dashboard fetch error", error);
+            const { data } = await API.post('/api/fitness/water-intake/', { amount_ml: 250 });
+            setWaterData((prev) => ({ ...prev, glasses: data.glasses, total_ml: data.total_ml }));
+        } catch (err) {
+            console.error('Add water failed', err);
+            setWaterFailed(true);
         } finally {
-            setLoading(false);
+            setAddingWater(false);
         }
     };
 
-    const caloriesBurned = todayWorkout ? (todayWorkout.exercises.reduce((acc, curr) => acc + (curr.sets * curr.reps * 0.5), 0) * 5) : 0;
+    if (loading) return <Skeleton />;
 
-    const containerVariants = {
-        hidden: { opacity: 0 },
-        visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
-    };
-
-    const itemVariants = {
-        hidden: { y: 20, opacity: 0 },
-        visible: { y: 0, opacity: 1, transition: { type: 'spring', stiffness: 300, damping: 24 } }
-    };
-
-    if (loading) {
+    if (error) {
         return (
-            <div style={{ height: '80vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <div style={{ width: '40px', height: '40px', border: '3px solid var(--border-color)', borderTopColor: 'var(--primary)', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
-                <style>{`@keyframes spin { 100% { transform: rotate(360deg); } }`}</style>
+            <div className="dashboard-container">
+                <div className="dx-inner">
+                    <div className="error-state" role="alert">
+                        <p>{error}</p>
+                        <button className="dx-btn dx-btn-brand" onClick={fetchDashboardData}>
+                            <RefreshCw size={16} /> Try again
+                        </button>
+                    </div>
+                </div>
             </div>
         );
     }
 
+    /* ---- derived values for the UI ---- */
+    const dateLabel = new Date().toLocaleDateString('en-US', { weekday: 'long', day: 'numeric', month: 'long' });
+    const todayShort = new Date().toLocaleDateString('en-US', { weekday: 'short' });
+    const maxVal = Math.max(...chartData.map((d) => d[metric] || 0), 1);
+    const weekTotal = chartData.reduce((a, d) => a + (d[metric] || 0), 0);
+    const weekEmpty = chartData.every((d) => !d.calories && !d.consumed);
+
+    const goalNow = stats?.current_weight;
+    const goalTarget = stats?.target_weight ?? user?.target_weight ?? user?.goal_weight;
+    const hasGoal = goalTarget !== null && goalTarget !== undefined;
+
+    const milestones = [
+        { id: 'first', icon: Dumbbell, title: 'First workout', desc: 'Finish your first workout', value: workouts, target: 1 },
+        { id: 's3', icon: Flame, title: '3-day streak', desc: 'Train 3 days in a row', value: streak, target: 3 },
+        { id: 's7', icon: Flame, title: '7-day streak', desc: 'Train 7 days in a row', value: streak, target: 7 },
+        { id: 'w10', icon: Trophy, title: '10 workouts', desc: 'Complete 10 workouts', value: workouts, target: 10 },
+        { id: 'water', icon: Droplets, title: 'Fully hydrated', desc: `Drink ${WATER_GOAL_GLASSES} glasses in a day`, value: waterData.glasses, target: WATER_GOAL_GLASSES },
+    ].map((m) => ({ ...m, done: m.value >= m.target }));
+    const unlocked = milestones.filter((m) => m.done).length;
+
+    const fade = { initial: { opacity: 0, y: 8 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.35 } };
+
     return (
-        <motion.div
-            className="dashboard-container"
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-        >
-            {/* HERO SECTION */}
-            <motion.div className="dashboard-hero" variants={itemVariants}>
-                <div className="hero-text">
-                    <h1>{greeting}, {user?.name || 'Champ'}</h1>
-                    <p>You have a <strong>5 day streak</strong>. Keep up the momentum.</p>
-                </div>
-                <div className="hero-action">
-                    <button className="btn-primary-glow" onClick={() => navigate('/workout')}>
-                        <Play size={16} fill="currentColor" /> Start workout
-                    </button>
-                </div>
-            </motion.div>
+        <div className="dashboard-container">
+            <motion.div className="dx-inner" {...fade}>
 
-            {/* KEY STATS ROW */}
-            <motion.div className="stats-grid" variants={itemVariants}>
-                <div className="stat-card">
-                    <div className="stat-icon-wrapper fire"><Flame size={20} /></div>
-                    <div className="stat-info">
-                        <span className="stat-label">Active Burn</span>
-                        <div className="stat-value">{Math.round(caloriesBurned)}<span className="unit">kcal</span></div>
+                {/* ============ PAGE HEADER ============ */}
+                <header className="dx-header">
+                    <h1>{greeting}, {firstName}</h1>
+                    <p>{dateLabel}</p>
+                </header>
+
+                {/* ============ TODAY + PROFILE ============ */}
+                <div className="dx-main">
+                    <section className="dx-today" style={{ '--hero-img': `url(${process.env.PUBLIC_URL || ''}/hero.jpg)` }} aria-label="Today's session">
+                        <div className="dx-today-copy">
+                            <p className="dx-today-label">Today's session</p>
+                            <h2>{isRestDay ? 'Rest day' : todayWorkout?.focus}</h2>
+                            <p className="dx-today-meta">
+                                {isRestDay
+                                    ? 'Recovery is part of training.'
+                                    : `${exercises.length} exercises, about ${plannedBurn} kcal`}
+                            </p>
+                            <div className="dx-today-actions">
+                                <button className="dx-btn dx-btn-grad" onClick={() => navigate('/workout')}>
+                                    {isRestDay
+                                        ? <><BedDouble size={18} /> View routine</>
+                                        : <><Play size={17} fill="currentColor" /> Start workout</>}
+                                </button>
+                                {!isRestDay && (
+                                    <button className="dx-btn dx-btn-glass" onClick={() => navigate('/workout')}>Full routine</button>
+                                )}
+                            </div>
+                        </div>
+
+                        <div className="dx-today-list">
+                            {isRestDay ? (
+                                <p className="dx-rest-note">
+                                    No exercises are planned for today. Light stretching, a walk and good sleep
+                                    will help you come back stronger.
+                                </p>
+                            ) : (
+                                <>
+                                    <ul>
+                                        {exercises.slice(0, SESSION_PREVIEW).map((ex, i) => (
+                                            <li key={i}>
+                                                <span className="dx-ex-name">{ex.name}</span>
+                                                <span className="dx-ex-sets">{ex.sets} × {ex.reps}</span>
+                                                {ex.adaptive_note && <span className="dx-ex-note">{ex.adaptive_note}</span>}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                    {exercises.length > SESSION_PREVIEW && (
+                                        <p className="dx-more">+ {exercises.length - SESSION_PREVIEW} more in your routine</p>
+                                    )}
+                                </>
+                            )}
+                        </div>
+                    </section>
+
+                    <aside className="dx-profile" aria-label="Your progress">
+                        <Avatar name={displayName} src={stats?.profile_pic ?? user?.profile_pic}
+                            progress={intoLevel / WORKOUTS_PER_LEVEL} level={level} />
+                        <h3>{displayName}</h3>
+                        <p className="dx-level">Level {level}</p>
+                        <div className="dx-xp" role="progressbar" aria-valuemin={0} aria-valuemax={WORKOUTS_PER_LEVEL} aria-valuenow={intoLevel} aria-label="Progress to next level">
+                            <i style={{ width: `${(intoLevel / WORKOUTS_PER_LEVEL) * 100}%` }} />
+                        </div>
+                        <p className="dx-xp-note">{toNext} more {toNext === 1 ? 'workout' : 'workouts'} to Level {level + 1}</p>
+
+                        <dl className="dx-facts">
+                            <div><dd><Flame size={16} className="dx-ic-streak" />{streak}</dd><dt>Day streak</dt></div>
+                            <div><dd>{workouts}</dd><dt>Workouts</dt></div>
+                            <div><dd>{activeDays}</dd><dt>Active days</dt></div>
+                        </dl>
+                    </aside>
+                </div>
+
+                {/* ============ STAT STRIP ============ */}
+                <section className="dx-strip" aria-label="Daily summary">
+                    <div className="dx-cell">
+                        <h2>Planned burn</h2>
+                        <p className="dx-fig dx-fig-kcal">{plannedBurn}<span>kcal</span></p>
+                        <p className="dx-note">{isRestDay ? 'No session today' : `From ${exercises.length} exercises`}</p>
                     </div>
-                </div>
 
-                <div className="stat-card">
-                    <div className="stat-icon-wrapper water"><Droplets size={20} /></div>
-                    <div className="stat-info">
-                        <span className="stat-label">Hydration</span>
-                        <div className="stat-value">{waterData.glasses}<span className="unit">/12</span></div>
-                    </div>
-                </div>
-
-                <div className="stat-card">
-                    <div className="stat-icon-wrapper fitness"><Activity size={20} /></div>
-                    <div className="stat-info">
-                        <span className="stat-label">Focus</span>
-                        <div className="stat-value text-truncate" style={{ maxWidth: '100px', fontSize: '1.25rem' }}>
-                            {todayWorkout?.focus || 'Rest'}
+                    <div className="dx-cell">
+                        <h2>Water</h2>
+                        <p className="dx-fig dx-fig-water">{waterData.glasses}<span>/ {WATER_GOAL_GLASSES} glasses</span></p>
+                        <div className="dx-segs" aria-hidden="true">
+                            {Array.from({ length: WATER_GOAL_GLASSES }, (_, i) => (
+                                <i key={i} className={i < waterData.glasses ? 'on' : ''} />
+                            ))}
+                        </div>
+                        <div className="dx-cell-row">
+                            <p className="dx-note">{waterData.total_ml || 0} ml today</p>
+                            <button className="dx-chip" onClick={addWater} disabled={addingWater} aria-label="Add one glass of water">
+                                <Plus size={14} /> {addingWater ? 'Adding' : waterFailed ? 'Retry' : 'Add glass'}
+                            </button>
                         </div>
                     </div>
-                </div>
 
-                <div className="stat-card">
-                    <div className="stat-icon-wrapper gold"><Target size={20} /></div>
-                    <div className="stat-info">
-                        <span className="stat-label">Goal Weight</span>
-                        <div className="stat-value">75<span className="unit">kg</span></div>
-                    </div>
-                </div>
-            </motion.div>
-
-            {/* BENTO GRID LAYOUT */}
-            <div className="bento-grid">
-                
-                {/* 1. CHART SECTION (Wide) */}
-                <motion.div className="bento-item chart-section" variants={itemVariants}>
-                    <div className="section-header">
-                        <h3><TrendingUp size={18} className="icon-mr" /> Activity Trends</h3>
-                    </div>
-                    <div className="chart-wrapper">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <AreaChart data={weeklyStats}>
-                                <defs>
-                                    <linearGradient id="colorCal" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor="#6366f1" stopOpacity={0.2} />
-                                        <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
-                                    </linearGradient>
-                                </defs>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border-color)" opacity={0.5} />
-                                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: 'var(--text-muted)', fontSize: 12, dy: 10 }} />
-                                <YAxis hide domain={['dataMin - 100', 'dataMax + 100']} />
-                                <Tooltip
-                                    contentStyle={{ background: 'var(--bg-card)', border: '1px solid var(--border-color)', borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
-                                    itemStyle={{ color: 'var(--text-main)', fontSize: '14px', fontWeight: 500 }}
-                                />
-                                <Area type="monotone" dataKey="calories" stroke="#6366f1" strokeWidth={2} fillOpacity={1} fill="url(#colorCal)" />
-                            </AreaChart>
-                        </ResponsiveContainer>
-                    </div>
-                </motion.div>
-
-                {/* 2. TODAY'S PLAN (Tall) */}
-                <motion.div className="bento-item plan-section" variants={itemVariants}>
-                    <div className="section-header">
-                        <h3><Calendar size={18} className="icon-mr" /> Today's Plan</h3>
-                        <span className="badge-highlight">{new Date().toLocaleDateString('en-US', { weekday: 'short', day: 'numeric' })}</span>
+                    <div className="dx-cell">
+                        <h2>Protein target</h2>
+                        <p className="dx-fig dx-fig-ok">{PROTEIN_GOAL_G}<span>g a day</span></p>
+                        <div className="dx-cell-row">
+                            <p className="dx-note">Fitty plans your meals around it</p>
+                        </div>
+                        <button className="dx-link" onClick={() => navigate('/diet')}><Utensils size={14} /> Open diet plan</button>
                     </div>
 
-                    <div className="plan-scroll-list">
-                        {todayWorkout?.exercises?.length > 0 ? (
-                            todayWorkout.exercises.map((ex, idx) => (
-                                <div key={idx} className="plan-item-compact">
-                                    <div className="list-icon-box">
-                                        <Dumbbell size={18} />
-                                    </div>
-                                    <div className="plan-info">
-                                        <h4>{ex.name}</h4>
-                                        <p>{ex.sets} sets • {ex.reps} reps</p>
-                                    </div>
-                                    <ChevronRight size={16} color="var(--text-muted)" />
-                                </div>
-                            ))
+                    <div className="dx-cell">
+                        <h2>Goal weight</h2>
+                        {hasGoal ? (
+                            <>
+                                <p className="dx-fig">{goalTarget}<span>kg</span></p>
+                                {goalNow != null ? (
+                                    <>
+                                        <div className="dx-bar"><i style={{ width: `${Math.round((Math.min(goalNow, goalTarget) / Math.max(goalNow, goalTarget)) * 100)}%` }} /></div>
+                                        <p className="dx-note">{goalNow} kg now, {Math.abs(goalTarget - goalNow).toFixed(1)} kg to go</p>
+                                    </>
+                                ) : <p className="dx-note">Log your weight to track progress</p>}
+                            </>
                         ) : (
-                            <div className="empty-state">
-                                No specific exercises planned for today.
-                            </div>
+                            <>
+                                <p className="dx-note dx-note-lg">Set a target weight and Fitty will track how close you are.</p>
+                                <button className="dx-link" onClick={() => navigate('/profile')}><Target size={14} /> Set goal weight</button>
+                            </>
                         )}
-                        
-                        <div className="plan-item-compact">
-                            <div className="list-icon-box" style={{ color: '#10b981', background: 'rgba(16, 185, 129, 0.1)' }}>
-                                <Utensils size={18} />
-                            </div>
-                            <div className="plan-info">
-                                <h4>Nutrition Goal</h4>
-                                <p>Consume 150g Protein</p>
-                            </div>
-                        </div>
                     </div>
-                    
-                    <button className="btn-full-width" onClick={() => navigate('/workout')}>View Full Routine</button>
-                </motion.div>
+                </section>
 
-                {/* 3. LEADERBOARD (Small) */}
-                <motion.div className="bento-item leaderboard-section" variants={itemVariants}>
-                    <div className="section-header">
-                        <h3><Trophy size={18} className="icon-mr text-warning" /> Top Performers</h3>
-                    </div>
-                    <div className="leaderboard-list">
-                        {[1, 2, 3].map((i) => (
-                            <div className="lb-item" key={i}>
-                                <span className="lb-rank">#{i}</span>
-                                <div className="lb-user">
-                                    <div className="lb-avatar">{String.fromCharCode(64 + i)}</div>
-                                    <span>Athlete {i}</span>
+                {/* ============ WEEK + MILESTONES ============ */}
+                <div className="dx-lower">
+                    <section className="dx-week" aria-label="Weekly activity">
+                        <header className="dx-sec-head">
+                            <div>
+                                <h2>This week</h2>
+                                <p>{weekTotal.toLocaleString()} kcal {metric === 'calories' ? 'burned' : 'consumed'}</p>
+                            </div>
+                            <div className="dx-seg" role="tablist">
+                                {[['calories', 'Burned'], ['consumed', 'Consumed']].map(([key, label]) => (
+                                    <button key={key} role="tab" aria-selected={metric === key}
+                                        className={metric === key ? 'active' : ''} onClick={() => setMetric(key)}>{label}</button>
+                                ))}
+                            </div>
+                        </header>
+
+                        <div className={`dx-plot m-${metric}`}>
+                            <ol className="dx-cols">
+                                {chartData.map((d) => {
+                                    const v = d[metric] || 0;
+                                    const pct = v ? Math.max((v / maxVal) * 100, 5) : 0;
+                                    return (
+                                        <li key={d.name} className={d.name === todayShort ? 'today' : ''}>
+                                            <span className="dx-col-val">{v || ''}</span>
+                                            <span className="dx-col-bar"><i style={{ height: `${pct}%` }} /></span>
+                                            <span className="dx-col-day">{d.name}</span>
+                                        </li>
+                                    );
+                                })}
+                            </ol>
+                            {weekEmpty && (
+                                <div className="dx-plot-empty">
+                                    <p>Your week fills in as you finish workouts.</p>
+                                    <button className="dx-link" onClick={() => navigate('/workout')}>Start today's workout <ArrowRight size={14} /></button>
                                 </div>
-                                <span className="lb-score">{2000 - (i * 150)} xp</span>
+                            )}
+                        </div>
+                    </section>
+
+                    <section className="dx-miles" aria-label="Milestones">
+                        <header className="dx-sec-head">
+                            <div>
+                                <h2>Milestones</h2>
+                                <p>{unlocked} of {milestones.length} unlocked</p>
                             </div>
-                        ))}
-                    </div>
-                </motion.div>
-
-                {/* 4. ACHIEVEMENTS (Horizontal Scroll) */}
-                <motion.div className="bento-item achievement-section" variants={itemVariants}>
-                    <div className="section-header">
-                        <h3><Zap size={18} className="icon-mr text-warning" /> Latest Achievement</h3>
-                    </div>
-                    <div className="achievement-display">
-                        <div className="badge-icon-large">
-                            <Flame size={24} color="#f59e0b" fill="#f59e0b" />
-                        </div>
-                        <div className="badge-info">
-                            <h4>Consistency King</h4>
-                            <p>Worked out 7 days straight</p>
-                        </div>
-                    </div>
-                </motion.div>
-
-            </div>
-        </motion.div>
+                            <Award size={20} className="dx-ic-brand" />
+                        </header>
+                        <ul>
+                            {milestones.map((m) => {
+                                const Icon = m.icon;
+                                return (
+                                    <li key={m.id} className={m.done ? 'done' : ''}>
+                                        <span className="dx-miles-ic"><Icon size={18} /></span>
+                                        <div className="dx-miles-text">
+                                            <h3>{m.title}</h3>
+                                            <p>{m.desc}</p>
+                                        </div>
+                                        {m.done
+                                            ? <span className="dx-miles-state ok"><Check size={14} /> Done</span>
+                                            : <span className="dx-miles-state">{Math.min(m.value, m.target)}/{m.target}</span>}
+                                    </li>
+                                );
+                            })}
+                        </ul>
+                    </section>
+                </div>
+            </motion.div>
+        </div>
     );
 };
 

@@ -1,0 +1,310 @@
+/* CallFab.css */
+.fcb-wrap {
+    /* Sits directly ABOVE the live chat button.
+     --fcb-right  = same distance from the right edge as the chat button (keeps them in one column)
+     --fcb-bottom = chat button height + its bottom gap + a small space between the two */
+    --fcb-right: 5px;
+    --fcb-bottom: 92px;
+    --fcb-size: 68px;
+
+    position: fixed;
+    right: var(--fcb-right);
+    bottom: var(--fcb-bottom);
+    z-index: 1100;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: 'Bricolage Grotesque', 'Inter', sans-serif;
+}
+
+/* ---------- Button ---------- */
+.fcb-btn {
+    position: relative;
+    width: var(--fcb-size);
+    height: var(--fcb-size);
+    padding: 0;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    background: linear-gradient(135deg, #7c3aed 0%, #c026d3 55%, #ec4899 100%);
+    box-shadow: 0 10px 28px rgba(124, 58, 237, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.35);
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
+}
+
+.fcb-btn:hover {
+    transform: translateY(-4px) scale(1.06);
+    box-shadow: 0 16px 36px rgba(236, 72, 153, 0.55), inset 0 1px 1px rgba(255, 255, 255, 0.35);
+}
+
+.fcb-btn:active {
+    transform: scale(0.96);
+}
+
+.fcb-btn:focus-visible {
+    outline: 3px solid #f1f2ff;
+    outline-offset: 3px;
+}
+
+.fcb-face {
+    width: 78%;
+    height: 78%;
+    overflow: visible;
+    filter: drop-shadow(0 2px 3px rgba(6, 10, 28, 0.35));
+}
+
+/* Soft pulse ring so people notice it is a live call button */
+.fcb-ring {
+    position: absolute;
+    inset: -2px;
+    border-radius: 50%;
+    border: 2px solid rgba(167, 139, 250, 0.8);
+    animation: fcb-pulse 2.4s ease-out infinite;
+    pointer-events: none;
+}
+
+@keyframes fcb-pulse {
+    0% {
+        transform: scale(1);
+        opacity: 0.8;
+    }
+
+    100% {
+        transform: scale(1.5);
+        opacity: 0;
+    }
+}
+
+/* ---------- Blinking eyes ---------- */
+.fcb-eye {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: fcb-blink 4.2s infinite;
+    filter: drop-shadow(0 0 3px rgba(34, 211, 238, 0.9));
+}
+
+@keyframes fcb-blink {
+
+    0%,
+    90%,
+    100% {
+        transform: scaleY(1);
+    }
+
+    93%,
+    96% {
+        transform: scaleY(0.08);
+    }
+}
+
+/* ---------- Popup ---------- */
+.fcb-tip {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 18px;
+    border-radius: 100px;
+    background: #f1f2ff;
+    color: #060a1c;
+    font-size: 0.92rem;
+    font-weight: 500;
+    white-space: nowrap;
+    box-shadow: 0 10px 30px rgba(6, 10, 28, 0.4);
+    order: -1;
+    /* tip sits to the left of the button */
+    animation: fcb-tip-in 0.25s ease-out;
+}
+
+@keyframes fcb-tip-in {
+    from {
+        opacity: 0;
+        transform: translateX(10px) scale(0.96);
+    }
+
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+.fcb-tip-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #22c55e;
+    box-shadow: 0 0 8px #22c55e;
+}
+
+/* ---------- Mobile ---------- */
+@media (max-width: 900px) {
+    .fcb-wrap {
+        --fcb-size: 56px;
+        --fcb-right: 16px;
+        --fcb-bottom: 150px;
+        /* above the chat button, which sits above the bottom navigation bar */
+    }
+
+    .fcb-tip {
+        font-size: 0.85rem;
+        padding: 9px 14px;
+    }
+}
+
+@media (max-width: 420px) {
+    .fcb-tip {
+        position: absolute;
+        right: 0;
+        bottom: calc(100% + 10px);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .fcb-ring,
+    .fcb-eye {
+        animation: none;
+    }
+
+    .fcb-btn {
+        transition: none;
+    }
+}
+
+/* ---------- Mouth: smile normally, talks while Fitty speaks ---------- */
+.fcb-talk {
+    display: none;
+    transform-box: fill-box;
+    transform-origin: center;
+}
+
+.is-speaking .fcb-smile {
+    display: none;
+}
+
+.is-speaking .fcb-talk {
+    display: block;
+    animation: fcb-talk 0.32s ease-in-out infinite alternate;
+}
+
+@keyframes fcb-talk {
+    from {
+        transform: scaleY(0.35);
+    }
+
+    to {
+        transform: scaleY(1.15);
+    }
+}
+
+.is-speaking .fcb-mic {
+    animation: fcb-mic 0.6s ease-in-out infinite alternate;
+}
+
+@keyframes fcb-mic {
+    from {
+        fill: #ec4899;
+    }
+
+    to {
+        fill: #f9a8d4;
+    }
+}
+
+/* ---------- Connecting ---------- */
+.is-connecting .fcb-btn {
+    animation: fcb-wiggle 1s ease-in-out infinite;
+}
+
+.is-connecting .fcb-ring {
+    border-color: rgba(250, 204, 21, 0.9);
+    animation-duration: 1.2s;
+}
+
+@keyframes fcb-wiggle {
+
+    0%,
+    100% {
+        transform: rotate(-4deg);
+    }
+
+    50% {
+        transform: rotate(4deg);
+    }
+}
+
+/* ---------- On call ---------- */
+.is-active .fcb-btn {
+    box-shadow: 0 10px 28px rgba(34, 197, 94, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.35);
+}
+
+.is-active .fcb-ring {
+    border-color: rgba(34, 197, 94, 0.9);
+}
+
+.is-active.is-speaking .fcb-ring {
+    animation-duration: 1s;
+}
+
+.fcb-end {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #ef4444;
+    border: 2px solid #060a1c;
+    display: grid;
+    place-items: center;
+}
+
+.fcb-end i {
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+    background: #fff;
+    display: block;
+}
+
+/* ---------- Popup variants ---------- */
+.fcb-tip-live .fcb-tip-dot {
+    background: #22c55e;
+    box-shadow: 0 0 8px #22c55e;
+    animation: fcb-dot 1.2s ease-in-out infinite;
+}
+
+.fcb-tip-info .fcb-tip-dot {
+    background: #facc15;
+    box-shadow: 0 0 8px #facc15;
+}
+
+.fcb-tip-warn {
+    background: #fee2e2;
+    color: #7f1d1d;
+    white-space: normal;
+    max-width: 260px;
+}
+
+.fcb-tip-warn .fcb-tip-dot {
+    background: #ef4444;
+    box-shadow: none;
+    flex: none;
+}
+
+@keyframes fcb-dot {
+    50% {
+        opacity: 0.35;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .is-speaking .fcb-talk,
+    .is-speaking .fcb-mic,
+    .is-connecting .fcb-btn,
+    .fcb-tip,
+    .fcb-tip-live .fcb-tip-dot {
+        animation: none;
+    }
+}
