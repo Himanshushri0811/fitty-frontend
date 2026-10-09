@@ -1,328 +1,403 @@
-/* Profile Page Container */
-.profile-container {
+/* Profile page: uses your existing theme variables, with safe fallbacks */
+.pf-root {
+  --pf-accent: var(--primary, #6366f1);
+  --pf-accent-2: var(--secondary, #ec4899);
+  --pf-bg: var(--bg-main, #0b0d12);
+  --pf-surface: var(--bg-secondary, #151821);
+  --pf-line: var(--border-color, rgba(255, 255, 255, 0.1));
+  --pf-text: var(--text-main, #f3f4f6);
+  --pf-text-2: var(--text-secondary, #a3a9b8);
+  --pf-text-3: var(--text-muted, #747b8c);
+  --pf-ok: #34d399;
+  --pf-bad: #f87171;
+
   min-height: 100vh;
-  padding-bottom: 80px;
+  padding-bottom: 96px;
+  color: var(--pf-text);
 }
 
-/* 1. Profile Header Section */
-.profile-header-wrapper {
+/* ---------- cover ---------- */
+.pf-cover {
   position: relative;
-  margin-bottom: 24px;
-}
-
-.profile-cover {
-  height: 240px;
-  width: 100%;
-  background: linear-gradient(120deg, var(--primary), var(--secondary));
-  position: relative;
+  height: clamp(160px, 28vw, 260px);
   overflow: hidden;
+  background: var(--pf-surface);
 }
-
-.cover-image {
+.pf-cover-img,
+.pf-cover-fallback {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  position: absolute;
-  top: 0;
-  left: 0;
 }
-
-.cover-gradient {
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  top: 0;
-  left: 0;
-  background: linear-gradient(120deg, var(--primary), var(--secondary));
+.pf-cover-img { object-fit: cover; }
+.pf-cover-fallback {
+  background:
+    radial-gradient(120% 140% at 85% 0%, color-mix(in srgb, var(--pf-accent-2) 45%, transparent), transparent 60%),
+    linear-gradient(120deg, var(--pf-accent), color-mix(in srgb, var(--pf-accent) 40%, #000));
 }
-
-.cover-overlay {
+.pf-cover-fade {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.6));
+  inset: 0;
   pointer-events: none;
-  /* Let clicks pass through to button */
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 40%, var(--pf-bg) 100%);
 }
-
-.edit-cover-btn {
+.pf-cover-btn {
   position: absolute;
-  top: 20px;
-  right: 20px;
-  background: rgba(0, 0, 0, 0.6);
-  color: white;
-  padding: 8px 16px;
-  border-radius: 20px;
-  display: flex;
+  top: 16px;
+  right: 16px;
+  z-index: 2;
+  display: inline-flex;
   align-items: center;
   gap: 8px;
-  font-size: 0.9rem;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #fff;
+  background: rgba(10, 12, 18, 0.62);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
   cursor: pointer;
-  backdrop-filter: blur(4px);
-  transition: background 0.2s;
-  pointer-events: auto;
-  z-index: 10;
+  transition: background 0.15s;
+}
+.pf-cover-btn:hover { background: rgba(10, 12, 18, 0.82); }
+.pf-cover-btn:focus-within { outline: 2px solid #fff; outline-offset: 2px; }
+.pf-busy {
+  position: absolute;
+  left: 16px;
+  top: 16px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  color: #fff;
+  background: rgba(10, 12, 18, 0.7);
 }
 
-.edit-cover-btn:hover {
-  background: rgba(0, 0, 0, 0.8);
-}
-
-.profile-info-section {
+/* ---------- identity ---------- */
+.pf-info {
   max-width: 1200px;
-  margin: 0 auto;
+  margin: -84px auto 0;
   padding: 0 24px;
   position: relative;
-  margin-top: -80px;
-  /* Pull up to overlap cover */
+  z-index: 1;
   display: flex;
   align-items: flex-end;
-  gap: 32px;
+  gap: 28px;
 }
 
-.profile-avatar-wrapper {
+.pf-avatar-wrap {
   position: relative;
-  width: 160px;
-  height: 160px;
-  border-radius: 50%;
-  padding: 6px;
-  background: var(--bg-main);
-  /* Match page bg to create spacing effect */
-  box-shadow: var(--shadow-xl);
+  flex: none;
+  width: 176px;
+  height: 176px;
 }
-
-.profile-avatar {
+.pf-ring {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 4px solid var(--bg-secondary);
+  transform: rotate(-90deg);
 }
-
-.edit-avatar-btn {
+.pf-ring circle { fill: none; stroke-width: 5; }
+.pf-ring-track { stroke: var(--pf-line); }
+.pf-ring-fill {
+  stroke: var(--pf-ok);
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.pf-avatar {
   position: absolute;
-  bottom: 10px;
-  right: 10px;
-  background: var(--primary);
-  color: white;
-  border: none;
-  width: 40px;
-  height: 40px;
+  inset: 14px;
   border-radius: 50%;
+  overflow: hidden;
+  background: var(--pf-surface);
+  border: 4px solid var(--pf-bg);
+  display: grid;
+  place-items: center;
+}
+.pf-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.pf-initials {
+  font-size: 2.6rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: #fff;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, var(--pf-accent), var(--pf-accent-2));
+}
+.pf-avatar-busy {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(10, 12, 18, 0.6);
+  color: #fff;
+}
+.pf-avatar-btn {
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  background: var(--pf-accent);
+  border: 3px solid var(--pf-bg);
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+.pf-avatar-btn:hover { transform: scale(1.08); }
+.pf-avatar-btn:focus-within { outline: 2px solid var(--pf-text); outline-offset: 2px; }
+
+.pf-identity {
+  flex: 1;
+  min-width: 0;
+  padding-bottom: 12px;
+}
+.pf-name-row {
   display: flex;
   align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow: var(--shadow-md);
-  transition: transform 0.2s;
+  flex-wrap: wrap;
+  gap: 14px;
 }
-
-.edit-avatar-btn:hover {
-  transform: scale(1.1);
-}
-
-.profile-text {
-  padding-bottom: 24px;
-  flex: 1;
-}
-
-.profile-name {
-  font-size: 2.5rem;
+.pf-name {
+  margin: 0;
+  font-size: clamp(1.8rem, 4vw, 2.5rem);
   font-weight: 800;
-  color: var(--text-main);
-  margin-bottom: 8px;
   line-height: 1.1;
+  letter-spacing: -0.02em;
+  overflow-wrap: anywhere;
+}
+.pf-handle {
+  margin: 6px 0 0;
+  color: var(--pf-text-3);
+  font-size: 0.95rem;
+}
+.pf-bio {
+  margin: 12px 0 0;
+  max-width: 62ch;
+  color: var(--pf-text-2);
+  font-size: 1.05rem;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
 }
 
-.profile-bio {
-  color: var(--text-secondary);
-  font-size: 1.1rem;
-  max-width: 600px;
+/* ---------- buttons ---------- */
+.pf-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 10px;
+  font: inherit;
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: background 0.15s, border-color 0.15s, opacity 0.15s;
 }
-
-.profile-stats-row {
-  display: flex;
-  gap: 24px;
-  margin-top: 16px;
+.pf-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.pf-btn:focus-visible { outline: 2px solid var(--pf-accent); outline-offset: 2px; }
+.pf-btn-sm { padding: 6px 12px; font-size: 0.85rem; border-radius: 999px; }
+.pf-btn-primary { background: var(--pf-accent); color: #fff; }
+.pf-btn-primary:not(:disabled):hover { filter: brightness(1.1); }
+.pf-btn-ghost {
+  background: transparent;
+  color: var(--pf-text-2);
+  border-color: var(--pf-line);
 }
+.pf-btn-ghost:not(:disabled):hover { color: var(--pf-text); border-color: var(--pf-text-3); }
 
-.stat-pill {
+/* ---------- edit form ---------- */
+.pf-form {
   display: flex;
   flex-direction: column;
+  gap: 14px;
+  max-width: 520px;
 }
-
-.stat-pill strong {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: var(--text-main);
+.pf-field { display: flex; flex-direction: column; gap: 6px; }
+.pf-field > span { font-size: 0.85rem; font-weight: 600; color: var(--pf-text-2); }
+.pf-field small { align-self: flex-end; color: var(--pf-text-3); font-size: 0.78rem; }
+.pf-field input,
+.pf-field textarea {
+  width: 100%;
+  padding: 10px 12px;
+  font: inherit;
+  color: var(--pf-text);
+  background: var(--pf-surface);
+  border: 1px solid var(--pf-line);
+  border-radius: 10px;
+  resize: vertical;
 }
-
-.stat-pill span {
-  font-size: 0.85rem;
-  color: var(--text-muted);
+.pf-field input:focus,
+.pf-field textarea:focus {
+  outline: none;
+  border-color: var(--pf-accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--pf-accent) 30%, transparent);
 }
+.pf-actions { display: flex; gap: 10px; }
 
-/* 2. Tabs Navigation */
-.profile-tabs-nav {
+/* ---------- banner ---------- */
+.pf-banner {
+  max-width: 1152px;
+  margin: 20px auto 0;
   display: flex;
-  gap: 32px;
-  border-bottom: 1px solid var(--border-color);
-  margin-top: 32px;
-  padding-bottom: 0;
-  margin-bottom: 32px;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  color: var(--pf-text);
+  background: color-mix(in srgb, var(--pf-bad) 14%, var(--pf-surface));
+  border: 1px solid color-mix(in srgb, var(--pf-bad) 45%, transparent);
+}
+.pf-banner svg { color: var(--pf-bad); flex: none; }
+.pf-banner span { flex: 1; font-size: 0.92rem; }
+
+/* ---------- stats ---------- */
+.pf-stats {
+  max-width: 1152px;
+  margin: 28px auto 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border-top: 1px solid var(--pf-line);
+  border-bottom: 1px solid var(--pf-line);
+}
+.pf-stat {
+  padding: 18px 12px;
+  text-align: center;
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 4px;
+}
+.pf-stat + .pf-stat { border-left: 1px solid var(--pf-line); }
+.pf-stat dd {
+  margin: 0;
+  font-size: clamp(1.4rem, 3vw, 1.9rem);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+}
+.pf-stat dt { font-size: 0.85rem; color: var(--pf-text-3); }
+
+/* ---------- tabs ---------- */
+.pf-tabs-bar {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  margin-top: 8px;
+  background: color-mix(in srgb, var(--pf-bg) 88%, transparent);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--pf-line);
+}
+.pf-tabs {
+  display: flex;
+  gap: 28px;
   overflow-x: auto;
-  /* Allow scroll on mobile */
   scrollbar-width: none;
 }
-
-.tab-btn {
-  background: transparent;
-  border: none;
-  padding: 16px 4px;
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--text-secondary);
-  cursor: pointer;
+.pf-tabs::-webkit-scrollbar { display: none; }
+.pf-tab {
   position: relative;
+  padding: 16px 4px;
+  font: inherit;
+  font-weight: 600;
   white-space: nowrap;
-  transition: color 0.3s;
+  color: var(--pf-text-2);
+  background: none;
+  border: 0;
+  cursor: pointer;
+  transition: color 0.15s;
 }
-
-.tab-btn:hover {
-  color: var(--primary);
-}
-
-.tab-btn.active {
-  color: var(--primary);
-}
-
-.active-indicator {
+.pf-tab:hover,
+.pf-tab.is-active { color: var(--pf-text); }
+.pf-tab:focus-visible { outline: 2px solid var(--pf-accent); outline-offset: -2px; border-radius: 6px; }
+.pf-tab-line {
   position: absolute;
-  bottom: -1px;
   left: 0;
-  width: 100%;
+  right: 0;
+  bottom: -1px;
   height: 3px;
-  background: var(--primary);
   border-radius: 3px 3px 0 0;
+  background: var(--pf-accent);
 }
+.pf-panel { min-height: 400px; padding-top: 28px; }
 
-/* 3. Content Area */
-.profile-content {
-  min-height: 400px;
+/* ---------- toast ---------- */
+.pf-toast-region {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 100;
 }
+.pf-toast {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  max-width: min(92vw, 440px);
+  padding: 12px 18px;
+  border-radius: 12px;
+  font-size: 0.92rem;
+  font-weight: 500;
+  color: #fff;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+.pf-toast-success { background: #0f7a55; }
+.pf-toast-error { background: #b42318; }
 
-/* Mobile Responsive */
+/* ---------- skeleton + spinner ---------- */
+.pf-skel {
+  background: linear-gradient(90deg, var(--pf-surface) 25%, color-mix(in srgb, var(--pf-surface) 70%, #fff) 50%, var(--pf-surface) 75%);
+  background-size: 200% 100%;
+  animation: pf-shimmer 1.4s linear infinite;
+}
+.pf-skel.pf-skel-line { border-radius: 8px; height: 16px; }
+.pf-skel-circle { width: 100%; height: 100%; border-radius: 50%; }
+@keyframes pf-shimmer { to { background-position: -200% 0; } }
+.pf-spin { animation: pf-rotate 0.9s linear infinite; }
+@keyframes pf-rotate { to { transform: rotate(360deg); } }
+
+/* ---------- mobile ---------- */
 @media (max-width: 768px) {
-  .profile-info-section {
+  .pf-info {
     flex-direction: column;
     align-items: center;
     text-align: center;
-    margin-top: -60px;
-  }
-
-  .profile-avatar-wrapper {
-    width: 120px;
-    height: 120px;
-  }
-
-  .profile-name {
-    font-size: 1.8rem;
-  }
-
-  .profile-tabs-nav {
+    margin-top: -72px;
     gap: 16px;
-    padding: 0 16px;
-    justify-content: flex-start;
   }
+  .pf-avatar-wrap { width: 144px; height: 144px; }
+  .pf-avatar { inset: 11px; }
+  .pf-name-row { justify-content: center; }
+  .pf-bio { margin-inline: auto; }
+  .pf-form { width: 100%; text-align: left; }
+  .pf-actions { justify-content: flex-end; }
+  .pf-stats { grid-template-columns: repeat(2, 1fr); margin-inline: 16px; }
+  .pf-stat:nth-child(3) { border-left: 0; }
+  .pf-stat:nth-child(n + 3) { border-top: 1px solid var(--pf-line); }
+  .pf-banner { margin-inline: 16px; }
+  .pf-tabs { padding: 0 16px; gap: 20px; }
 }
 
-/* Edit Profile Styles */
-.name-row {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 8px;
-}
-
-@media (max-width: 768px) {
-  .name-row {
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-}
-
-.edit-profile-btn {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid var(--border-color);
-  color: var(--text-secondary);
-  padding: 6px 12px;
-  border-radius: 20px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.85rem;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.edit-profile-btn:hover {
-  background: var(--bg-card-hover);
-  color: var(--text-main);
-  border-color: var(--text-secondary);
-}
-
-.edit-profile-form {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  max-width: 500px;
-  margin-bottom: 16px;
-}
-
-.edit-name-input {
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-color);
-  color: var(--text-main);
-  font-size: 1.5rem;
-  font-weight: 700;
-  padding: 8px 12px;
-  border-radius: 8px;
-  width: 100%;
-}
-
-.edit-bio-input {
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-color);
-  color: var(--text-secondary);
-  font-size: 1rem;
-  padding: 8px 12px;
-  border-radius: 8px;
-  width: 100%;
-  resize: vertical;
-}
-
-.edit-actions {
-  display: flex;
-  gap: 12px;
-}
-
-.save-btn {
-  background: var(--primary);
-  color: white;
-  border: none;
-  padding: 8px 20px;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.cancel-btn {
-  background: transparent;
-  color: var(--text-secondary);
-  border: 1px solid var(--border-color);
-  padding: 8px 16px;
-  border-radius: 8px;
-  cursor: pointer;
+@media (prefers-reduced-motion: reduce) {
+  .pf-ring-fill, .pf-skel, .pf-spin { animation: none; transition: none; }
 }
