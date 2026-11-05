@@ -1,14 +1,18 @@
-/* DietSection.css - Premium Glassmorphism Theme (Fixed Variables) */
+/* DietSection.css - Premium Glassmorphism Theme (Fixed Variables & Mobile-First) */
 
 .diet-page-container {
   min-height: 100vh;
+  min-height: 100dvh;
   margin: 0 auto;
-  padding: 40px 48px 120px 48px;
-  background-color: var(--bg-main) !important;
-  color: var(--text-main);
+  padding: 40px 48px calc(120px + env(safe-area-inset-bottom, 0px)) 48px;
+  background-color: var(--bg-main, #0f0f13) !important;
+  color: var(--text-main, #ffffff);
   transition: background-color 0.3s ease, color 0.3s ease;
   font-family: 'Inter', sans-serif;
   width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+  box-sizing: border-box;
 }
 
 /* --- 1. PREMIUM FILTER BAR --- */
@@ -16,11 +20,11 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
+  background: var(--bg-card, rgba(255, 255, 255, 0.04));
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
   border-radius: 16px;
-  padding: 16px 32px;
-  margin-bottom: 32px;
+  padding: 16px 24px;
+  margin-bottom: 16px;
   box-shadow: 0 4px 20px rgba(0,0,0,0.03);
   flex-wrap: wrap;
   gap: 16px;
@@ -33,12 +37,12 @@
   flex-direction: column;
   gap: 6px;
   flex: 1;
-  min-width: 150px;
+  min-width: 140px;
 }
 
 .filter-group label {
   font-size: 0.8125rem;
-  color: var(--text-secondary);
+  color: var(--text-secondary, #9ca3af);
   text-transform: uppercase;
   letter-spacing: 1px;
   font-weight: 600;
@@ -47,8 +51,8 @@
 .premium-filter-bar select {
   background: transparent;
   border: none;
-  color: var(--text-main);
-  font-size: 1.0625rem;
+  color: var(--text-main, #ffffff);
+  font-size: 1rem; /* >= 16px prevents iOS zoom */
   font-weight: 600;
   cursor: pointer;
   appearance: none;
@@ -58,33 +62,220 @@
   background-size: 0.65em auto;
   padding-right: 24px;
   outline: none;
+  min-height: 44px;
 }
 
 .premium-filter-bar select option {
-  background: var(--bg-card);
-  color: var(--text-main);
+  background: var(--bg-card, #1e1e24);
+  color: var(--text-main, #ffffff);
 }
 
 .divider {
   width: 1px;
   height: 40px;
-  background: var(--border-color);
-  margin: 0 16px;
+  background: var(--border-color, rgba(255, 255, 255, 0.1));
+  margin: 0 8px;
+}
+
+.regenerate-group {
+  display: flex;
+  align-items: center;
+}
+
+.regen-plan-btn {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  border: none;
+  color: #ffffff;
+  padding: 10px 18px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s;
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+}
+
+.regen-plan-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5);
+}
+
+.regen-plan-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* --- PREFERENCES & ALLERGIES BAR --- */
+.diet-preferences-bar {
+  background: var(--bg-card, rgba(255, 255, 255, 0.04));
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+  border-radius: 16px;
+  padding: 16px 20px;
+  margin-bottom: 16px;
+}
+
+.pref-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.pref-label-col {
+  min-width: 110px;
+}
+
+.pref-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-secondary, #9ca3af);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.pref-chips-col {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+
+.pref-chip {
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.15));
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-secondary, #d1d5db);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  transition: all 0.2s;
+}
+
+.pref-chip:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-main, #ffffff);
+}
+
+.pref-chip-active {
+  background: rgba(239, 68, 68, 0.18);
+  border-color: #ef4444;
+  color: #fca5a5;
+  font-weight: 700;
+}
+
+.custom-tag {
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #fca5a5;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+}
+
+.custom-tag button {
+  background: transparent;
+  border: none;
+  color: #fca5a5;
+  cursor: pointer;
+  font-weight: bold;
+  padding: 0 4px;
+}
+
+.dislike-tag {
+  background: rgba(245, 158, 11, 0.15);
+  border-color: rgba(245, 158, 11, 0.3);
+  color: #fcd34d;
+}
+
+.dislike-tag button {
+  color: #fcd34d;
+}
+
+.custom-chip-input-wrap {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.15));
+  border-radius: 999px;
+  padding: 2px 8px;
+  min-height: 44px;
+}
+
+.custom-chip-input-wrap input {
+  background: transparent;
+  border: none;
+  color: var(--text-main, #ffffff);
+  font-size: 1rem; /* >= 16px prevents iOS zoom */
+  padding: 6px 8px;
+  outline: none;
+  min-width: 140px;
+}
+
+.custom-chip-input-wrap button {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary, #9ca3af);
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 4px 8px;
+  min-width: 44px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Targets pill */
+.targets-summary-pill {
+  background: linear-gradient(90deg, rgba(99, 102, 241, 0.1), rgba(16, 185, 129, 0.1));
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+  border-radius: 12px;
+  padding: 10px 18px;
+  margin-bottom: 24px;
+  font-size: 0.875rem;
+  color: var(--text-secondary, #d1d5db);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.targets-summary-pill strong {
+  color: #f97316;
 }
 
 /* --- 2. GRID LAYOUT --- */
 .diet-dashboard-grid {
   display: grid;
-  grid-template-columns: 2fr 1fr;
+  grid-template-columns: 1.15fr 1fr;
+  gap: 24px;
+}
+
+.dashboard-left, .dashboard-right {
+  display: flex;
+  flex-direction: column;
   gap: 24px;
 }
 
 /* --- CARDS & PANELS --- */
 .glass-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
+  background: var(--bg-card, rgba(255, 255, 255, 0.04));
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
   border-radius: 20px;
-  padding: 32px;
+  padding: 24px;
   box-shadow: 0 4px 15px rgba(0,0,0,0.02);
   transition: transform 0.2s, box-shadow 0.2s;
 }
@@ -92,88 +283,130 @@
 [data-theme='dark'] .glass-card { box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
 
 .glass-card:hover {
-  box-shadow: 0 12px 30px rgba(0,0,0,0.06);
-  border-color: var(--text-muted);
+  border-color: rgba(99, 102, 241, 0.3);
 }
-[data-theme='dark'] .glass-card:hover { box-shadow: 0 12px 30px rgba(0,0,0,0.4); border-color: rgba(255,255,255,0.1); }
 
 .stats-card {
-  margin-bottom: 24px;
-  background: var(--bg-card);
+  background: transparent;
+  padding: 0;
+  border: none;
 }
 
-/* --- TODAY'S PREVIEW --- */
-.todays-plan-preview h4 {
-  margin-top: 0;
-  margin-bottom: 24px;
-  font-size: 1.1rem;
-  border-bottom: 1px solid var(--border-color);
-  padding-bottom: 16px;
-  color: var(--text-main);
-}
-
-.mini-meal-list {
+/* --- TODAY'S PREVIEW & SLOTS --- */
+.plan-preview-header {
   display: flex;
-  flex-direction: column;
-  gap: 12px;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+  padding-bottom: 14px;
+  margin-bottom: 20px;
 }
 
-.mini-meal-row {
+.plan-preview-header h4 {
+  margin: 0;
+  font-size: 1.15rem;
+  color: var(--text-main, #ffffff);
+}
+
+.preview-date-badge {
+  font-size: 0.8rem;
+  color: var(--text-secondary, #9ca3af);
+  background: rgba(255, 255, 255, 0.06);
+  padding: 4px 10px;
+  border-radius: 8px;
+}
+
+.slots-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+.empty-msg {
+  color: var(--text-secondary, #9ca3af);
+  font-size: 0.9rem;
+  text-align: center;
+  padding: 24px 0;
+}
+
+/* --- LOGIN OVERLAY --- */
+.login-overlay-glass {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(10px);
   display: flex;
   align-items: center;
-  gap: 16px;
-  background: var(--bg-main);
-  padding: 12px 16px;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.login-modal-glass {
+  background: var(--bg-card, #1e1e24);
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.15));
+  border-radius: 24px;
+  padding: 36px 28px;
+  max-width: 420px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+}
+
+.login-modal-glass .lock-emoji {
+  font-size: 2.5rem;
+  margin-bottom: 12px;
+  display: inline-block;
+}
+
+.login-modal-glass h2 {
+  font-size: 1.4rem;
+  margin: 0 0 10px 0;
+  color: var(--text-main, #ffffff);
+}
+
+.login-modal-glass p {
+  color: var(--text-secondary, #9ca3af);
+  font-size: 0.9rem;
+  margin-bottom: 24px;
+}
+
+.login-modal-glass button {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: white;
+  border: none;
+  padding: 12px 28px;
   border-radius: 12px;
-  border: 1px solid transparent;
-  transition: 0.2s;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  min-height: 44px;
+  width: 100%;
+  transition: transform 0.1s;
 }
 
-.mini-meal-row:hover {
-  background: var(--bg-card);
-  border-color: var(--border-color);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-}
-
-.mini-meal-row img {
-  width: 48px;
-  height: 48px;
-  border-radius: 8px;
-  object-fit: cover;
-}
-
-.mini-meal-row span {
-  display: block;
-  font-weight: 600;
-  font-size: 0.9375rem;
-  color: var(--text-main);
-}
-
-.mini-meal-row small {
-  color: var(--text-secondary);
-  font-size: 0.8125rem;
+.login-modal-glass button:hover {
+  transform: translateY(-2px);
 }
 
 /* --- LOADING --- */
 .loading-overlay {
-  position: absolute;
+  position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.2);
-  backdrop-filter: blur(4px);
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(6px);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  z-index: 50;
-  border-radius: 20px;
+  z-index: 2000;
 }
-[data-theme='dark'] .loading-overlay { background: rgba(0,0,0,0.6); }
 
 .spinner {
-  width: 40px;
-  height: 40px;
-  border: 4px solid var(--border-color);
-  border-left-color: var(--primary);
+  width: 44px;
+  height: 44px;
+  border: 4px solid rgba(255, 255, 255, 0.15);
+  border-left-color: var(--primary, #6366f1);
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin-bottom: 16px;
@@ -181,8 +414,68 @@
 
 @keyframes spin { 100% { transform: rotate(360deg); } }
 
-/* --- RESPONSIVE --- */
+/* --- MOBILE-FIRST RESPONSIVE (360x640, 390x844, 768x1024) --- */
 @media (max-width: 900px) {
-  .diet-dashboard-grid { grid-template-columns: 1fr; }
-  .diet-page-container { padding: 24px; margin-top: 20px;}
+  .diet-page-container {
+    padding: 16px 16px calc(100px + env(safe-area-inset-bottom, 0px)) 16px;
+    margin-top: 10px;
+  }
+
+  .premium-filter-bar {
+    padding: 16px;
+    gap: 12px;
+  }
+
+  .divider {
+    display: none;
+  }
+
+  .filter-group {
+    min-width: 100%;
+  }
+
+  .regenerate-group {
+    width: 100%;
+  }
+
+  .regen-plan-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .pref-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  /* Single column layout with exact requested order on mobile:
+     Order: summary (1), logger (2), today's meals (3), smart box (4)
+  */
+  .diet-dashboard-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .dashboard-left,
+  .dashboard-right {
+    display: contents;
+  }
+
+  .stats-row {
+    order: 1;
+  }
+
+  .logger-card {
+    order: 2;
+  }
+
+  .todays-plan-preview {
+    order: 3;
+  }
+
+  .smart-box-wrapper {
+    order: 4;
+  }
 }

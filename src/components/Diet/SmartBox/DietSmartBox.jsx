@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { fetchDietCarousel } from '../../../services/dietService';
 import RobotAssistant from './RobotAssistant';
 import './SmartBox.css';
@@ -8,44 +8,71 @@ const DietSmartBox = () => {
     const navigate = useNavigate();
     const [foods, setFoods] = useState([]);
     const [currentIndex, setCurrentIndex] = useState(0);
-    const [isPaused, setIsPaused] = useState(false);
+    const [isInteracting, setIsInteracting] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
-    const [isSpeaking, setIsSpeaking] = useState(false); // To drive Robot animation
+    const [isSpeaking, setIsSpeaking] = useState(false);
+    const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
-    // TTS Refs
+    // Refs
     const speechRef = useRef(null);
     const isSpeakingRef = useRef(false);
 
+    // Check prefers-reduced-motion
+    useEffect(() => {
+        if (typeof window !== 'undefined' && window.matchMedia) {
+            const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+            setPrefersReducedMotion(mq.matches);
+            const handler = (e) => setPrefersReducedMotion(e.matches);
+            if (mq.addEventListener) {
+                mq.addEventListener('change', handler);
+                return () => mq.removeEventListener('change', handler);
+            }
+        }
+    }, []);
+
     // 1. Fetch Carousel Data
     useEffect(() => {
+        let mounted = true;
         const fetchCarousel = async () => {
             try {
                 const data = await fetchDietCarousel();
-                if (data && data.length > 0) {
+                if (mounted && data && data.length > 0) {
                     setFoods(data);
                 }
             } catch (err) {
                 console.error("SmartBox Fetch Error", err);
             } finally {
-                setIsLoading(false);
+                if (mounted) setIsLoading(false);
             }
         };
         fetchCarousel();
+        return () => {
+            mounted = false;
+        };
     }, []);
 
-    // 2. TTS Logic
-    const speak = (text) => {
-        if (!window.speechSynthesis) return;
+    // 2. TTS Logic - Only triggered manually by user tap
+    const stopSpeaking = useCallback(() => {
+        if (typeof window !== 'undefined' && window.speechSynthesis) {
+            window.speechSynthesis.cancel();
+            setIsSpeaking(false);
+            isSpeakingRef.current = false;
+        }
+    }, []);
 
-        // Cancel previous
+    const toggleSpeech = (text) => {
+        if (typeof window === 'undefined' || !window.speechSynthesis) return;
+
+        if (isSpeaking) {
+            stopSpeaking();
+            return;
+        }
+
         window.speechSynthesis.cancel();
-
         const utterance = new SpeechSynthesisUtterance(text);
-
-        // Voice Selection: Try to find a Hindi or Indian English voice
         const voices = window.speechSynthesis.getVoices();
-        const hindiVoice = voices.find(v => v.lang.includes('hi') || v.name.includes('India'));
-        if (hindiVoice) utterance.voice = hindiVoice;
+        const preferredVoice = voices.find(v => v.lang.includes('hi') || v.name.includes('India')) || voices[0];
+        if (preferredVoice) utterance.voice = preferredVoice;
 
         utterance.rate = 1.0;
         utterance.pitch = 1.0;
@@ -58,62 +85,56 @@ const DietSmartBox = () => {
             isSpeakingRef.current = false;
             setIsSpeaking(false);
         };
+        utterance.onerror = () => {
+            isSpeakingRef.current = false;
+            setIsSpeaking(false);
+        };
 
         speechRef.current = utterance;
         window.speechSynthesis.speak(utterance);
     };
 
-    const stopSpeaking = () => {
-        if (window.speechSynthesis) {
-            window.speechSynthesis.cancel();
-            setIsSpeaking(false);
-            isSpeakingRef.current = false;
-        }
-    };
+    // Stop speaking on slide change or unmount
+    useEffect(() => {
+        return () => {
+            stopSpeaking();
+        };
+    }, [currentIndex, stopSpeaking]);
 
-    // 3. Carousel Logic
+    // Handle document.hidden to pause auto-rotation & pause speech
+    const [isDocumentHidden, setIsDocumentHidden] = useState(false);
+    useEffect(() => {
+        const handleVisibilityChange = () => {
+            if (document.hidden) {
+                setIsDocumentHidden(true);
+                stopSpeaking();
+            } else {
+                setIsDocumentHidden(false);
+            }
+        };
+
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+        return () => {
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+        };
+    }, [stopSpeaking]);
+
+    // 3. Carousel Auto-rotation: Paused when interacting, speaking, or document hidden
     useEffect(() => {
         if (isLoading || foods.length === 0) return;
-
-        // Speak current slide on change (Enable Autoplay only if user interacted? 
-        // Browsers block audio without interaction. We assume user click triggers "Start" or we try anyway)
-        const currentFood = foods[currentIndex];
-        if (currentFood && !isPaused) {
-            speak(currentFood.persona_text);
-        }
+        if (isInteracting || isSpeaking || isDocumentHidden) return;
 
         const interval = setInterval(() => {
-            if (!isPaused) {
-                setCurrentIndex(prev => (prev + 1) % foods.length);
-            }
-        }, 10000); // 10 seconds per slide
+            setCurrentIndex(prev => (prev + 1) % foods.length);
+        }, 8000);
 
         return () => {
             clearInterval(interval);
-            stopSpeaking();
         };
-    }, [currentIndex, isPaused, isLoading, foods]);
-
-
-    // Handlers
-    const handleMouseEnter = () => {
-        setIsPaused(true);
-        window.speechSynthesis.pause(); // Pause audio
-        setIsSpeaking(false);
-    };
-
-    const handleMouseLeave = () => {
-        setIsPaused(false);
-        window.speechSynthesis.resume(); // Resume audio
-        setIsSpeaking(true); // Assume it resumes speaking if it was
-    };
-
-    const handleItemClick = (food) => {
-        // Do nothing on container click to avoid accidental triggers
-    };
+    }, [foods.length, isInteracting, isSpeaking, isDocumentHidden, isLoading]);
 
     const handleSeeMore = (e, food) => {
-        e.stopPropagation(); // Prevent bubble
+        e.stopPropagation();
         stopSpeaking();
         navigate(`/diet/food/${food.id}`);
     };
@@ -125,14 +146,29 @@ const DietSmartBox = () => {
 
     return (
         <div
-            className="smart-box-container"
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
+            className={`smart-box-container ${prefersReducedMotion ? 'reduced-motion' : ''}`}
+            onMouseEnter={() => setIsInteracting(true)}
+            onMouseLeave={() => setIsInteracting(false)}
+            onTouchStart={() => setIsInteracting(true)}
+            onTouchEnd={() => setIsInteracting(false)}
         >
-            <div className="carousel-slide slide-enter" key={item.id}>
-
-                {/* 1. LEFT CONTENT (40%) */}
+            <div className={`carousel-slide ${prefersReducedMotion ? '' : 'slide-enter'}`} key={item.id}>
+                {/* 1. LEFT CONTENT */}
                 <div className="sb-left">
+                    <div className="sb-top-bar">
+                        <span className="sb-slide-counter">{currentIndex + 1} / {foods.length}</span>
+                        {/* MANUAL SPEAKER BUTTON - NO AUTOPLAY */}
+                        <button
+                            type="button"
+                            className={`speaker-btn ${isSpeaking ? 'speaking-active' : ''}`}
+                            aria-label={isSpeaking ? "Stop voice assistant" : "Listen to voice introduction"}
+                            onClick={() => toggleSpeech(item.persona_text || item.description || item.name)}
+                            title={isSpeaking ? "Mute" : "Listen to persona voice"}
+                        >
+                            {isSpeaking ? "🔊 Speaking... (Tap to Mute)" : "🔈 Tap to Listen"}
+                        </button>
+                    </div>
+
                     <h2 className="food-persona-greeting">
                         {item.persona_text ? item.persona_text.split('.')[0] : `Hello, I am ${item.name}`}
                     </h2>
@@ -155,22 +191,27 @@ const DietSmartBox = () => {
                         <span>💪 {item.macros?.protein || item.protein}g P</span>
                     </div>
 
-                    <button className="see-more-btn" onClick={(e) => handleSeeMore(e, item)}>
-                        See More Details →
-                    </button>
+                    <div className="sb-actions-row">
+                        <button
+                            type="button"
+                            className="see-more-btn"
+                            onClick={(e) => handleSeeMore(e, item)}
+                        >
+                            See More Details →
+                        </button>
+                    </div>
                 </div>
 
-                {/* 2. CENTER: ROBOT (20%) */}
+                {/* 2. CENTER: ROBOT */}
                 <div className="sb-center">
-                    <RobotAssistant isSpeaking={isSpeaking} />
+                    <RobotAssistant isSpeaking={!prefersReducedMotion && isSpeaking} />
                 </div>
 
-                {/* 3. RIGHT IMAGE (40%) */}
+                {/* 3. RIGHT: IMAGE */}
                 <div className="sb-right" onClick={(e) => handleSeeMore(e, item)}>
-                    <img src={item.image_url} alt={item.name} />
+                    <img src={item.image_url} alt={item.name} loading="lazy" />
                     <div className="food-name-overlay">{item.name}</div>
                 </div>
-
             </div>
         </div>
     );
